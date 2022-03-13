@@ -37,13 +37,12 @@ tss_bottom:
     .align  16
 gdt:
 _gdt:
-
     # First GDT entry cannot be used
     .quad 0
-
+    
     # NULL entry
     .quad 0
-
+    
     # Segmentation will not be used
     # CS and DS both are 0-4GB r/w segments
     #

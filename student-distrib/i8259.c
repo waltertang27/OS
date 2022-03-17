@@ -80,7 +80,7 @@ void send_eoi(uint32_t irq_num) {
     //means that the irq_num corresponds to the secondary PIC
     if(irq_num > MASTER_IRQ_NUM) {
 
-        outb(EOI | (irq_num - NUM_IR), SLAVE_8259_PORT); //sends to slave; we subtract my 8 to obtain the correct IRQ number (0-7) for the secondary PIC
+        outb(EOI | (irq_num - NUM_IR), SLAVE_8259_PORT); //sends to slave; we subtract by 8 to obtain the correct IRQ number (0-7) for the secondary PIC
         outb(EOI | IR2, MASTER_8259_PORT);  //lets the master know the secondary interrupt was serviced
 
     }

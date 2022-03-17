@@ -12,6 +12,16 @@
 #define MASTER_8259_PORT    0x20
 #define SLAVE_8259_PORT     0xA0
 
+//the seconds connected ports for ICW2+
+#define MASTER_PORT_2   0x21
+#define SLAVE_PORT_2    0xA1
+
+//secondary PIC is connected through IR2
+#define IR2    2
+
+//8 total ports for IR
+#define NUM_IR  8
+
 /* Initialization control words to init each PIC.
  * See the Intel manuals for details on the meaning
  * of each word */
@@ -21,6 +31,12 @@
 #define ICW3_MASTER         0x04
 #define ICW3_SLAVE          0x02
 #define ICW4                0x01
+
+#define MASTER_IRQ_NUM  7
+#define SLAVE_IRQ_NUM   15
+
+//value used for mask
+#define MASK_VALUE  0xFF
 
 /* End-of-interrupt byte.  This gets OR'd with
  * the interrupt number and sent out to the PIC

@@ -8,8 +8,8 @@
 #include "i8259.h"
 #include "debug.h"
 #include "tests.h"
-
-// #define RUN_TESTS 
+#include "idt.h"
+#define RUN_TESTS 
 
 /* Macros. */
 /* Check if the bit BIT in FLAGS is set. */
@@ -135,10 +135,11 @@ void entry(unsigned long magic, unsigned long addr) {
         tss.esp0 = 0x800000;
         ltr(KERNEL_TSS);
     }
-
+    
+    IDT_init();
     /* Init the PIC */
     i8259_init();
-
+    
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
 

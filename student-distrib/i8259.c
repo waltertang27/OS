@@ -35,7 +35,7 @@ void i8259_init(void) {
 /* Enable (unmask) the specified IRQ */
 void enable_irq(uint32_t irq_num) {
     if(irq_num > SLAVE_IRQ_NUM || irq_num < 0) {
-        printk("irq_num invalid\n");
+        //printk("irq_num invalid\n");
         return;
     }
     //if irq_num corresponds to secondary PIC, unmask the secondary PIC
@@ -54,7 +54,7 @@ void enable_irq(uint32_t irq_num) {
 /* Disable (mask) the specified IRQ */
 void disable_irq(uint32_t irq_num) {
     if(irq_num > SLAVE_IRQ_NUM || irq_num < 0) {
-        printk("irq_num invalid\n");
+        //printk("irq_num invalid\n");
         return;
     }
     //if irq_num corresponds to secondary PIC, mask the secondary PIC

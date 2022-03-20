@@ -7,7 +7,7 @@
 #include "i8259.h"
 #include "debug.h"
 #include "tests.h"
-
+#include "types.h"
 
 #define KEYBOARD_IRQ  1
 
@@ -16,6 +16,7 @@
 
 void keyboard_init(void);
 
-void keyboard_handler(void);
+extern void keyboard_handler(void);
 
 #endif 
+

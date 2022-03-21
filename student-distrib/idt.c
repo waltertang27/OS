@@ -45,8 +45,9 @@ extern void IDT_init(void){
     
     idt[33].present = 1;
     idt[33].reserved3 = 1;
-    SET_IDT_ENTRY(idt[33],keyboard_handler);
+    SET_IDT_ENTRY(idt[33],rtc_handler_linkage);
     
+
     /*
     idt[40].present = 1;
     idt[40].reserved3 = 1;

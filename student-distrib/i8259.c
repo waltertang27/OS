@@ -11,6 +11,13 @@ uint8_t slave_mask = MASK_VALUE;  /* IRQs 8-15 */
 
 
 /* Initialize the 8259 PIC */
+/*
+DESCRIPTION: Inits the i8259 PIC
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: Writes the ICWs to the data ports of the 8259 PICs
+*/
 void i8259_init(void) {
 
     //mask all interrupts
@@ -34,6 +41,13 @@ void i8259_init(void) {
 }
 
 /* Enable (unmask) the specified IRQ */
+/*
+DESCRIPTION: Enables (unmask) the specified IRQ
+INPUTS: the irq_number we want to unmask
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: sets the bit of the Interrupt Mask Register to unmask
+*/
 void enable_irq(uint32_t irq_num) {
     if(irq_num > SLAVE_IRQ_NUM || irq_num < 0) {
         //printk("irq_num invalid\n");
@@ -51,8 +65,13 @@ void enable_irq(uint32_t irq_num) {
         outb(master_mask, MASTER_PORT_2);
     }
 }
-
-/* Disable (mask) the specified IRQ */
+/*
+DESCRIPTION: Disable (mask) the specified IRQ
+INPUTS: the irq_number we want to mask
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: sets the bit of the Interrupt Mask Register to mask
+*/
 void disable_irq(uint32_t irq_num) {
     if(irq_num > SLAVE_IRQ_NUM || irq_num < 0) {
         //printk("irq_num invalid\n");
@@ -72,6 +91,13 @@ void disable_irq(uint32_t irq_num) {
 }
 
 /* Send end-of-interrupt signal for the specified IRQ */
+/*
+DESCRIPTION: Send end-of-interrupt signal for the specified IRQ
+INPUTS: the irq_num that has been handled
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: writes to the PIC that an interrupt has been handled
+*/
 void send_eoi(uint32_t irq_num) {
     //irq_num is greater than the number on the PICs or less than 0, is invalid
     if(irq_num > SLAVE_IRQ_NUM || irq_num < 0) {

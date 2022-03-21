@@ -28,7 +28,7 @@ void i8259_init(void) {
     outb(ICW2_SLAVE, SLAVE_PORT_2); //map to 0x28 to 0x2F
     outb(ICW3_SLAVE, SLAVE_PORT_2);
     outb(ICW4, SLAVE_PORT_2);
-
+    enable_irq(2);
 
     //we can manually enable individual interrupts here
 }

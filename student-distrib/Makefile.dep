@@ -5,11 +5,11 @@ i8259.o: i8259.c i8259.h types.h lib.h
 idt.o: idt.c idt.h multiboot.h types.h x86_desc.h lib.h i8259.h debug.h \
   tests.h intr_link.h keyboard.h
 kernel.o: kernel.c multiboot.h types.h x86_desc.h lib.h i8259.h debug.h \
-  tests.h idt.h intr_link.h keyboard.h
+  tests.h idt.h intr_link.h keyboard.h paging.h
 keyboard.o: keyboard.c keyboard.h multiboot.h types.h x86_desc.h lib.h \
   i8259.h debug.h tests.h
 lib.o: lib.c lib.h types.h
-paging.o: paging.c paging.h types.h
+paging.o: paging.c paging.h types.h x86_desc.h lib.h
 rtc.o: rtc.c rtc.h multiboot.h types.h x86_desc.h lib.h i8259.h debug.h \
   tests.h
-tests.o: tests.c tests.h x86_desc.h types.h lib.h
+tests.o: tests.c tests.h x86_desc.h types.h lib.h paging.h

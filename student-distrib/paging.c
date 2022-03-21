@@ -1,10 +1,5 @@
 #include "paging.h"
 
-// extern void enable(int directory);
-
-page_directory_entry_t page_directory[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
-page_table_entry_t page_table[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
-page_table_entry_t video_mapping_pt[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
 
 /*
 	void init()
@@ -13,27 +8,36 @@ page_table_entry_t video_mapping_pt[TABLE_SIZE] __attribute__((aligned(ALIGN_BYT
 	Outputs: None
 */
 
-void init(){
+void paging_init()
+{
 
 	int i;
 
-	for (i = 0; i < TABLE_SIZE; i++){
-		if (i == 0){
+	for (i = 0; i < TABLE_SIZE; i++)
+	{
+		if (i == 0)
+		{
 			// first entry
 			page_directory[i].present = 1;
 			page_directory[i].user_supervisor = 0;
 			page_directory[i].page_table_addr = ((int)page_table) / ALIGN_BYTES;
-		} else if (i == KERNEL_INDEX){
+		}
+		else if (i == KERNEL_INDEX)
+		{
 			// kernel memory
 			page_directory[i].present = 1;
 			page_directory[i].user_supervisor = 0;
 			page_directory[i].page_table_addr = KERNEL_ADDR / ALIGN_BYTES;
-		} else if (i == USER_INDEX){
+		}
+		else if (i == USER_INDEX)
+		{
 			// user memory
 			page_directory[i].present = 1;
 			page_directory[i].user_supervisor = 1;
 			page_directory[i].page_table_addr = USER_V / ALIGN_BYTES;
-		} else {
+		}
+		else
+		{
 			// not setting up page_table_addr
 			page_directory[i].present = 0;
 			page_directory[i].user_supervisor = 0;
@@ -44,21 +48,28 @@ void init(){
 		page_directory[i].cache_disable = 0;
 		page_directory[i].accessed = 0;
 		page_directory[i].reserved = 0;
-		
-		if (i == 0){
+
+		if (i == 0)
+		{
 			page_directory[i].page_size = 0;
-		} else {
+		}
+		else
+		{
 			page_directory[i].page_size = 1;
 		}
-  	}
+	}
 
-  	// page table
-	for (i = 0; i < TABLE_SIZE; i++){
+	// page table
+	for (i = 0; i < TABLE_SIZE; i++)
+	{
 		// video memory
-		if (i * ALIGN_BYTES == VID_ADDR){
-			page_table[i].present   = 1;
-		} else {
-			page_table[i].present   = 0;
+		if (i * ALIGN_BYTES == VID_ADDR)
+		{
+			page_table[i].present = 1;
+		}
+		else
+		{
+			page_table[i].present = 0;
 		}
 		page_table[i].read_write = 1;
 		page_table[i].user_supervisor = 0;
@@ -72,7 +83,8 @@ void init(){
 	}
 
 	// video mapping
-	for (i = 0; i < TABLE_SIZE; i++){
+	for (i = 0; i < TABLE_SIZE; i++)
+	{
 		video_mapping_pt[i].present = 0;
 		video_mapping_pt[i].read_write = 1;
 		video_mapping_pt[i].user_supervisor = 0;
@@ -83,7 +95,19 @@ void init(){
 		video_mapping_pt[i].reserved = 0;
 		video_mapping_pt[i].global = 0;
 		video_mapping_pt[i].page_table_addr = i;
-  	}
-	// enable((int)page_directory);
+	}
 
+	
+	asm (
+		"movl $page_directory, %%eax ;"
+		"andl $0xFFFFFC00, %%eax ;"
+		"movl %%eax, %%cr3 ;"
+		"movl %%cr4, %%eax ;"
+		"orl $0x00000010, %%eax ;"
+		"movl %%eax, %%cr4 ;"
+		"movl %%cr0, %%eax ;"
+		"orl $0x80000000, %%eax ;"
+		"movl %%eax, %%cr0"
+		: : : "eax", "cc" );
+	
 }

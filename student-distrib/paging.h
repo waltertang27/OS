@@ -1,4 +1,12 @@
+#ifndef PAGING_H
+#define PAGING_H
+#ifndef ASM
+
+
 #include "types.h"
+#include "x86_desc.h"
+#include "lib.h"
+
 #define TABLE_SIZE   1024
 #define ALIGN_BYTES  4096 // 4KB, 1024 * 4
 #define PAGE_SIZE    4194304 // 4Mb
@@ -37,4 +45,15 @@ typedef struct __attribute__(()) page_table_entry{
     uint32_t page_table_addr : 20;
 } page_table_entry_t;
 
-extern void init();
+
+
+page_directory_entry_t page_directory[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
+page_table_entry_t page_table[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
+page_table_entry_t video_mapping_pt[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
+
+
+
+extern void paging_init();
+
+#endif
+#endif

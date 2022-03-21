@@ -2,9 +2,7 @@
 
 // extern void enable(int directory);
 
-page_directory_entry_t page_directory[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
-page_table_entry_t page_table[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
-page_table_entry_t video_mapping_pt[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
+
 
 /*
 	void init()
@@ -13,7 +11,9 @@ page_table_entry_t video_mapping_pt[TABLE_SIZE] __attribute__((aligned(ALIGN_BYT
 	Outputs: None
 */
 
-void init(){
+void paging_init(){
+
+	
 
 	int i;
 
@@ -51,7 +51,7 @@ void init(){
 			page_directory[i].page_size = 1;
 		}
   	}
-
+	
   	// page table
 	for (i = 0; i < TABLE_SIZE; i++){
 		// video memory
@@ -70,7 +70,7 @@ void init(){
 		page_table[i].global = 0;
 		page_table[i].page_table_addr = i;
 	}
-
+	
 	// video mapping
 	for (i = 0; i < TABLE_SIZE; i++){
 		video_mapping_pt[i].present = 0;
@@ -85,5 +85,19 @@ void init(){
 		video_mapping_pt[i].page_table_addr = i;
   	}
 	// enable((int)page_directory);
+	
+	/*
+	asm (
+		"movl $page_directory, %%eax ;"
+		"andl $0xFFFFFC00, %%eax ;"
+		"movl %%eax, %%cr3 ;"
+		"movl %%cr4, %%eax ;"
+		"orl $0x00000010, %%eax ;"
+		"movl %%eax, %%cr4 ;"
+		"movl %%cr0, %%eax ;"
+		"orl $0x80000000, %%eax ;"
+		"movl %%eax, %%cr0"
+		: : : "eax", "cc" );
+	*/
 
 }

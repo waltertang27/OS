@@ -2,8 +2,6 @@
 
 // extern void enable(int directory);
 
-
-
 /*
 	void init()
 	Description: initialize paging
@@ -11,29 +9,36 @@
 	Outputs: None
 */
 
-void paging_init(){
-
-	
+void paging_init()
+{
 
 	int i;
 
-	for (i = 0; i < TABLE_SIZE; i++){
-		if (i == 0){
+	for (i = 0; i < TABLE_SIZE; i++)
+	{
+		if (i == 0)
+		{
 			// first entry
 			page_directory[i].present = 1;
 			page_directory[i].user_supervisor = 0;
 			page_directory[i].page_table_addr = ((int)page_table) / ALIGN_BYTES;
-		} else if (i == KERNEL_INDEX){
+		}
+		else if (i == KERNEL_INDEX)
+		{
 			// kernel memory
 			page_directory[i].present = 1;
 			page_directory[i].user_supervisor = 0;
 			page_directory[i].page_table_addr = KERNEL_ADDR / ALIGN_BYTES;
-		} else if (i == USER_INDEX){
+		}
+		else if (i == USER_INDEX)
+		{
 			// user memory
 			page_directory[i].present = 1;
 			page_directory[i].user_supervisor = 1;
 			page_directory[i].page_table_addr = USER_V / ALIGN_BYTES;
-		} else {
+		}
+		else
+		{
 			// not setting up page_table_addr
 			page_directory[i].present = 0;
 			page_directory[i].user_supervisor = 0;
@@ -44,21 +49,28 @@ void paging_init(){
 		page_directory[i].cache_disable = 0;
 		page_directory[i].accessed = 0;
 		page_directory[i].reserved = 0;
-		
-		if (i == 0){
+
+		if (i == 0)
+		{
 			page_directory[i].page_size = 0;
-		} else {
+		}
+		else
+		{
 			page_directory[i].page_size = 1;
 		}
-  	}
-	
-  	// page table
-	for (i = 0; i < TABLE_SIZE; i++){
+	}
+
+	// page table
+	for (i = 0; i < TABLE_SIZE; i++)
+	{
 		// video memory
-		if (i * ALIGN_BYTES == VID_ADDR){
-			page_table[i].present   = 1;
-		} else {
-			page_table[i].present   = 0;
+		if (i * ALIGN_BYTES == VID_ADDR)
+		{
+			page_table[i].present = 1;
+		}
+		else
+		{
+			page_table[i].present = 0;
 		}
 		page_table[i].read_write = 1;
 		page_table[i].user_supervisor = 0;
@@ -70,9 +82,10 @@ void paging_init(){
 		page_table[i].global = 0;
 		page_table[i].page_table_addr = i;
 	}
-	
+
 	// video mapping
-	for (i = 0; i < TABLE_SIZE; i++){
+	for (i = 0; i < TABLE_SIZE; i++)
+	{
 		video_mapping_pt[i].present = 0;
 		video_mapping_pt[i].read_write = 1;
 		video_mapping_pt[i].user_supervisor = 0;
@@ -83,9 +96,9 @@ void paging_init(){
 		video_mapping_pt[i].reserved = 0;
 		video_mapping_pt[i].global = 0;
 		video_mapping_pt[i].page_table_addr = i;
-  	}
+	}
 	// enable((int)page_directory);
-	
+
 	/*
 	asm (
 		"movl $page_directory, %%eax ;"
@@ -99,5 +112,4 @@ void paging_init(){
 		"movl %%eax, %%cr0"
 		: : : "eax", "cc" );
 	*/
-
 }

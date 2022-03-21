@@ -32,6 +32,7 @@
 #define ICW3_SLAVE          0x02
 #define ICW4                0x01
 
+//numbers corresponding to the primary/secondary PIC
 #define MASTER_IRQ_NUM  7
 #define SLAVE_IRQ_NUM   15
 

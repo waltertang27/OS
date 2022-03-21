@@ -4,8 +4,12 @@
 #include "i8259.h"
 #include "debug.h"
 #include "tests.h"
-
+//#include "keyboard.h"
+#include "intr_link.h"
+#include "keyboard.h"
 #define EXCEP_NUM 19
+
+#define KEYBOARD_IDT    33
 
 extern void IDT_init(void);
 void blue_screen(char * exception);

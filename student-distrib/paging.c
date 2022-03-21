@@ -1,6 +1,5 @@
 #include "paging.h"
 
-// extern void enable(int directory);
 
 /*
 	void init()
@@ -97,9 +96,8 @@ void paging_init()
 		video_mapping_pt[i].global = 0;
 		video_mapping_pt[i].page_table_addr = i;
 	}
-	// enable((int)page_directory);
 
-	/*
+	
 	asm (
 		"movl $page_directory, %%eax ;"
 		"andl $0xFFFFFC00, %%eax ;"
@@ -111,5 +109,5 @@ void paging_init()
 		"orl $0x80000000, %%eax ;"
 		"movl %%eax, %%cr0"
 		: : : "eax", "cc" );
-	*/
+	
 }

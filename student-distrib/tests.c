@@ -82,12 +82,10 @@ int paging_test() {
 	TEST_HEADER;
     
     char result;
-
-
-    char* pointer = (char*)0x400000; //kernel
+    char* pointer = (char*)0x400000; // kernel
     result = *pointer;
 
-    pointer = (char*)0xB8000; //video memory
+    pointer = (char*)0xB8000; // video memory
     result = *pointer;
 
     pointer = (char*)0x7FFFFF;
@@ -96,49 +94,76 @@ int paging_test() {
     pointer = (char*)0xB8FFF;
     result = *pointer;
 
+	// if no exception appears, pass the test
     return PASS;
 }
 
-// Check to see if the memory before the kernel causes a page fault
-int kernel_up_bound_test() {
-    TEST_HEADER;
-    char result;
-    char* pointer = (char*)0x3FFFFF;
-    result = *pointer;
-    return FAIL;
-}
-
-int kernel_low_bound_test() {
-    TEST_HEADER;
-    char result;
-    char* pointer = (char*)0x800000;
-    result = *pointer;
-    return FAIL;
-}
-
-int vidmem_up_bound_test() {
-    TEST_HEADER;
-    char result;
-    char* pointer = (char*) 0xB7FFF;
-    result = *pointer;
-    return FAIL;
-}
-
-int vidmem_low_bound_test() {
-    TEST_HEADER;
-    char result;
-    char* pointer = (char*) 0xB9000;
-    result = *pointer;
-    return FAIL;
-}
-
+// attempts to deference NULL
 int null_test() {
     TEST_HEADER;
     char result;
+
+	// deference NULL. expect page fault exception
     char* pointer = (char*) 0;
     result = *pointer;
+
+	// if no exception appears, fail the test
     return FAIL;
 }
+
+// memory before kernel
+int kernel_before_test() {
+    TEST_HEADER;
+    char result;
+
+	// deference out of bounds address. expect page fault exception
+    char* pointer = (char*)0x3FFFFF;
+    result = *pointer;
+
+	// if no exception appears, fail the test
+    return FAIL;
+}
+
+// memory after kernel
+int kernel_after_test() {
+    TEST_HEADER;
+    char result;
+
+	// deference out of bounds address. expect page fault exception
+    char* pointer = (char*)0x800000;
+    result = *pointer;
+
+	// if no exception appears, fail the test
+    return FAIL;
+}
+
+// memory before video memory
+int video_mem_before_test() {
+    TEST_HEADER;
+    char result;
+
+	// deference out of bounds address. expect page fault exception
+    char* pointer = (char*) 0xB7FFF;
+    result = *pointer;
+
+	// if no exception appears, fail the test
+    return FAIL;
+}
+
+// memory after video memory
+int vdieo_mem_after_test() {
+    TEST_HEADER;
+    char result;
+
+	// deference out of bounds address. expect page fault exception
+    char* pointer = (char*) 0xB9000;
+    result = *pointer;
+
+	// if no exception appears, fail the test
+    return FAIL;
+}
+
+
 
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
@@ -151,18 +176,16 @@ void launch_tests(){
 
 	// TEST_OUTPUT("idt_test", idt_test());
 
-	TEST_OUTPUT("idt_test", idt_test());
-	//TEST_OUTPUT("Paging test",paging_test());
-
 	// launch your tests here
 	
-	//TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
+	// TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
 	// TEST_OUTPUT("syscall_test", syscall_test());
 	// TEST_OUTPUT("paging_init_test", paging_init_test());
 	// TEST_OUTPUT("paging_test", paging_test());
-	// TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
-    // TEST_OUTPUT("kernel_low_bound_test", kernel_low_bound_test());
-    // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());
-    // TEST_OUTPUT("vidmem_low_bound_test", vidmem_low_bound_test());
-    // TEST_OUTPUT("null_test", null_test());
+	// TEST_OUTPUT("null_test", null_test());
+	TEST_OUTPUT("kernel_before_test", kernel_before_test());
+    // TEST_OUTPUT("kernel_after_test", kernel_after_test());
+    // TEST_OUTPUT("video_mem_before_test", video_mem_before_test());
+    // TEST_OUTPUT("video_mem_after_test", video_mem_after_test());
+    
 }

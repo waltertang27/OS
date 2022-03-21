@@ -21,7 +21,7 @@ extern void rtc_init(void){
 extern void rtc_handler(void){
     cli();
     // printf("Called handler \n");
-    // test_interrupts();
+    test_interrupts();
     outb(0x8C, 0x70);	// select register C
     inb(0x71);		// just throw away contents
     send_eoi(8);

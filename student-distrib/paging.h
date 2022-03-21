@@ -27,6 +27,7 @@ typedef struct __attribute__(()) page_directory_entry
 	uint8_t accessed : 1;
 	uint8_t reserved : 1;
 	uint8_t page_size : 1;
+	uint8_t unused : 1; // extra bit so that the entry fits
 	uint8_t avl : 3;
 	uint32_t page_table_addr : 20;
 } page_directory_entry_t;

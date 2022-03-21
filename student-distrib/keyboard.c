@@ -16,7 +16,7 @@ void keyboard_init(void) {
 }
 
 extern void keyboard_handler(void) {
-    //putc('z');
+   // putc('z');
     cli();
     uint32_t keycode = inb(KEYBOARD_DATA_PORT);
     //putc('a');

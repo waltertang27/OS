@@ -6,7 +6,7 @@
 #include "tests.h"
 //#include "keyboard.h"
 #include "intr_link.h"
-
+#include "keyboard.h"
 #define EXCEP_NUM 19
 
 extern void IDT_init(void);

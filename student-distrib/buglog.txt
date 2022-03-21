@@ -1,0 +1,26 @@
+
+
+CHECKPOINT 3.1
+
+Description: The keyboard interrupt handler was printing twice to the screen, once with the character, and right after with a space. 
+Where: keyboard.c
+Issue: Releasing a key also counts as a keypress, which was causing it to register twice. 
+Solution: We added an if-statment to check if the keyboard press data byte was a release key, and if it was, we did not register it.
+
+Description: After fixing the bug above, the keyboard was not displaying values to the screen.
+Where: keyboard.c 
+Issue: After checking if the keypress was not valid and returning, I forgot to set the interrupt flag and send_eoi.
+Solution: Added a sti() and send_eoi(1) so that the interrupts would properly be addressed after a keypress.  
+
+Description: The RTC handler was not properly being accessed and would not work with the tests in lib.causing
+Where: rtc.c, i8259.c 
+Issue: The secondary PIC was not being properly enabled
+Solution: We enabled_irq(2) in i8259_init so that the secondary PIC was being properly enabled
+
+Description: When the keys were being stressed tested (spammed), there would be a General Protection Exception raised.
+Where: keyboard.c, intr_link.S 
+Issue: The assembly linkage was not being done correctly which caused issues with the keyboard
+Solution: We fixed the intr_link.S by adding an iret statement. 
+
+
+

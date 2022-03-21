@@ -151,16 +151,16 @@ void launch_tests(){
 
 	// TEST_OUTPUT("idt_test", idt_test());
 
-	//TEST_OUTPUT("idt_test", idt_test());
+	TEST_OUTPUT("idt_test", idt_test());
 	//TEST_OUTPUT("Paging test",paging_test());
 
 	// launch your tests here
 	
-	// TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
+	//TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
 	// TEST_OUTPUT("syscall_test", syscall_test());
 	// TEST_OUTPUT("paging_init_test", paging_init_test());
 	// TEST_OUTPUT("paging_test", paging_test());
-	TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
+	// TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
     // TEST_OUTPUT("kernel_low_bound_test", kernel_low_bound_test());
     // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());
     // TEST_OUTPUT("vidmem_low_bound_test", vidmem_low_bound_test());

@@ -1,4 +1,5 @@
 #include "idt.h"
+#include "intr_link.h"
 
 
 extern void IDT_init(void){
@@ -40,6 +41,18 @@ extern void IDT_init(void){
     SET_IDT_ENTRY(idt[17],machine_check_excep);
     SET_IDT_ENTRY(idt[18],simd_excep);
 
+    
+    
+    idt[33].present = 1;
+    //idt[33].reserved3 = 1;
+    SET_IDT_ENTRY(idt[33],keyboard_handler_linkage);
+    
+
+    /*
+    idt[40].present = 1;
+    idt[40].reserved3 = 1;
+    SET_IDT_ENTRY(idt[40], rtc_handler_linkage);
+*/
     lidt(idt_desc_ptr);
 }
 

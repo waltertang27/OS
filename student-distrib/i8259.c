@@ -14,8 +14,8 @@ uint8_t slave_mask = MASK_VALUE;  /* IRQs 8-15 */
 void i8259_init(void) {
 
     //mask all interrupts
-    outb(MASK_VALUE, MASTER_PORT_2);
-    outb(MASK_VALUE, SLAVE_PORT_2);
+    //outb(MASK_VALUE, MASTER_PORT_2);
+    //outb(MASK_VALUE, SLAVE_PORT_2);
 
     //send ICWs to master
     outb(ICW1, MASTER_8259_PORT);
@@ -28,6 +28,7 @@ void i8259_init(void) {
     outb(ICW2_SLAVE, SLAVE_PORT_2); //map to 0x28 to 0x2F
     outb(ICW3_SLAVE, SLAVE_PORT_2);
     outb(ICW4, SLAVE_PORT_2);
+
 
     //we can manually enable individual interrupts here
 }
@@ -87,5 +88,6 @@ void send_eoi(uint32_t irq_num) {
     //irq corresponds to primary PIC
     else {
         outb(EOI | irq_num, MASTER_8259_PORT);
+
     }
 }

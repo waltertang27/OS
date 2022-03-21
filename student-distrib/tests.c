@@ -148,12 +148,12 @@ int null_test() {
 
 /* Test suite entry point */
 void launch_tests(){
-<<<<<<< HEAD
+
 	// TEST_OUTPUT("idt_test", idt_test());
-=======
-	TEST_OUTPUT("idt_test", idt_test());
+
+	//TEST_OUTPUT("idt_test", idt_test());
 	//TEST_OUTPUT("Paging test",paging_test());
->>>>>>> 72927b2786f7d892c4397389949ac776710db670
+
 	// launch your tests here
 	
 	// TEST_OUTPUT("division_by_zero_test", division_by_zero_test());

@@ -6,18 +6,24 @@ extern void IDT_init(void){
     unsigned int i; 
  
     for(i = 0; i< NUM_VEC; i++){
-    //  currGate.offset_15_00 //idk what to do here yet
+    // If the value is not 15(reserved) and under 19 then make it present 
         if(i != 15 && i <EXCEP_NUM)
             idt[i].present = 1;
         else
             idt[i].present = 0; 
         
+        //Make the segment for all interrupt the CS Kernel 
         idt[i].seg_selector = KERNEL_CS ;
+
+        // 16 bit interrupt gates have reserved bits 0110 
         idt[i].reserved0 = 0;
         idt[i].reserved1 = 1;
         idt[i].reserved2 = 1;
         idt[i].reserved3 = 0;
+
+        // DPL is 0 to prevent user level programs from acessing interrupts 
         idt[i].size = 1; 
+        // Standard size is 1
         idt[i].dpl = 0;
     }
     
@@ -48,14 +54,13 @@ extern void IDT_init(void){
     SET_IDT_ENTRY(idt[KEYBOARD_IDT],keyboard_handler_linkage);
     
 
-    idt[40].present = 1;
-    //idt[40].reserved3 = 1;
-    SET_IDT_ENTRY(idt[40], rtc_handler_linkage);
+    idt[RTC_INTERRUPT].present = 1;                            
+    SET_IDT_ENTRY(idt[RTC_INTERRUPT], rtc_handler_linkage);
 
     lidt(idt_desc_ptr);
 }
 
-
+// Loop in an inifite loop when any exception is called 
 void blue_screen(char * exp_name){
     printf("Exception: %s \n",exp_name);
     while (1){}   ; 

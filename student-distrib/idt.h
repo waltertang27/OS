@@ -9,6 +9,8 @@
 #include "keyboard.h"
 #define EXCEP_NUM 19
 
+#define KEYBOARD_IDT    33
+
 extern void IDT_init(void);
 void blue_screen(char * exception);
 

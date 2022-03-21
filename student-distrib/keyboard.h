@@ -13,6 +13,8 @@
 
 #define KEYBOARD_DATA_PORT   0x60
 
+#define SPECIAL_KEYCODES    0x81
+
 
 void keyboard_init(void);
 

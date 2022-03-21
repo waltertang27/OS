@@ -46,7 +46,24 @@ int idt_test(){
 }
 
 // add more tests here
+int paging_test() {
+    TEST_HEADER;
+    char result;
 
+    char* pointer = (char*)0x400000;
+    result = *pointer;
+
+    pointer = (char*)0xB8000;
+    result = *pointer;
+
+    pointer = (char*)0x7FFFFF;
+    result = *pointer;
+	
+    pointer = (char*)0xB8FFF;
+    result = *pointer;
+
+    return PASS; // If exception BSODs, we never get here
+}
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */

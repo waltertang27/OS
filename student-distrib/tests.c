@@ -224,14 +224,14 @@ int null_test()
     result = *pointer;
     return FAIL;
 }
-/* IDT Test - Example
+/* RTC Test
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Asserts that the RTC handler is being called multiple times
  * Inputs: None
  * Outputs: PASS/FAIL
  * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Coverage: Tests the RTC
+ * Files: RTC.h RTC.c
  */
 int rtc_test(){
 	TEST_HEADER;

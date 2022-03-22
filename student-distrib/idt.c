@@ -1,7 +1,13 @@
 #include "idt.h"
 #include "intr_link.h"
 
-
+/*
+DESCRIPTION: initializes the IDT with the first 18 entries
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: IDT can be called with coresponding handlers
+*/
 extern void IDT_init(void){
     unsigned int i; 
  
@@ -27,6 +33,7 @@ extern void IDT_init(void){
         idt[i].dpl = 0;
     }
     
+    // Each value in the IDT array refrences the exception defined by intel 0-18
     SET_IDT_ENTRY(idt[0],div_zero_excep);
     SET_IDT_ENTRY(idt[1],debug_excep);
     SET_IDT_ENTRY(idt[2],nmi_excep);
@@ -60,14 +67,27 @@ extern void IDT_init(void){
     lidt(idt_desc_ptr);
 }
 
-// Loop in an inifite loop when any exception is called 
+/*
+DESCRIPTION: Stops the operating system when an exception is called 
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS:Kernel loops forever 
+*/
 void blue_screen(char * exp_name){
     printf("Exception: %s \n",exp_name);
     while (1){}   ; 
 }
 
 
-//Individual exception handlers
+/*
+DESCRIPTION: Prints corresponding exception handler and called blue screen 
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: Prints to screen and halts OS 
+*/
+
 extern void div_zero_excep(){
     char exception[] = "Divide by zero" ; 
     blue_screen(exception);

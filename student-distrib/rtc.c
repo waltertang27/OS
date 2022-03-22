@@ -1,6 +1,14 @@
 
 #include "rtc.h" 
 
+
+/*
+DESCRIPTION: Initializes RTC registers and turn on IRQ 8
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: RTC fires 
+*/
 extern void rtc_init(void){
     printf("RTC Started init \n");
 
@@ -18,7 +26,13 @@ extern void rtc_init(void){
     enable_irq(RTC_IRQ_NUM);
 }
 
-
+/*
+DESCRIPTION: Introduces periodic interrupt in the RTC 
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: RTC continiously fires 
+*/
 extern void rtc_handler(void){
     cli();
     if(testing_RTC)

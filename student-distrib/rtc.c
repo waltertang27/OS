@@ -18,11 +18,12 @@ extern void rtc_init(void){
     enable_irq(RTC_IRQ_NUM);
 }
 
+
 extern void rtc_handler(void){
     cli();
     if(testing_RTC)
         printf("Called handler \n");
-    // test_interrupts();
+    //test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C
     inb(RTC_PORT_2);		        // just throw away contents
     send_eoi(RTC_IRQ_NUM);

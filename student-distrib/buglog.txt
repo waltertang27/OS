@@ -1,5 +1,3 @@
-
-
 CHECKPOINT 3.1
 
 Description: The keyboard interrupt handler was printing twice to the screen, once with the character, and right after with a space. 
@@ -20,7 +18,15 @@ Solution: We enabled_irq(2) in i8259_init so that the secondary PIC was being pr
 Description: When the keys were being stressed tested (spammed), there would be a General Protection Exception raised.
 Where: keyboard.c, intr_link.S 
 Issue: The assembly linkage was not being done correctly which caused issues with the keyboard
-Solution: We fixed the intr_link.S by adding an iret statement. 
+Solution: We fixed the intr_link.S by adding an iret statement.
 
+Description: Addresses allocated are not correct
+Where: paging.c
+Issue: page_directory array does not allocate to correct page_table addresses. We think this is because there are not enough bits for the address
+Solution: We divided the addresses by ALIGN_BYTES (4kb).
 
+Description: test_debug goes back to its starting screen whenever paging_init() is called
+Where: kernel.c, paging.c
+Issue: After investigating, we found out there are only 31 bits allocated in the page directory struct.
+Solution: We added a bit called "unused" to fill the 32-bit page directory struct.
 

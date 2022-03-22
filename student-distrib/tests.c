@@ -2,7 +2,7 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "paging.h"
-
+#include "rtc.h"
 #define PASS 1
 #define FAIL 0
 
@@ -51,6 +51,15 @@ int idt_test()
 
 // add more tests here
 
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int division_by_zero_test()
 {
     TEST_HEADER;
@@ -60,6 +69,15 @@ int division_by_zero_test()
     return FAIL;
 }
 
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int syscall_test()
 {
     TEST_HEADER;
@@ -67,7 +85,15 @@ int syscall_test()
     return FAIL;
 }
 
-// tests if paging initializes
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int paging_init_test()
 {
     TEST_HEADER;
@@ -83,7 +109,15 @@ int paging_init_test()
     return PASS;
 }
 
-// Checks that the kernel and video memory addresses can be dereferenced
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int paging_test()
 {
     TEST_HEADER;
@@ -105,7 +139,15 @@ int paging_test()
     return PASS;
 }
 
-// Check to see if the memory before the kernel causes a page fault
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int kernel_up_bound_test()
 {
     TEST_HEADER;
@@ -114,7 +156,15 @@ int kernel_up_bound_test()
     result = *pointer;
     return FAIL;
 }
-
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int kernel_low_bound_test()
 {
     TEST_HEADER;
@@ -123,7 +173,15 @@ int kernel_low_bound_test()
     result = *pointer;
     return FAIL;
 }
-
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int vidmem_up_bound_test()
 {
     TEST_HEADER;
@@ -132,7 +190,15 @@ int vidmem_up_bound_test()
     result = *pointer;
     return FAIL;
 }
-
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int vidmem_low_bound_test()
 {
     TEST_HEADER;
@@ -141,7 +207,15 @@ int vidmem_low_bound_test()
     result = *pointer;
     return FAIL;
 }
-
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
 int null_test()
 {
     TEST_HEADER;
@@ -150,7 +224,20 @@ int null_test()
     result = *pointer;
     return FAIL;
 }
-
+/* IDT Test - Example
+ *
+ * Asserts that first 10 IDT entries are not NULL
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: Load IDT, IDT definition
+ * Files: x86_desc.h/S
+ */
+int rtc_test(){
+	TEST_HEADER;
+	testing_RTC = 1; 
+	return PASS; 
+}
 /* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -166,7 +253,7 @@ void launch_tests()
     // TEST_OUTPUT("Paging test",paging_test());
 
     // launch your tests here
-
+	//TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
     //TEST_OUTPUT("paging_init_test", paging_init_test());

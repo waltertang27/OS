@@ -11,7 +11,7 @@
 #define PAGE_SIZE 4194304 // 4Mb
 
 #define KERNEL_ADDR 0x400000 // kernel address
-#define VID_ADDR 0xB8000	 // video address
+#define VID_ADDR 0x0B8000	 // video address
 #define USER_V 0x8000000	 // user virtual
 
 #define KERNEL_INDEX 1
@@ -49,12 +49,12 @@ typedef struct __attribute__(()) page_table_entry
 	uint32_t page_table_addr : 20;
 } page_table_entry_t;
 
+extern void paging_init();
+
 // arrays that hold entries for the table and directory
 page_directory_entry_t page_directory[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
 page_table_entry_t page_table[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
 page_table_entry_t video_mapping_pt[TABLE_SIZE] __attribute__((aligned(ALIGN_BYTES)));
-
-extern void paging_init();
 
 // #endif
 #endif

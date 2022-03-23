@@ -21,7 +21,7 @@ extern void rtc_init(void){
     outb(RTC_REG_A,RTC_PORT_1); // Do the same for register A as was done above 
     prev = inb(RTC_PORT_2);
     outb(RTC_REG_A,RTC_PORT_1);
-    outb(prev & TOP_FOUR_BITMASK | LOWER_FOUR_BITMASK ,RTC_PORT_2); //0F allows to mask for top 4 bits
+    outb(prev & (TOP_FOUR_BITMASK | LOWER_FOUR_BITMASK) ,RTC_PORT_2); //0F allows to mask for top 4 bits
     testing_RTC = 0; 
     enable_irq(RTC_IRQ_NUM);
 }
@@ -43,3 +43,4 @@ extern void rtc_handler(void){
     send_eoi(RTC_IRQ_NUM);
     sti();
 }
+

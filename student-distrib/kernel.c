@@ -11,6 +11,8 @@
 #include "idt.h"
 #include "keyboard.h"
 #include "paging.h"
+#include "rtc.h"
+
 #define RUN_TESTS 
 
 /* Macros. */
@@ -164,3 +166,4 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }
+

@@ -1,6 +1,6 @@
 #ifndef PAGING_H
 #define PAGING_H
-#ifndef ASM
+// #ifndef ASM
 
 #include "types.h"
 #include "x86_desc.h"
@@ -56,5 +56,5 @@ page_table_entry_t video_mapping_pt[TABLE_SIZE] __attribute__((aligned(ALIGN_BYT
 
 extern void paging_init();
 
-#endif
+// #endif
 #endif

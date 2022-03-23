@@ -96,15 +96,18 @@ void paging_init()
 		video_mapping_pt[i].page_table_addr = i;
 	}
 
-	asm(
+	asm (
 		"movl $page_directory, %%eax ;"
 		"andl $0xFFFFFC00, %%eax ;" // gets the argument
 		"movl %%eax, %%cr3 ;"
 		"movl %%cr4, %%eax ;"
 		"orl $0x00000010, %%eax ;" // sets the bit for 4MB pages
+
+
 		"movl %%eax, %%cr4 ;"
 		"movl %%cr0, %%eax ;"
 		"orl $0x80000001, %%eax ;" // set paging bits
 		"movl %%eax, %%cr0"
-		::: "eax", "cc");
+		::: "eax", "cc"
+	);
 }

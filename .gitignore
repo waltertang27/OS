@@ -112,4 +112,5 @@ dkms.conf
 *.qcow
 source/
 mp3.img
+*.img 
 bootimg

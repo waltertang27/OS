@@ -51,14 +51,14 @@ int idt_test()
 
 // add more tests here
 
-/* IDT Test - Example
+/* division_by_zero_test 
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Cause blue screen
  * Inputs: None
  * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: Exception handling
+ * Files: idt.c
  */
 int division_by_zero_test()
 {
@@ -69,14 +69,14 @@ int division_by_zero_test()
     return FAIL;
 }
 
-/* IDT Test - Example
+/* syscall_test()
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Cause blue screen
  * Inputs: None
  * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: Exception handling
+ * Files: idt.c
  */
 int syscall_test()
 {
@@ -85,14 +85,14 @@ int syscall_test()
     return FAIL;
 }
 
-/* IDT Test - Example
+/* paging_init_test()
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Initialize paging
  * Inputs: None
  * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: Kernel index of page directory from paging
+ * Files: paging.c
  */
 int paging_init_test()
 {
@@ -109,14 +109,14 @@ int paging_init_test()
     return PASS;
 }
 
-/* IDT Test - Example
+/* paging_test()
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Dereference the kernel and video memory addresses 
  * Inputs: None
  * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: Kernel and video memory addresses from paging
+ * Files: paging.c
  */
 int paging_test()
 {
@@ -139,14 +139,14 @@ int paging_test()
     return PASS;
 }
 
-/* IDT Test - Example
+/* kernel_up_bound_test()
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Checks if there is a page fault from memory before the kernel
  * Inputs: None
- * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Outputs: Page fault/FAIL
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: page fault handling from memory before the kernel
+ * Files: paging.c
  */
 int kernel_up_bound_test()
 {
@@ -156,14 +156,15 @@ int kernel_up_bound_test()
     result = *pointer;
     return FAIL;
 }
-/* IDT Test - Example
+
+/* kernel_low_bound_test()
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Checks if there is a page fault from memory after the kernel
  * Inputs: None
- * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Outputs: Page fault/FAIL
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: page fault handling from memory after the kernel
+ * Files: paging.c
  */
 int kernel_low_bound_test()
 {
@@ -173,14 +174,14 @@ int kernel_low_bound_test()
     result = *pointer;
     return FAIL;
 }
-/* IDT Test - Example
+/* vidmem_up_bound_test()
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Checks if there is a page fault from memory before the video memory
  * Inputs: None
- * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Outputs: Page fault/FAIL
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: page fault handling from memory before the video memory
+ * Files: paging.c
  */
 int vidmem_up_bound_test()
 {
@@ -190,14 +191,14 @@ int vidmem_up_bound_test()
     result = *pointer;
     return FAIL;
 }
-/* IDT Test - Example
+/* vidmem_low_bound_test()
  *
- * Asserts that first 10 IDT entries are not NULL
+ * Checks if there is a page fault from memory after the video memory
  * Inputs: None
- * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+ * Outputs: Page fault/FAIL
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: page fault handling from memory after the video memory
+ * Files: paging.c
  */
 int vidmem_low_bound_test()
 {
@@ -207,14 +208,15 @@ int vidmem_low_bound_test()
     result = *pointer;
     return FAIL;
 }
-/* IDT Test - Example
- *
- * Asserts that first 10 IDT entries are not NULL
- * Inputs: None
- * Outputs: PASS/FAIL
- * Side Effects: None
- * Coverage: Load IDT, IDT definition
- * Files: x86_desc.h/S
+
+/* null_test()
+*
+* Cause blue screen if dereferencing 0 causes a page fault
+* Inputs: None
+* Outputs: Page fault/FAIL
+* Side Effects: Halts the OS and displays errors
+* Coverage: page fault handling of location 0.
+* Files: paging.c
  */
 int null_test()
 {
@@ -253,10 +255,10 @@ void launch_tests()
     // TEST_OUTPUT("Paging test",paging_test());
 
     // launch your tests here
-	//TEST_OUTPUT("RTC test", rtc_test());
+	// TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
-    //TEST_OUTPUT("paging_init_test", paging_init_test());
+    // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
     // TEST_OUTPUT("kernel_low_bound_test", kernel_low_bound_test());

@@ -98,13 +98,9 @@ int paging_init_test()
 {
     TEST_HEADER;
 
-    if (page_directory[0].present != 1 || page_directory[KERNEL_INDEX].present != 1)
-    {
+    if (page_directory[0].present != 1 || page_directory[KERNEL_INDEX].present != 1){
         return FAIL;
     }
-    // if(page_table[1].present != 1 || page_table[20].present != 1 || page_table[1000].present != 1){
-    // 	return FAIL;
-    // }
 
     return PASS;
 }
@@ -122,18 +118,39 @@ int paging_test()
 {
     TEST_HEADER;
 
-    char result;
+    char ref;
 
     char *pointer = (char *)0x400000; // kernel
-    result = *pointer;
+    ref = *pointer;
 
     pointer = (char *)0x0B8000; // video memory
-    result = *pointer;
+    ref = *pointer;
 
     pointer = (char *)0x7FFFFF;
-    result = *pointer;
+    ref = *pointer;
 
     return PASS;
+}
+
+/* null_test()
+*
+* Cause blue screen if dereferencing 0 causes a page fault
+* Inputs: None
+* Outputs: Page fault/FAIL
+* Side Effects: Halts the OS and displays errors
+* Coverage: page fault handling of location 0.
+* Files: paging.c
+ */
+int null_test()
+{
+    TEST_HEADER;
+    char ref;
+
+    // convert 0 to char pointer for NULL
+
+    char *pointer = (char *)0;
+    ref = *pointer;
+    return FAIL;
 }
 
 /* kernel_up_bound_test()
@@ -148,9 +165,9 @@ int paging_test()
 int kernel_up_bound_test()
 {
     TEST_HEADER;
-    char result;
+    char ref;
     char *pointer = (char *)0x3FFFFF;
-    result = *pointer;
+    ref = *pointer;
     return FAIL;
 }
 
@@ -166,9 +183,9 @@ int kernel_up_bound_test()
 int kernel_low_bound_test()
 {
     TEST_HEADER;
-    char result;
+    char ref;
     char *pointer = (char *)0x800000;
-    result = *pointer;
+    ref = *pointer;
     return FAIL;
 }
 /* vidmem_up_bound_test()
@@ -183,9 +200,9 @@ int kernel_low_bound_test()
 int vidmem_up_bound_test()
 {
     TEST_HEADER;
-    char result;
+    char ref;
     char *pointer = (char *)0x0B7FFF;
-    result = *pointer;
+    ref = *pointer;
     return FAIL;
 }
 /* vidmem_low_bound_test()
@@ -200,31 +217,13 @@ int vidmem_up_bound_test()
 int vidmem_low_bound_test()
 {
     TEST_HEADER;
-    char result;
+    char ref;
     char *pointer = (char *)0x0B9000;
-    result = *pointer;
+    ref = *pointer;
     return FAIL;
 }
 
-/* null_test()
-*
-* Cause blue screen if dereferencing 0 causes a page fault
-* Inputs: None
-* Outputs: Page fault/FAIL
-* Side Effects: Halts the OS and displays errors
-* Coverage: page fault handling of location 0.
-* Files: paging.c
- */
-int null_test()
-{
-    TEST_HEADER;
-    char result;
 
-
-    char *pointer = (char *)0;
-    result = *pointer;
-    return FAIL;
-}
 /* RTC Test
  *
  * Asserts that the RTC handler is being called multiple times

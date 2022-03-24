@@ -127,13 +127,10 @@ int paging_test()
     char *pointer = (char *)0x400000; // kernel
     result = *pointer;
 
-    pointer = (char *)0xB8000; // video memory
+    pointer = (char *)0x0B8000; // video memory
     result = *pointer;
 
     pointer = (char *)0x7FFFFF;
-    result = *pointer;
-
-    pointer = (char *)0xB8FFF;
     result = *pointer;
 
     return PASS;
@@ -187,7 +184,7 @@ int vidmem_up_bound_test()
 {
     TEST_HEADER;
     char result;
-    char *pointer = (char *)0xB7FFF;
+    char *pointer = (char *)0x0B7FFF;
     result = *pointer;
     return FAIL;
 }
@@ -204,7 +201,7 @@ int vidmem_low_bound_test()
 {
     TEST_HEADER;
     char result;
-    char *pointer = (char *)0xB9000;
+    char *pointer = (char *)0x0B9000;
     result = *pointer;
     return FAIL;
 }
@@ -222,6 +219,8 @@ int null_test()
 {
     TEST_HEADER;
     char result;
+
+
     char *pointer = (char *)0;
     result = *pointer;
     return FAIL;

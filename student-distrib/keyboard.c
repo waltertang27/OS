@@ -1,6 +1,5 @@
 #include "keyboard.h"
 
-
 //holds the values corresponding to the keycodes to display to screen
 /*
 char keycode_to_char[58] = {0, 0, '1', '2', '3', '4', 
@@ -10,11 +9,18 @@ char keycode_to_char[58] = {0, 0, '1', '2', '3', '4',
 0, 0, 0, 0};
 */
 
+//represents the index in keycode_to_char, when it is the original or (shifted) version of the key
+#define INDEX0 0
+#define INDEX1 1
+
+int CAPS_ON = 0;
+
 int shift_flag = 0;
 int ctrl_flag = 0;
 int capslock_flag = 0;
+int alt_flag = 0;
 
-char keycode_to_char[59][2] = {
+char keycode_to_char[91][2] = {
 {0, 0}, //0x0, empty
 {0, 0}, //escape
 {'1', '!'}, //0x02
@@ -30,7 +36,7 @@ char keycode_to_char[59][2] = {
 {'-', '_'}, //0x0C
 {'=', '+'}, //0x0D
 {}, //0x0E, backspace
-{'  ', }, //0x0F, tab
+{0, 0}, //0x0F, tab
 {'q', 'Q'}, //0x10
 {'w', 'W'}, //0x11
 {'e', 'E'}, 
@@ -70,7 +76,7 @@ char keycode_to_char[59][2] = {
 {'.', '>'},
 {'/', '?'}, //0x35
 {0, 0}, //RIGHT SHIFT, 0x36 
-{}, //0x37 ?? (keypad) * pressed
+{0, 0}, //0x37 ?? (keypad) * pressed
 {0, 0}, //LEFT ALT, 0x38 
 {' ', ' '}, //SPACE, 0x39 
 {0, 0}, //CAPS LOCK, 0x3A 
@@ -85,8 +91,8 @@ char keycode_to_char[59][2] = {
 {0, 0}, 
 {0, 0}, 
 {0, 0}, 
-{},  //NUM_LOCK
-{}, //SCROLL_LOCK, 0x46
+{0, 0},  //NUM_LOCK
+{0, 0}, //SCROLL_LOCK, 0x46
 /* NUMBER PAD */
 {0, 0},
 {0, 0}, 
@@ -106,15 +112,9 @@ char keycode_to_char[59][2] = {
 {0, 0}, 
 {0, 0},   
 {0, 0}, //F11
-{0, 0}, //F12 0x58
+{0, 0} //F12 0x58
+};
 
-
-
-
-
-
-
-}
 /*
 DESCRIPTION: initializes the keyboard for interrupts
 INPUTS: none
@@ -135,14 +135,72 @@ SIDE EFFECTS: Displays the characters that are pressed on the keyboard to the sc
 extern void keyboard_handler(void) { 
     cli();
     uint32_t keycode = inb(KEYBOARD_DATA_PORT);
+
+    if(keycode == CAPSLOCK_PRESSED && CAPS_ON == 0) {
+        capslock_flag = 1;
+        CAPS_ON = 1;
+    }
+    else if(keycode == CAPSLOCK_PRESSED && CAPS_ON == 1) {
+        capslock_flag = 0;
+        CAPS_ON = 0;
+    }
+    if(keycode == LSHIFT_PRESSED) {
+        shift_flag = 1;
+    }
+    if(keycode == LSHIFT_RELEASED) {
+        shift_flag = 0;
+    }
+    if(keycode == RSHIFT_PRESSED) {
+        shift_flag = 1;
+    }
+    if(keycode == RSHIFT_RELEASED) {
+        shift_flag = 0;
+    }
+    if(keycode == LALT_PRESSED) {
+        alt_flag = 1;
+    }
+    if(keycode == LALT_RELEASED) {
+        alt_flag = 0;
+    }
+
     if(keycode >= SPECIAL_KEYCODES) {                           //for now, we won't handle keycodes after 0x81
         send_eoi(KEYBOARD_IRQ);
         sti();
         return;
     }
-    putc(keycode_to_char[keycode]);
+    //prints for tab
+    if(keycode == 0x0F) {
+        printf("%s", "    ");
+        send_eoi(KEYBOARD_IRQ);
+        sti();
+        return;
+    }
+    if(capslock_flag == 1) {
+        char temp = keycode_to_char[keycode][INDEX0];
+        //checks if it is a letter, if so, display the uppercase version
+        if(temp >= 'a' && temp <= 'z') {
+            printf("%c", keycode_to_char[keycode][INDEX1]);
+            send_eoi(KEYBOARD_IRQ);
+            sti();
+            return;
+        }
+        //otherwise, display original
+        else {
+            printf("%c", keycode_to_char[keycode][INDEX0]);
+            send_eoi(KEYBOARD_IRQ);
+            sti();
+            return;
+        }
+    }
+    //if shift is held
+    if(shift_flag == 1) {
+        printf("%c", keycode_to_char[keycode][INDEX1]);
+        send_eoi(KEYBOARD_IRQ);
+        sti();
+        return;
+    }
+    printf("%c", keycode_to_char[keycode][INDEX0]);
     send_eoi(KEYBOARD_IRQ);
     sti();
-
-
+    return;
 }

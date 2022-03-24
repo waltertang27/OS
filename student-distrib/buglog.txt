@@ -30,3 +30,5 @@ Where: kernel.c, paging.c
 Issue: After investigating, we found out there are only 31 bits allocated in the page directory struct.
 Solution: We added a bit called "unused" to fill the 32-bit page directory struct.
 
+CHECKPOINT 3.2
+

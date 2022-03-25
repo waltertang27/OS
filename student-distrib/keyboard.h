@@ -26,6 +26,9 @@
 
 #define LALT_PRESSED 0x38
 #define LALT_RELEASED 0xB8
+
+#define LCTRL_PRESSED 0x1D
+#define LCTRL_RELEASED 0x9D
 /*
 #define RALT_PRESSED 0xE0
 #define RALT_RELEASED 

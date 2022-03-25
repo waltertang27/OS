@@ -160,6 +160,7 @@ int32_t puts(int8_t* s) {
         putc(s[index]);
         index++;
     }
+
     return index;
 }
 

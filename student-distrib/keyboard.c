@@ -10,22 +10,28 @@ char keycode_to_char[58] = {0, 0, '1', '2', '3', '4',
 0, 0, 0, 0};
 */
 
-//represents the index in keycode_to_char, when it is the original or (shifted) version of the key
-#define INDEX0 0
-#define INDEX1 1
 
-#define BUFFER_SIZE 128 //maximum size of the char buffer
 
 int CAPS_ON = 0;
-
 int shift_flag = 0;
 int ctrl_flag = 0;
 int capslock_flag = 0;
 int alt_flag = 0;
-
-char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
-int index = 0;      //index of what we want to display till
+/*
+extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
+extern int index;     //index of what we want to display till
 //buffer[index] = '\0';
+extern int enter_detected;
+*/
+
+
+char buffer[BUFFER_SIZE];
+int index;
+int enter_detected;
+int backspace_detected;
+int ctrl_l_detected;
+
+
 
 char keycode_to_char[91][2] = {
 {0, 0}, //0x0, empty
@@ -42,7 +48,7 @@ char keycode_to_char[91][2] = {
 {'0', ')'}, //0x0B
 {'-', '_'}, //0x0C
 {'=', '+'}, //0x0D
-{}, //0x0E, backspace
+{'\b', '\b'}, //0x0E, backspace
 {0, 0}, //0x0F, tab
 {'q', 'Q'}, //0x10
 {'w', 'W'}, //0x11
@@ -122,6 +128,11 @@ char keycode_to_char[91][2] = {
 {0, 0} //F12 0x58
 };
 
+char* get_buffer() {
+    return buffer;
+}
+
+
 /*
 DESCRIPTION: initializes the keyboard for interrupts
 INPUTS: none
@@ -132,6 +143,10 @@ SIDE EFFECTS: sets IRQ1 to keyboard interrupts
 void keyboard_init(void) {
     enable_irq(KEYBOARD_IRQ);   //enables the irq for keyboard (irq num is 1 according to google)
     buffer[0] = '\0';
+    index = 0;
+    enter_detected = 0;
+    backspace_detected = 0;
+    ctrl_l_detected = 0;
 }
 /*
 DESCRIPTION: handles the interrupts for keyboard
@@ -206,7 +221,6 @@ extern void keyboard_handler(void) {
         cli();
         return;
     }
-
     if(keycode >= SPECIAL_KEYCODES) {                           //for now, we won't handle keycodes after 0x81
         send_eoi(KEYBOARD_IRQ);
         sti();
@@ -218,9 +232,27 @@ extern void keyboard_handler(void) {
         sti();
         return;
     }
+    if(keycode == ENTER) {
+        enter_detected = 1;
+        buffer[index] = '\n';
+        buffer[index + 1] = '\0';
+        index = index + 1;
+        puts(buffer);
+        send_eoi(KEYBOARD_IRQ);
+        //a newline clears the buffer
+        index = 0;
+        buffer[index] = '\0';
+        sti();
+        return;
+    }
     //0x26 is the value L where ctrl L clears the buffer
     if(ctrl_flag == 1 && keycode == 0x26) {
+        ctrl_l_detected = 1;
         buffer[0] = '\0';
+        int i;
+        for(i = 0; i < index; i++) {
+            buffer[i] = ' ';
+        }
         index = 0;
         puts(buffer);
         send_eoi(KEYBOARD_IRQ);
@@ -228,13 +260,48 @@ extern void keyboard_handler(void) {
         return;
     }
     //checks for backspace
-    if(keycode == 0x0E && index > 0) {
-        buffer[index - 1] = '\0';
-        index = index - 1;
-        puts(buffer);
-        send_eoi(KEYBOARD_IRQ);
-        sti();
-        return;
+    if(keycode == 0x0E) {
+        if(index > 0) {
+            int count = 4;
+            backspace_detected = 1;
+            //if we want to delete a tab
+            if(buffer[index] == '\t') {
+                while(count > 0 && index > 1) {
+                    if(buffer[index] == '\t') {
+                        index = index - 1;
+                        count--;
+                    }
+                    else {
+                        count = 0;
+                    }
+                }
+            }
+            if(index == 1) {
+                buffer[index - 1] = '\0';
+                index = index - 1;
+                puts(buffer);
+                send_eoi(KEYBOARD_IRQ);
+                sti();
+                return;
+            }
+            buffer[index - 1] = ' ';
+            buffer[index] = '\0';
+            //buffer[index - 1] = '\0';
+            //index = index - 1;
+            puts(buffer);
+            buffer[index - 1] = '\0';
+            index = index - 1;
+            //puts(buffer);
+            send_eoi(KEYBOARD_IRQ);
+            sti();
+            return;
+        }
+        else {
+            puts(buffer);
+            send_eoi(KEYBOARD_IRQ);
+            sti();
+            return;
+        }
     }
 
 
@@ -244,31 +311,31 @@ extern void keyboard_handler(void) {
         //adjusts space correctly based on if index might go out of bounds
         //not out of bounds
         if(index <= BUFFER_SIZE - 5) {
-            buffer[index] = ' ';
-            buffer[index + 1] = ' ';
-            buffer[index + 2] = ' ';
-            buffer[index + 3] = ' ';  
+            buffer[index] = '\t';
+            buffer[index + 1] = '\t';
+            buffer[index + 2] = '\t';
+            buffer[index + 3] = '\t';  
             buffer[index + 4] = '\0';
             index = index + 4;
         }
         //3 spaces left in buffer
         else if(index == BUFFER_SIZE - 4) {
-            buffer[index] = ' ';
-            buffer[index + 1] = ' ';
-            buffer[index + 2] = ' ';
+            buffer[index] = '\t';
+            buffer[index + 1] = '\t';
+            buffer[index + 2] = '\t';
             buffer[index + 3] = '\0';
             index = index + 3;
         }
         //2 spaces left in buffer
         else if(index == BUFFER_SIZE - 3) {
-            buffer[index] = ' ';
-            buffer[index + 1] = ' ';
+            buffer[index] = '\t';
+            buffer[index + 1] = '\t';
             buffer[index + 2] = '\0';
             index = index + 2;
         }
         //1 space left in buffer
         else if(index == BUFFER_SIZE - 2) {
-            buffer[index] = ' ';
+            buffer[index] = '\t';
             buffer[index + 1] = '\0';
             index = index + 1;
         }
@@ -285,6 +352,7 @@ extern void keyboard_handler(void) {
             buffer[index] = keycode_to_char[keycode][INDEX1];
             buffer[index + 1] = '\0';
             index = index + 1;
+            puts(buffer);
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
@@ -294,6 +362,7 @@ extern void keyboard_handler(void) {
             //printf("%c", keycode_to_char[keycode][INDEX0]);
             buffer[index] = keycode_to_char[keycode][INDEX0];
             buffer[index + 1] = '\0';
+            puts(buffer);
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
@@ -301,6 +370,18 @@ extern void keyboard_handler(void) {
     }
     //if shift is held
     if(shift_flag == 1 && index <= BUFFER_SIZE - 2) {
+        if(capslock_flag == 1) {
+            char temp = keycode_to_char[keycode][INDEX0];
+            if(temp >= 'a' && temp <= 'z') {
+                buffer[index] = keycode_to_char[keycode][INDEX0];
+                buffer[index + 1] = '\0';
+                index = index + 1;
+                puts(buffer);
+                send_eoi(KEYBOARD_IRQ);
+                sti();
+                return;
+            }
+        }
         //printf("%c", keycode_to_char[keycode][INDEX1]);
         buffer[index] = keycode_to_char[keycode][INDEX1];
         buffer[index + 1] = '\0';

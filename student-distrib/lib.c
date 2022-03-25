@@ -12,6 +12,8 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
+int char_index;
+
 /* void clear(void);
  * Inputs: void
  * Return Value: none
@@ -160,7 +162,7 @@ int32_t puts(int8_t* s) {
         putc(s[index]);
         index++;
     }
-
+    screen_x = 0;
     return index;
 }
 
@@ -173,16 +175,31 @@ void putc(uint8_t c) {
         screen_y++;
         screen_x = 0;
     } 
+    else if(c == '\t') {
+        screen_x++;
+    } 
+
   //  if(c == '\t') {
   //      screen_x += 4;
   //  }
+  /*
+    if(c == '\b' && screen_x > 0) {
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) >> 1)) = ' ';
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        screen_x--;
+        //screen_x %= NUM_COLS;
+        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;  
+    }
+    */
     else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+
     }
+    char_index++;
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);

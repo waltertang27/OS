@@ -29,14 +29,34 @@
 
 #define LCTRL_PRESSED 0x1D
 #define LCTRL_RELEASED 0x9D
+
+#define ENTER 0x1C
+
+//represents the index in keycode_to_char, when it is the original or (shifted) version of the key
+#define INDEX0 0
+#define INDEX1 1
+
+#define BUFFER_SIZE 128 //maximum size of the char buffer
 /*
 #define RALT_PRESSED 0xE0
 #define RALT_RELEASED 
 */
 
+extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
+extern int index;     //index of what we want to display till
+//buffer[index] = '\0';
+extern int enter_detected;
+
+extern int backspace_detected;
+extern int ctrl_l_detected;
+
+
 void keyboard_init(void);
 
 extern void keyboard_handler(void);
+
+char* get_buffer(void);
+
 
 #endif 
 

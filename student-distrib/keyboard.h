@@ -49,7 +49,7 @@ extern int enter_detected;
 
 extern int backspace_detected;
 extern int ctrl_l_detected;
-
+ 
 
 void keyboard_init(void);
 

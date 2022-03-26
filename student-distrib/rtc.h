@@ -5,6 +5,7 @@
 #include "i8259.h"
 #include "debug.h"
 #include "tests.h"
+#include "types.h"
 
 #define RTC_PORT_1 0x70
 #define RTC_PORT_2 0x71
@@ -15,13 +16,17 @@
 #define TOP_FOUR_BITMASK 0xF0 
 #define LOWER_FOUR_BITMASK 0xF
 #define RTC_IRQ_NUM 8
+#define MAX_FREQ 1024
+#define MIN_FREQ 2
 
 extern void rtc_init(void);
 extern void rtc_handler(void);
-int32_t open (const uint8_t* filename);
-int32_t read (int32_t fd, void* buf, int32_t nbytes);
-int32_t write (int32_t fd, const void* buf, int32_t nbytes);
-int32_t close (int32_t fd);
+int32_t open_rtc (const uint8_t* filename);
+int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes);
+int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes);
+int32_t close_rtc (int32_t fd);
+uint32_t rtc_rate;
+volatile uint32_t rtc_int = 1;
 
 int testing_RTC ; 
 

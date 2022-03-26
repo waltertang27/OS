@@ -1,7 +1,6 @@
 
 #include "rtc.h" 
 
-
 /*
 DESCRIPTION: Initializes RTC registers and turn on IRQ 8
 INPUTS: none
@@ -17,12 +16,14 @@ extern void rtc_init(void){
     outb(RTC_REG_B,RTC_PORT_1); //set the index again (a read will reset the index to register D)
     outb(prev | SIXTH_BIT_MASK ,RTC_PORT_2); //write the previous value ORed with 0x40. This turns on bit 6 of register B
 
-
     outb(RTC_REG_A,RTC_PORT_1); // Do the same for register A as was done above 
     prev = inb(RTC_PORT_2);
     outb(RTC_REG_A,RTC_PORT_1);
     outb(prev & (TOP_FOUR_BITMASK | LOWER_FOUR_BITMASK) ,RTC_PORT_2); //0F allows to mask for top 4 bits
     testing_RTC = 0; 
+    rtc_rate = MIN_FREQ; // the initial frequency is set to 2 interrupts/second;
+    rtc_int = 1; // interrupts occur and not handled yet
+
     enable_irq(RTC_IRQ_NUM);
 }
 
@@ -44,3 +45,34 @@ extern void rtc_handler(void){
     sti();
 }
 
+int32_t open_rtc (const uint8_t* filename) {
+    if (filename == NULL)
+        return -1;                  // if the filename does not exist, return -1
+    rtc_rate = MIN_FREQ;
+    return 0;
+}
+
+int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
+    sti();
+    while (rtc_int != 1); // set a flag until the interrupt is handled (rtc_int = 0)
+    cli();
+    rtc_int == 0
+    return 0;
+}
+
+int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
+    // the system call will only accept a 4-byte integer for specifying the interrupt rate
+    if (buf == NULL || nbytes != sizeof(int32_t))
+        return -1;
+ 	int32_t freq_int = *(int32_t *)buf;
+    // check if the frequency is out of bounds and check if it is powers of two 
+    if (freq_int < MIN_FREQ || freq_int > MAX_FREQ || freq & (freq - 1) != 0) 
+        return -1;
+
+    rtc_rate = MAX_FREQ / freq_int; 
+    return 0;
+}
+
+int32_t close_rtc (int32_t fd) {
+    return 0;
+}

@@ -56,7 +56,7 @@ int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
     sti();
     while (rtc_int != 1); // set a flag until the interrupt is handled (rtc_int = 0)
     cli();
-    rtc_int == 0
+    rtc_int == 0;
     return 0;
 }
 

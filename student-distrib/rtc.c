@@ -79,18 +79,19 @@ int32_t close_rtc (int32_t fd) {
 
 extern void rtc_freq (int32_t freq) {
     // int range;
-    char rate = rate_(32768) - (rate_(freq) - 1);   // frequency =  32768 >> (rate - 1);
-    outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
-    unsigned char prev = inb(RTC_PORT_2);           // get initial value of register A
-    rate &= 0x0F;                                   // get the lower 4 bits
+    // default frequency is 1024Hz and the lower 4 is 0110b (default rate value)
+    char value = rate_(32768) - (rate_(freq) - 1);   // get the frequency value from frequency =  32768 >> (rate - 1)
+    outb(RTC_REG_A, RTC_PORT_1);                     // set index to register A
+    unsigned char prev = inb(RTC_PORT_2);            // get initial value of register A
+    freq &= 0x0F;                                    // freq must in between the range of 3-15
 
 /*
-    if (rate >= MIN_RATE || rate <= MAX_RATE)       // rate will only be in the range from 3-15
+    if (rate >= MIN_RATE || rate <= MAX_RATE)       // the input frequency will only be in the range from 3-15
         range = 1;
         return;
 */
     outb(RTC_REG_A, RTC_PORT_1);                           // reset index to A
-    outb((prev & TOP_FOUR_BITMASK) | rate, RTC_PORT_2);    // write rate (the bottom 4 bits that represent the 
+    outb((prev & TOP_FOUR_BITMASK) | value, RTC_PORT_2);    // write rate (the bottom 4 bits that represent the 
                                                            // periodic interrupt rate) to A.
 }
 

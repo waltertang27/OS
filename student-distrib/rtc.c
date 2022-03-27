@@ -22,7 +22,7 @@ extern void rtc_init(void){
     outb(prev & (TOP_FOUR_BITMASK | LOWER_FOUR_BITMASK) ,RTC_PORT_2); //0F allows to mask for top 4 bits
     testing_RTC = 0; 
     rtc_rate = MIN_FREQ; // the initial frequency is set to 2 interrupts/second;
-    rtc_intt = 1; // interrupts occur and not handled yet
+    rtc_int = 1; // interrupts occur and not handled yet
 
     enable_irq(RTC_IRQ_NUM);
 }
@@ -54,9 +54,9 @@ int32_t open_rtc (const uint8_t* filename) {
 
 int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
     sti();
-    while (rtc_intt != 1); // set a flag until the interrupt is handled (rtc_int = 0)
+    while (rtc_int != 1); // set a flag until the interrupt is handled (rtc_int = 0)
     cli();
-    rtc_intt = 0;
+    rtc_int = 0;
     return 0;
 }
 
@@ -76,3 +76,29 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
 int32_t close_rtc (int32_t fd) {
     return 0;
 }
+
+extern void rtc_freq (int32_t freq) {
+    int range;
+    char rate = MAX_RATE - (rate(freq) - 1);          // frequency =  32768 >> (rate - 1);
+    outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
+    unsigned char prev = inb(RTC_PORT_2);           // get initial value of register A
+    rate &= 0x0F;
+
+    if (rate >= MIN_RATE || rate <= MAX_RATE)       // rate will only be in the range from 3-15
+        range = 1;
+        return;
+    
+    outb(RTC_REG_A, RTC_PORT_1);                           // reset index to A
+    outb((prev & TOP_FOUR_BITMASK) | rate, RTC_PORT_2);    // write rate (the bottom 4 bits that represent the 
+                                                           // periodic interrupt rate) to A.
+}
+
+char rate(uint32_t freq) {                                 // log2 operation
+    char log2 = 0;
+    while ((freq % 2 != 1) || (freq % 2 != 0)) {
+        freq >>= 1;
+        log2++;
+    }
+    return log2;
+}
+

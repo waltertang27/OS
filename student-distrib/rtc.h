@@ -18,6 +18,8 @@
 #define RTC_IRQ_NUM 8
 #define MAX_FREQ 1024
 #define MIN_FREQ 2
+#define MAX_RATE 15
+#define MIN_RATE 3
 
 extern void rtc_init(void);
 extern void rtc_handler(void);
@@ -26,7 +28,9 @@ int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes);
 int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes);
 int32_t close_rtc (int32_t fd);
 uint32_t rtc_rate;
-volatile uint32_t rtc_intt = 1;
+volatile uint32_t rtc_int;
+extern void rtc_freq (int32_t freq);
+char rate(uint32_t freq);
 
-int testing_RTC ; 
+int testing_RTC; 
 

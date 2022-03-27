@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "paging.h"
 #include "rtc.h"
+#include "terminal.h"
 #define PASS 1
 #define FAIL 0
 
@@ -240,6 +241,22 @@ int rtc_test(){
 	return PASS; 
 }
 /* Checkpoint 2 tests */
+
+int terminal_test() {
+    TEST_HEADER;
+    //terminal_open();
+    while(1) {
+        int32_t out = terminal_read();
+        if(out != 0) {
+            terminal_write();
+        }
+    }
+    //terminal_close();
+    return PASS;
+}
+
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -248,7 +265,7 @@ int rtc_test(){
 void launch_tests()
 {
 
-    TEST_OUTPUT("idt_test", idt_test());
+    //TEST_OUTPUT("idt_test", idt_test());
 
     // TEST_OUTPUT("idt_test", idt_test());
     // TEST_OUTPUT("Paging test",paging_test());
@@ -264,5 +281,6 @@ void launch_tests()
     // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());
     // TEST_OUTPUT("vidmem_low_bound_test", vidmem_low_bound_test());
     // TEST_OUTPUT("null_test", null_test());
+    TEST_OUTPUT("terminal test", terminal_test());
 }
 

@@ -194,12 +194,15 @@ void update_cursor(void) {
     outb(0x3D4, 0x0E);
     loc |= ((uint16_t) inb(0x3D5)) << 8;
     //puts(loc);
-    //x = loc % NUM_COLS;
+    uint16_t x = loc % NUM_COLS;
+    uint16_t y = loc / NUM_ROWS;
+
+    uint16_t pos = y * y * NUM_COLS + x;
     //y = loc / NUM_ROWS;
     outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint8_t) (loc & 0xFF));
+    outb(0x3D5, (uint8_t) (pos & 0xFF));
     outb(0x3D4, 0x0E);
-    outb(0x3D5, (uint8_t) ((loc >> 8) & 0xFF));
+    outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }
 
 /* void putc(uint8_t c);

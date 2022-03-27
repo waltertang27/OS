@@ -26,7 +26,9 @@ extern int enter_detected;
 
 
 char buffer[BUFFER_SIZE];
+char enter_buffer[BUFFER_SIZE];
 int index;
+int enter_index;
 int enter_detected;
 int backspace_detected;
 int ctrl_l_detected;
@@ -241,6 +243,8 @@ extern void keyboard_handler(void) {
         puts(buffer);
         send_eoi(KEYBOARD_IRQ);
         //a newline clears the buffer
+        enter_index = index;
+        memcpy(enter_buffer, buffer, strlen(buffer) + 1);
         index = 0;
         buffer[index] = '\0';
         sti();
@@ -288,7 +292,7 @@ extern void keyboard_handler(void) {
             }
             buffer[index - 1] = ' ';
             buffer[index] = '\0';
-            //buffer[index - 1] = '\0';
+            //buffer[index - 1] = '\0;
             //index = index - 1;
             puts(buffer);
             buffer[index - 1] = '\0';

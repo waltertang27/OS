@@ -12,6 +12,7 @@
 #include "keyboard.h"
 #include "paging.h"
 #include "rtc.h"
+#include "terminal.h"
 
 #define RUN_TESTS 
 
@@ -147,6 +148,7 @@ void entry(unsigned long magic, unsigned long addr) {
     keyboard_init();
     rtc_init();
     paging_init();
+    terminal_open();
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
 

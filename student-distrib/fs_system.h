@@ -44,7 +44,7 @@ void FileSystem_Init(uint32_t * fsStart);
 
 //Dont know what these do yet lol
 int32_t read_dentry_by_name(const uint8_t * fname, dentry_t * dentry);
-int32_t read_dentry_by_index(const uint8_t *index, dentry_t * dentry);
+int32_t read_dentry_by_index(const uint8_t index, dentry_t * dentry);
 
 
 // Operations on files

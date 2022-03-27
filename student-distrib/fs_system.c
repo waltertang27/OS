@@ -49,8 +49,8 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
             continue;
         else{
             // They should have the same name lol so ima copy the useful stuff 
-            dentry->fileType = startBootBlock->dirEntries->fileType; 
-            dentry->INodeNum = startBootBlock->dirEntries->INodeNum; 
+            dentry->fileType = startBootBlock->dirEntries[i].fileType; 
+            dentry->INodeNum = startBootBlock->dirEntries[i].INodeNum; 
             break;
         }
     }   
@@ -69,8 +69,17 @@ INPUTS:
 RETURN VALUE: 0 on sucess 1 on failure 
 SIDE EFFECTS: dentry will be filled with the correct information if the file exists 
 */
-int32_t read_dentry_by_index(const uint8_t *index, dentry_t *dentry)
+int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 {
+    if (index > NUM_DIR_ENTRIES -1 )
+        return -1;
+
+    int8_t *currWord = startBootBlock->dirEntries[index].fileName;
+    strcpy((int8_t *) dentry->fileName, currWord);
+
+    dentry->fileType = startBootBlock->dirEntries[index].fileType;
+    dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum;
+
     return 0; 
 }
 

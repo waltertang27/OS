@@ -150,6 +150,7 @@ void keyboard_init(void) {
     backspace_detected = 0;
     ctrl_l_detected = 0;
     //enable_cursor();
+    //update_cursor();
 }
 /*
 DESCRIPTION: handles the interrupts for keyboard
@@ -254,7 +255,6 @@ extern void keyboard_handler(void) {
     if(ctrl_flag == 1 && keycode == 0x26) {
         ctrl_l_detected = 1;
         buffer[0] = '\0';
-        int i;
         //for(i = 0; i < index; i++) {
         //    buffer[i] = ' ';
         //}
@@ -353,6 +353,18 @@ extern void keyboard_handler(void) {
     }
     if(capslock_flag == 1 && index <= BUFFER_SIZE - 2) {
         char temp = keycode_to_char[keycode][INDEX0];
+        if(shift_flag == 1) {
+            char temp = keycode_to_char[keycode][INDEX0];
+            if(temp >= 'a' && temp <= 'z') {
+                buffer[index] = keycode_to_char[keycode][INDEX0];
+                buffer[index + 1] = '\0';
+                index = index + 1;
+                puts(buffer);
+                send_eoi(KEYBOARD_IRQ);
+                sti();
+                return;
+            }
+        }
         //checks if it is a letter, if so, display the uppercase version
         if(temp >= 'a' && temp <= 'z') {
             //printf("%c", keycode_to_char[keycode][INDEX1]);
@@ -369,6 +381,7 @@ extern void keyboard_handler(void) {
             //printf("%c", keycode_to_char[keycode][INDEX0]);
             buffer[index] = keycode_to_char[keycode][INDEX0];
             buffer[index + 1] = '\0';
+            index = index + 1;
             puts(buffer);
             send_eoi(KEYBOARD_IRQ);
             sti();
@@ -377,18 +390,7 @@ extern void keyboard_handler(void) {
     }
     //if shift is held
     if(shift_flag == 1 && index <= BUFFER_SIZE - 2) {
-        if(capslock_flag == 1) {
-            char temp = keycode_to_char[keycode][INDEX0];
-            if(temp >= 'a' && temp <= 'z') {
-                buffer[index] = keycode_to_char[keycode][INDEX0];
-                buffer[index + 1] = '\0';
-                index = index + 1;
-                puts(buffer);
-                send_eoi(KEYBOARD_IRQ);
-                sti();
-                return;
-            }
-        }
+        
         //printf("%c", keycode_to_char[keycode][INDEX1]);
         buffer[index] = keycode_to_char[keycode][INDEX1];
         buffer[index + 1] = '\0';

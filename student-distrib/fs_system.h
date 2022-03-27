@@ -9,10 +9,10 @@
 #define TOTAL_BLOCK_NUM 1024
 
 //Global pointers to start of different sections 
-boot_block_t * start_boot_block;
-INode_t * start_INode ;
-int32_t * start_data_block; 
-dentry_t * directory_start ; 
+boot_block_t * startBootBlock;
+INode_t * startINode ;
+int32_t * startDataBlock; 
+dentry_t * directoryStart ; 
 
 
 typedef struct{
@@ -23,27 +23,27 @@ typedef struct{
 } dentry_t; 
 
 typedef struct{
-    uint32_t num_dir_entries; 
+    uint32_t numDirEntries; 
     uint32_t inodes; 
-    uint32_t data_blocks ;
+    uint32_t dataBlocks ;
     uint8_t reserved[RESERVED_BOOT_SPACE];
-    dentry_t dir_entries[NUM_DIR_ENTRIES];
+    dentry_t dirEntries[NUM_DIR_ENTRIES];
 } boot_block_t; 
 
 typedef struct 
 {
-    uint32_t b_length ;
-    uint32_t block_num[TOTAL_BLOCK_NUM];
+    uint32_t bLength ;
+    uint32_t blockNum[TOTAL_BLOCK_NUM];
 }INode_t;
 
 
 // Initalize the filesystem
-void FileSystem_Init(uint32_t * fs_start);
+void FileSystem_Init(uint32_t * fsStart);
 
 
 //Dont know what these do yet lol
 int32_t read_dentry_by_name(const uint8_t * fname, dentry_t * dentry);
-int32_t read_dentry_by_index(const uint8_t *index, dentry_t *dentry);
+int32_t read_dentry_by_index(const uint8_t *index, dentry_t * dentry);
 
 
 // Operations on files

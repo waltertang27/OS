@@ -2,10 +2,10 @@
 
 void FileSystem_Init(uint32_t *fs_start){
     //cast it into a pointer of boot block type since the first block in filesystem is the boot block
-    start_boot_block  = (boot_block_t * )file_system_start;
-    directory_start = start_boot_block->dir_entries; 
-    start_INode = (INode_t *  )(start_boot_block + 1) ;
-    start_data_block = (uint32_t *) (start_INode + start_boot_block->INodeNum) ;
+    startBootBlock  = (boot_block_t * )file_system_start;
+    directoryStart = startBootBlock->dir_entries;
+    startINode = (INode_t *)(startBootBlock + 1);
+    startDataBlock = (uint32_t *)(startINode + startBootBlock->INodeNum);
 }
 
 int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)

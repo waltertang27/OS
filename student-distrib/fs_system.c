@@ -84,32 +84,50 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 // Read a directory and fill buffer 
 int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
 {
-    return 0; 
+    dentry_t dentry;   
+    int32_t error, bytes;
+
+    // read into dentry
+    error = read_dentry_by_index(count, &dentry);
+    if (error == -1){
+        return 0;
+    }
+
+    // void * can be anything
+    // I don't know the length of the filename
+    strncpy((int8_t * )buf, (int8_t * )&(dentry.fname), MAX_FILE_NAME);
+    bytes = strlen((int8_t*)&(dentry.fname));
+    return bytes;
 }
 
 
 // Given a inode, offset and length, fill a buffer
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length){
-    return 0; 
+    return 0;
 }
 
 
 // read file and fill buffer 
 int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
-    return 0; 
+
+
+    // read file
+    int32_t bytes = read_data(/* where do we get the inode / offset? */, buf, nbytes);
+    return bytes;
 }
 
 
 
 // Apparently since its a read only file system these dont matter and should all return 0 
 
+// I think this is -1, lab slides say so
 int32_t file_write(){
-    return 0; 
+    return -1; 
 }
 
 int32_t directory_write()
 {
-    return 0;
+    return -1;
 }
 
 int32_t file_open(){

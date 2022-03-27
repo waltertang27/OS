@@ -94,7 +94,6 @@ int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
     }
 
     // void * can be anything
-    // I don't know the length of the filename
     strncpy((int8_t * )buf, (int8_t * )&(dentry.fname), MAX_FILE_NAME);
     bytes = strlen((int8_t*)&(dentry.fname));
     return bytes;

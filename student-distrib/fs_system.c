@@ -10,16 +10,19 @@ void FileSystem_Init(uint32_t *fs_start){
 
 int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 {
+    return 0; 
 }
 int32_t read_dentry_by_index(const uint8_t *index, dentry_t *dentry)
 {
+    return 0; 
 }
 
 int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
 {
+    return 0; 
 }
 
 int32_t file_read(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length){
-
+    return 0; 
 }
 

@@ -95,14 +95,14 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 * length bytes starting from position offset in the file with inode number inode and returning the number of bytes
 * read and placed in the buffer. A return value of 0 thus indicates that the end of the file has been reached
 */
-int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length){
+int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t length){
 
     // INode_t * curr_inode; 
     // uint32_t blockNum; 
     
     // int bytes = 0;
     // int i; 
-    // curr_inode = (INode_t*)(startINode[inode]);
+    // curr_inode = (INode_t*)(startINode[inodeIDX]);
 
     // for(bytes = 0; bytes<length;bytes++){
 

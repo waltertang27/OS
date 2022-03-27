@@ -58,8 +58,6 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 }
 
 
-
-
 /*
 read_dentry_by_index
 DESCRIPTION: Read a directory entry when given its index within all directories  
@@ -83,12 +81,50 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
     return 0; 
 }
 
+// Read a directory and fill buffer 
 int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
 {
     return 0; 
 }
 
-int32_t file_read(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length){
+
+// Given a inode, offset and length, fill a buffer
+int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length){
     return 0; 
 }
 
+
+// read file and fill buffer 
+int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
+    return 0; 
+}
+
+
+
+// Apparently since its a read only file system these dont matter and should all return 0 
+
+int32_t file_write(){
+    return 0; 
+}
+
+int32_t directory_write()
+{
+    return 0;
+}
+
+int32_t file_open(){
+    return 0; 
+}
+
+int32_t directory_open(){
+    return 0; 
+}
+
+int32_t file_close(){
+    return 0; 
+}
+
+int32_t directory_close()
+{
+    return 0;
+}

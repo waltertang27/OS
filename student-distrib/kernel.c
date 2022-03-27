@@ -13,7 +13,7 @@
 #include "paging.h"
 #include "rtc.h"
 #include "types.h" 
-// #include "fs_system.h"
+#include "fs_system.h"
 #define RUN_TESTS 
 
 /* Macros. */
@@ -151,6 +151,9 @@ void entry(unsigned long magic, unsigned long addr) {
 
     keyboard_init();
     rtc_init();
+    FileSystem_Init(fileSystemStart);
+
+
     paging_init();
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */

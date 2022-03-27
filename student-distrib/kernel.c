@@ -151,7 +151,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
     keyboard_init();
     rtc_init();
-    FileSystem_Init(fileSystemStart);
+    FileSystem_Init((uint32_t *)fileSystemStart);
 
 
     paging_init();

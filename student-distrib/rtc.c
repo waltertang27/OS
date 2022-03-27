@@ -78,24 +78,25 @@ int32_t close_rtc (int32_t fd) {
 }
 
 extern void rtc_freq (int32_t freq) {
-    int range;
-    char rate = MAX_RATE - (rate(freq) - 1);          // frequency =  32768 >> (rate - 1);
+    // int range;
+    char rate = MAX_RATE - (rate_(freq) - 1);          // frequency =  32768 >> (rate - 1);
     outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
     unsigned char prev = inb(RTC_PORT_2);           // get initial value of register A
     rate &= 0x0F;
 
+/*
     if (rate >= MIN_RATE || rate <= MAX_RATE)       // rate will only be in the range from 3-15
         range = 1;
         return;
-    
+*/
     outb(RTC_REG_A, RTC_PORT_1);                           // reset index to A
     outb((prev & TOP_FOUR_BITMASK) | rate, RTC_PORT_2);    // write rate (the bottom 4 bits that represent the 
                                                            // periodic interrupt rate) to A.
 }
 
-char rate(uint32_t freq) {                                 // log2 operation
+char rate_(uint32_t freq) {                                 // log2 operation
     char log2 = 0;
-    while ((freq % 2 != 1) || (freq % 2 != 0)) {
+    while (freq % 2 != 1) {
         freq >>= 1;
         log2++;
     }

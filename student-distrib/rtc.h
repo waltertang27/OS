@@ -30,7 +30,7 @@ int32_t close_rtc (int32_t fd);
 uint32_t rtc_rate;
 volatile uint32_t rtc_int;
 extern void rtc_freq (int32_t freq);
-char rate(uint32_t freq);
+char rate_(uint32_t freq);
 
 int testing_RTC; 
 

@@ -147,6 +147,7 @@ void keyboard_init(void) {
     enter_detected = 0;
     backspace_detected = 0;
     ctrl_l_detected = 0;
+    enable_cursor();
 }
 /*
 DESCRIPTION: handles the interrupts for keyboard
@@ -278,8 +279,9 @@ extern void keyboard_handler(void) {
             }
             if(index == 1) {
                 buffer[index - 1] = '\0';
+                buffer[index] = '\0';
                 index = index - 1;
-                puts(buffer);
+                putc(' ');
                 send_eoi(KEYBOARD_IRQ);
                 sti();
                 return;

@@ -158,12 +158,48 @@ format_char_switch:
  *    Function: Output a string to the console */
 int32_t puts(int8_t* s) {
     register int32_t index = 0;
+    //if(s[0] == '\0') {
+    //    screen_x = -1;
+    //    return 0;
+    //}
     while (s[index] != '\0') {
         putc(s[index]);
         index++;
     }
     screen_x = 0;
+    update_cursor();
     return index;
+}
+
+void enable_cursor(void) {
+  /*  outb(0x3D4, 0x09);
+    outb(0x3D5, 0x0F);
+    outb(0x3D4, 0x0B);
+    outb(0x3D5, 0x0F);
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, 0x0E);
+    */
+
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, (inb(0x3D5) & 0xC0) | 0);
+    outb(0x3D4, 0x0B);
+    outb(0x3D5, (inb(0x3D5) & 0xE0) | 15);
+}
+
+void update_cursor(void) {
+    //get cursor position
+    uint16_t loc = 0;
+    outb(0x3D4, 0x0F);
+    loc |= inb(0x3D5);
+    outb(0x3D4, 0x0E);
+    loc |= ((uint16_t) inb(0x3D5)) << 8;
+    //puts(loc);
+    //x = loc % NUM_COLS;
+    //y = loc / NUM_ROWS;
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t) (loc & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t) ((loc >> 8) & 0xFF));
 }
 
 /* void putc(uint8_t c);
@@ -200,6 +236,7 @@ void putc(uint8_t c) {
 
     }
     char_index++;
+    //update_cursor();
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);

@@ -89,20 +89,34 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
     return 0; 
 }
 
-
 /*
-* The last routine works much like the read system call, reading up to
-* length bytes starting from position offset in the file with inode number inode and returning the number of bytes
-* read and placed in the buffer. A return value of 0 thus indicates that the end of the file has been reached
+read_data
+DESCRIPTION: Read a data from an inode and fills a buffer 
+INPUTS: 
+    inocdeIdx - An index into the inodes(1 would get the first inode, 2 would get second)
+    Offset - The byte number that you want to start at from the begining of a file
+    buf - Buffer which will be filled will the contents of the read
+    length - the maximum number of bytes to be read 
+RETURN VALUE: 0 on sucess 1 on failure 
+SIDE EFFECTS: From the given index and offset, the buffer is filled with bytes until length is reached or end of file
 */
 int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t length){
 
-    // INode_t * curr_inode; 
-    // uint32_t blockNum; 
+    INode_t * curr_inode; 
+    uint32_t currBlock; 
     
-    // int bytes = 0;
-    // int i; 
-    // curr_inode = (INode_t*)(startINode[inodeIDX]);
+    //Number of bytes copied 
+    uint32_t bytes = 0;
+    uint32_t i, temp, blockOffset; 
+    curr_inode = &(startINode[inodeIdx]);
+    currBlock = curr_inode->blockData[0]; 
+
+    if(offset > FOURKB){
+        temp = offset / 4000 ;
+        blockOffset = offset % 4000 ; 
+    }
+
+    // Figure out the right starting block and where in that block to start 
 
     // for(bytes = 0; bytes<length;bytes++){
 

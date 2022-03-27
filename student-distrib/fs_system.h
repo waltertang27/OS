@@ -6,7 +6,7 @@
 #define RESERVED_BOOT_SPACE 52
 #define NUM_DIR_ENTRIES 64
 #define TOTAL_BLOCK_NUM 1023
-
+#define FOURKB 4000
 //Global pointers to start of different sections 
 
 
@@ -37,7 +37,10 @@ INode_t * startINode ;
 uint32_t * startDataBlock; 
 dentry_t * directoryStart ; 
 
+//File position is how many bytes of the current dentry have been read 
 uint32_t filePosition; 
+
+//The current file that is being read(0 is the first file, 1 is the second)
 uint32_t dentryIDX ; 
 
 // Initalize the filesystem

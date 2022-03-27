@@ -31,6 +31,29 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 */
 int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 {
+    int i;
+    uint8_t *currName;
+    dentry_t currEntry; 
+    
+    int fileNameLength = strlen((int8_t *)fname);
+    if(fileNameLength > 32){
+        return -1; 
+        printf("Filename was too long");
+    }
+
+    for (i = 0; i < NUM_DIR_ENTRIES; i++){
+        currName = startBootBlock->dirEntries[i].fileName;
+        if (strlen((int8_t *)currName) != fileNameLength)
+            continue;
+        else if (strncmp(currName, fname, sizeof(fname)))
+            continue;
+        else{
+            // They should have the same name lol so ima copy the useful stuff 
+            dentry->fileType = startBootBlock->dirEntries->fileType; 
+            dentry->INodeNum = startBootBlock->dirEntries->INodeNum; 
+            break;
+        }
+    }   
     return 0; 
 }
 

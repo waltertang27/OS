@@ -103,7 +103,9 @@ int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
 
 // Given a inode, offset and length, fill a buffer
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length){
-    return 0;
+    int bytes = 0;
+    inode_t * curr_inode = (inode_t*)(startINode + inode);
+    return bytes;
 }
 
 

@@ -79,10 +79,10 @@ int32_t close_rtc (int32_t fd) {
 
 extern void rtc_freq (int32_t freq) {
     // int range;
-    char rate = MAX_RATE - (rate_(freq) - 1);          // frequency =  32768 >> (rate - 1);
+    char rate = rate_(32768) - (rate_(freq) - 1);   // frequency =  32768 >> (rate - 1);
     outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
     unsigned char prev = inb(RTC_PORT_2);           // get initial value of register A
-    rate &= 0x0F;
+    rate &= 0x0F;                                   // get the lower 4 bits
 
 /*
     if (rate >= MIN_RATE || rate <= MAX_RATE)       // rate will only be in the range from 3-15

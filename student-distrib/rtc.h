@@ -18,8 +18,6 @@
 #define RTC_IRQ_NUM 8
 #define MAX_FREQ 1024
 #define MIN_FREQ 2
-#define MAX_RATE 15
-#define MIN_RATE 3
 
 extern void rtc_init(void);
 extern void rtc_handler(void);

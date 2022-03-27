@@ -170,21 +170,23 @@ int32_t puts(int8_t* s) {
     update_cursor();
     return index;
 }
-
+/*
 void enable_cursor(void) {
-  /*  outb(0x3D4, 0x09);
-    outb(0x3D5, 0x0F);
-    outb(0x3D4, 0x0B);
-    outb(0x3D5, 0x0F);
-    outb(0x3D4, 0x0A);
-    outb(0x3D5, 0x0E);
-    */
+    //outb(0x3D4, 0x09);
+    //outb(0x3D5, 0x0F);
+    //outb(0x3D4, 0x0B);
+    //outb(0x3D5, 0x0F);
+    //outb(0x3D4, 0x0A);
+    //outb(0x3D5, 0x0E);
+    
+    
 
     outb(0x3D4, 0x0A);
     outb(0x3D5, (inb(0x3D5) & 0xC0) | 0);
     outb(0x3D4, 0x0B);
     outb(0x3D5, (inb(0x3D5) & 0xE0) | 15);
 }
+*/
 
 void update_cursor(void) {
     //get cursor position
@@ -193,7 +195,7 @@ void update_cursor(void) {
     loc |= inb(0x3D5);
     outb(0x3D4, 0x0E);
     loc |= ((uint16_t) inb(0x3D5)) << 8;
-    //puts(loc);
+
     uint16_t x = loc % NUM_COLS;
     uint16_t y = loc / NUM_ROWS;
 

@@ -149,7 +149,7 @@ void keyboard_init(void) {
     enter_detected = 0;
     backspace_detected = 0;
     ctrl_l_detected = 0;
-    enable_cursor();
+    //enable_cursor();
 }
 /*
 DESCRIPTION: handles the interrupts for keyboard
@@ -255,11 +255,12 @@ extern void keyboard_handler(void) {
         ctrl_l_detected = 1;
         buffer[0] = '\0';
         int i;
-        for(i = 0; i < index; i++) {
-            buffer[i] = ' ';
-        }
+        //for(i = 0; i < index; i++) {
+        //    buffer[i] = ' ';
+        //}
         index = 0;
-        puts(buffer);
+        //puts(buffer);
+        clear();
         send_eoi(KEYBOARD_IRQ);
         sti();
         return;

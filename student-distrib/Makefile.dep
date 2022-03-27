@@ -1,6 +1,7 @@
 boot.o: boot.S multiboot.h x86_desc.h types.h
 intr_link.o: intr_link.S
 x86_desc.o: x86_desc.S x86_desc.h types.h
+fs_system.o: fs_system.c fs_system.h lib.h types.h
 i8259.o: i8259.c i8259.h types.h lib.h
 idt.o: idt.c idt.h multiboot.h types.h x86_desc.h lib.h i8259.h debug.h \
   tests.h intr_link.h keyboard.h

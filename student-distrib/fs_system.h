@@ -1,6 +1,5 @@
 #include "lib.h"
 #include "types.h"
-#include "kernel.c"
 
 #define MAX_FILE_NAME 32 
 #define RESERVED_DIRENTRY_SPACE 24
@@ -9,10 +8,7 @@
 #define TOTAL_BLOCK_NUM 1024
 
 //Global pointers to start of different sections 
-boot_block_t * startBootBlock;
-INode_t * startINode ;
-int32_t * startDataBlock; 
-dentry_t * directoryStart ; 
+
 
 
 typedef struct{
@@ -24,7 +20,7 @@ typedef struct{
 
 typedef struct{
     uint32_t numDirEntries; 
-    uint32_t inodes; 
+    uint32_t InodesNum; 
     uint32_t dataBlocks ;
     uint8_t reserved[RESERVED_BOOT_SPACE];
     dentry_t dirEntries[NUM_DIR_ENTRIES];
@@ -36,6 +32,11 @@ typedef struct
     uint32_t blockNum[TOTAL_BLOCK_NUM];
 }INode_t;
 
+
+boot_block_t * startBootBlock;
+INode_t * startINode ;
+uint32_t * startDataBlock; 
+dentry_t * directoryStart ; 
 
 // Initalize the filesystem
 void FileSystem_Init(uint32_t * fsStart);

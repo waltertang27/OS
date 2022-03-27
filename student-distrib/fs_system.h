@@ -38,7 +38,7 @@ uint32_t * startDataBlock;
 dentry_t * directoryStart ; 
 
 uint32_t filePosition; 
-dentry_t * currdentry ; 
+uint32_t dentryIDX ; 
 
 // Initalize the filesystem
 void FileSystem_Init(uint32_t * fsStart);

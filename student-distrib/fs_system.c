@@ -16,7 +16,10 @@ void FileSystem_Init(uint32_t *fs_start){
     directoryStart = startBootBlock->dirEntries;
     startINode = (INode_t *)(startBootBlock + 1);
     startDataBlock = (uint32_t *)(startINode + startBootBlock->InodesNum);
-    currdentry = directoryStart ;
+
+    // Initialize global variables that will be used for reads
+    dentryIDX = 0; 
+    filePosition = 0; 
 }
 
 
@@ -33,8 +36,9 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 {
     int i;
+    int filledDentry = -1; 
     uint8_t *currName;
-    dentry_t currEntry; 
+
     
     int fileNameLength = strlen((int8_t *)fname);
     if(fileNameLength > MAX_FILE_NAME){
@@ -52,10 +56,12 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
             // They should have the same name lol so ima copy the useful stuff 
             dentry->fileType = startBootBlock->dirEntries[i].fileType; 
             dentry->INodeNum = startBootBlock->dirEntries[i].INodeNum; 
+            filledDentry = 0; 
             break;
         }
-    }   
-    return 0; 
+    }
+
+    return filledDentry; 
 }
 
 
@@ -124,22 +130,20 @@ int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
 
 // Read a directory entry and fill the buffer with the corresponding value
 int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
-{
-    // dentry_t dentry;   
-    // int32_t error, bytes;
+{ 
+    dentry_t currDir; 
+    int32_t error, bytes;
 
-    // // read into dentry
-    // error = read_dentry_by_index(count, &dentry);
-    // if (error == -1){
-    //     return 0;
-    // }
-
-    // // void * can be anything
-    // // strncpy: Copies the first num characters of source to destination.
-    // strncpy((int8_t * )buf, (int8_t * )&(dentry.fileName), MAX_FILE_NAME);
-    // bytes = strlen((int8_t*)&(dentry.fileName));
-    // return bytes;
-    return 0; 
+    // read into dentry
+    error = read_dentry_by_index(dentryIDX, &currDir);
+    if (error == -1){
+        return 0;
+    }
+    dentryIDX++;
+    // void * can be anything
+    // strncpy: Copies the first num characters of source to destination.
+    strncpy((int8_t * )buf, (int8_t * )(currDir.fileName), nbytes);
+    return nbytes;
 }
 
 

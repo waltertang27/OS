@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "paging.h"
 #include "rtc.h"
+#include "fs_system.h"
 #define PASS 1
 #define FAIL 0
 
@@ -239,6 +240,67 @@ int rtc_test(){
 	return PASS; 
 }
 /* Checkpoint 2 tests */
+
+int name_search_test(){
+    TEST_HEADER;
+    dentry_t entry; 
+    uint8_t * word = "cat";
+    if (read_dentry_by_name(word, &entry) == -1){
+        return FAIL;
+    }
+
+    word = "FFFF";
+    if (read_dentry_by_name(word, &entry) == -1){
+        return PASS;
+    }
+    
+    return FAIL;
+}
+
+int idx_search_test(){
+    TEST_HEADER;
+    dentry_t entry, entry_2; 
+    if (read_dentry_by_index(5, &entry) == -1){
+        return FAIL;
+    }
+    // printf("=================================== \n %s \n =========================================\n", entry.fileName);
+    if(strncmp((int8_t * ) entry.fileName, (int8_t * )"rtc",sizeof("rtc")))
+        return FAIL; 
+
+    if (read_dentry_by_index(2, &entry_2) == -1){
+        return FAIL;
+    }
+    // printf("=================================== \n %s \n =========================================\n", entry.fileName);
+    if(! strncmp((int8_t * ) entry_2.fileName, (int8_t * )"grep",sizeof("grep")))
+        return FAIL; 
+
+
+    return PASS;
+}
+
+int directory_read_test(){
+    TEST_HEADER;
+    int8_t dir_name[32]; 
+    directory_read(0, &dir_name, 32);
+    if(!strlen(dir_name))
+        return FAIL;
+
+    directory_read(0, &dir_name, 32);
+    if(!strlen(dir_name))
+        return FAIL;
+    
+    directory_read(0, &dir_name, 32);
+    if(!strlen(dir_name))
+        return FAIL;
+    
+    directory_read(0, &dir_name, 32);
+    if(!strlen(dir_name))
+        return FAIL;
+
+
+    return PASS; 
+}
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -253,11 +315,14 @@ void launch_tests()
     // TEST_OUTPUT("Paging test",paging_test());
 
     // launch your tests here
+    // TEST_OUTPUT("read by name test", name_search_test());
+      TEST_OUTPUT("Read Directory", directory_read_test());
+    // TEST_OUTPUT("Read by IDX Test", idx_search_test());
 	// TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
-    TEST_OUTPUT("paging_init_test", paging_init_test());
-    TEST_OUTPUT("paging_test", paging_test());
+    // TEST_OUTPUT("paging_init_test", paging_init_test());
+    // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
     // TEST_OUTPUT("kernel_low_bound_test", kernel_low_bound_test());
     // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());

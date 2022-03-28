@@ -103,12 +103,15 @@ SIDE EFFECTS: From the given index and offset, the buffer is filled with bytes u
 int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t length){
 
     INode_t * curr_inode; 
-    uint32_t currBlock; 
+    uint32_t * currBlock; 
     uint32_t bytes = 0;
-    uint32_t i, temp, blockOffset, bytesToCopy; 
-
+    uint32_t i, temp, blockOffset, bytesToCopy, end_of_file; 
+    uint32_t file_byte_size; 
     // Get a pointer to the inode we are going to use using the inodeIDX 
     curr_inode = &(startINode[inodeIdx]);
+    file_byte_size = curr_inode->bLength;
+
+    end_of_file = 0; 
 
     // Calculate how many blocks and bytes you need to jump before starting your read
     temp = offset / FOURKB;
@@ -116,18 +119,22 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
     // Figure out the right starting block and where in that block to start 
     curr_inode = &startINode[inodeIdx];
-    currBlock = curr_inode->blockData[temp];
-
+    currBlock = (int32_t *)(curr_inode->blockData[temp] ) ;
+    currBlock = *currBlock + blockOffset; 
+    
     // Copy from the offset to the end of that block
     bytesToCopy = FOURKB - offset;
 
     //If you reach the limit for bytes you can copy before the entirety of a block
     if (bytesToCopy > length)
         bytesToCopy = length; 
+
+    if(bytesToCopy > file_byte_size)
+        bytesToCopy = file_byte_size; 
     
 
-
-    memcpy(buf, currBlock + blockOffset,bytesToCopy) ; // This is definety wrong but you get what im trying to do
+    memcpy(buf, currBlock, bytesToCopy) ; // This is definety wrong but you get what im trying to do
+    bytes +=bytesToCopy; 
 
     bytesToCopy = FOURKB ; 
     
@@ -136,9 +143,19 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
         currBlock = curr_inode->blockData[++temp];
 
         if(bytesToCopy > length)
-            bytesToCopy = length; 
+            bytesToCopy = length;
+
+        // if bytesToCopy is greater  than how much we have in the file
+        if (bytesToCopy > (file_byte_size - bytes)){
+            bytesToCopy = file_byte_size - bytes;
+            end_of_file = 1; 
+        }
+
+        memcpy(buf, currBlock, bytesToCopy);
+        bytes += bytesToCopy; 
         
-        memcpy(buf, currBlock,bytesToCopy);
+        if(end_of_file)
+            break; 
     }
 
     return 0;

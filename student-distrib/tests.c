@@ -281,6 +281,17 @@ int directory_read_test(){
     return PASS; 
 }
 
+int read_data_test(){
+    TEST_HEADER;
+    int8_t dir_name[6]; 
+    if (read_data(2, 10, &dir_name, 6) == 0){
+        return PASS;
+    }
+
+    return FAIL;
+    
+}
+
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -289,25 +300,25 @@ int directory_read_test(){
 /* Test suite entry point */
 void launch_tests()
 {
+    
+    /* CHECKPOINT 1 */
 
     // TEST_OUTPUT("idt_test", idt_test());
-
-    // TEST_OUTPUT("idt_test", idt_test());
-    // TEST_OUTPUT("Paging test",paging_test());
-
-    // launch your tests here
-    // TEST_OUTPUT("read by name test", name_search_test());
-    //   TEST_OUTPUT("Read Directory", directory_read_test());
-    // TEST_OUTPUT("Read by IDX Test", idx_search_test());
 	// TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
-    TEST_OUTPUT("paging_test", paging_test());
+    // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("null_test", null_test());
     // TEST_OUTPUT("before_kernel_memory", kernel_up_test());
     // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
     // TEST_OUTPUT("before_vidmem_memory", vidmem_up_test());
-    
+
+    /* CHECKPOINT 2 */
+
+    // TEST_OUTPUT("read by name test", name_search_test());
+    // TEST_OUTPUT("Read Directory", directory_read_test());
+    // TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    TEST_OUTPUT("Read Data Test", read_data_test());
 }
 

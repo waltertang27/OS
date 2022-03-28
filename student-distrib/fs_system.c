@@ -119,9 +119,8 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
     // Figure out the right starting block and where in that block to start 
     curr_inode = &startINode[inodeIdx];
-    currBlock = (int32_t *)(curr_inode->blockData[temp] ) ;
-    currBlock = *currBlock + blockOffset; 
-    
+    currBlock = (int32_t *)(curr_inode->blockData[temp] + blockOffset) ;
+
     // Copy from the offset to the end of that block
     bytesToCopy = FOURKB - offset;
 

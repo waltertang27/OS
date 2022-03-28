@@ -21,7 +21,7 @@ void FileSystem_Init(uint32_t *fs_start){
 
    // directoryStart = startBootBlock->dirEntries;
     startINode = (INode_t *)(fs_start + FOURKB);
-    startDataBlock = (uint32_t *)(startINode + startBootBlock->InodesNum);
+  //  startDataBlock = (uint32_t *)(startINode + startBootBlock->InodesNum);
     // printf("start I node Pointer %p ",startINode);
     // Initialize global variables that will be used for reads
     dentryIDX = 0; 
@@ -89,8 +89,10 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
     strcpy((int8_t *) dentry->fileName, currWord);
 
     dentry->fileType = startBootBlock->dirEntries[index].fileType;
-    dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum;
+    dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum -3 ;
+
     // printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
+
     return 0; 
 }
 
@@ -107,65 +109,68 @@ SIDE EFFECTS: From the given index and offset, the buffer is filled with bytes u
 */
 int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t length){
     
-    INode_t * curr_inode; 
-    uint32_t * currBlock; 
-    uint32_t bytes = 0;
-    uint32_t temp, blockOffset, bytesToCopy, end_of_file; 
-    uint32_t file_byte_size; 
-
-    //uint32_t start, end, index; 
-    // Get a pointer to the inode we are going to use using the inodeIDX 
-
-    curr_inode = &startINode[inodeIdx];
-    file_byte_size = curr_inode->bLength;
-
-    end_of_file = 0; 
-
-    // Calculate how many blocks and bytes you need to jump before starting your read
-    temp = offset / FOURKB;
-    blockOffset = offset % FOURKB;
-
-    // Figure out the right starting block and where in that block to start 
+    INode_t * curr_inode = &startINode[inodeIdx]; 
     
-    // currBlock = (int32_t *)(curr_inode->blockData[temp] + blockOffset) ;
-    currBlock = (uint32_t * )(startDataBlock + FOURKB * temp + blockOffset);
+    uint32_t numInodes = startBootBlock->InodesNum; 
+    uint32_t bytes = 0;
+    uint32_t file_byte_size = curr_inode->bLength; 
 
-    // Copy from the offset to the end of that block
-    bytesToCopy = FOURKB - offset;
+    uint32_t blocksSkipped = offset / FOURKB; 
+    uint32_t blockOffset = offset % FOURKB;;
+    uint32_t end_of_file = 0; 
+    uint32_t blockIDX = curr_inode->blockData[blocksSkipped]; 
+    uint32_t bytesToCopy = FOURKB - offset;
+    uint8_t  * currBlock = (uint8_t *)( startBootBlock + numInodes + blockIDX);
+
 
     //If you reach the limit for bytes you can copy before the entirety of a block
-    if (bytesToCopy > length)
+    if (bytesToCopy > length){
         bytesToCopy = length; 
+        end_of_file = 1;
+    }  
 
-    if(bytesToCopy > file_byte_size)
+    if(bytesToCopy > file_byte_size){
         bytesToCopy = file_byte_size; 
-    
+        end_of_file = 1; 
+    }
 
-    memcpy(buf, currBlock, bytesToCopy) ; // This is definety wrong but you get what im trying to do
+    if(end_of_file){
+        end_of_file = 0; 
+        memcpy(buf, currBlock, bytesToCopy) ; 
+        bytes += bytesToCopy; 
+        return bytes; 
+    }
+
+    //If you are reading more than 4kb 
+    memcpy(buf, currBlock, bytesToCopy) ; 
     bytes += bytesToCopy; 
 
     bytesToCopy = FOURKB; 
     
-    while(bytes != length) // Add some condition to check if it is at the end of the file
+    while(bytes < length) // Add some condition to check if it is at the end of the file
     {
-        // currBlock = curr_inode->blockData[++temp];
-        temp++;
-        currBlock = (uint32_t * )(startDataBlock + FOURKB * temp);
+        blocksSkipped++;
+        currBlock = (uint32_t * )(startDataBlock + FOURKB * blocksSkipped);
 
-        if(bytesToCopy > length)
-            bytesToCopy = length;
+        if (bytesToCopy > length - bytes ){
+            bytesToCopy = length - bytes; 
+            end_of_file = 1;
+        }  
 
-        // if bytesToCopy is greater  than how much we have in the file
-        if (bytesToCopy > (file_byte_size - bytes)){
-            bytesToCopy = file_byte_size - bytes;
+        if(bytesToCopy > file_byte_size - bytes){
+            bytesToCopy = file_byte_size - bytes ; 
             end_of_file = 1; 
+        }
+
+        if(end_of_file){
+            end_of_file = 0; 
+            memcpy(buf, currBlock + offset, bytesToCopy) ; 
+            bytes += bytesToCopy; 
+            return bytes; 
         }
 
         memcpy(buf + bytes, currBlock, bytesToCopy);
         bytes += bytesToCopy; 
-        
-        if(end_of_file)
-            break; 
     }
 
     return bytes;
@@ -194,14 +199,14 @@ int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
 
     // read into dentry
     error = read_dentry_by_index(temp_global_array[fd].file_position, &currDir);
-	// printf(" Filename: %s, File Type: %d, File Size %d \n ", currDir.fileName, currDir.fileType, startINode[currDir.INodeNum].bLength);
+    // printf(" Filename: %s, File Type: %d, File Size %d \n ", currDir.fileName,currDir.fileType, startINode[currDir.INodeNum -3].bLength);
     if (error == -1){
         return 0;
     }
     temp_global_array[fd].file_position++;
     // void * can be anything
     // strncpy: Copies the first num characters of source to destination.
-    strncpy((int8_t * )buf, (int8_t * )&(currDir.fileName), nbytes);
+    memcpy((int8_t * )buf, (int8_t * )&(currDir), nbytes);
     return nbytes;
 }
 

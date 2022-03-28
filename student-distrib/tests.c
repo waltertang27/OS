@@ -233,27 +233,46 @@ int vidmem_low_bound_test()
  * Coverage: Tests the RTC
  * Files: RTC.h RTC.c
  */
+// int rtc_test(){
+// 	TEST_HEADER;
+// 	testing_RTC = 1; 
+// 	return PASS; 
+// }
+
+/* Checkpoint 2 tests */
 int rtc_test(){
 	TEST_HEADER;
 	testing_RTC = 1; 
+    open_rtc(NULL);
+    int i, j;
+	int32_t* freq;
+    int level = 5;
+    int32_t list[5] = {2, 8, 32, 128, 512};
+    for (i = 0; i < level; i++) {
+        freq = list + i;
+        printf("Freqency: %d Hz \n", *freq);
+        write_rtc(0, freq, 4);
+		for (j = 0; j < i; j++) {
+			read_rtc(0, freq, 4);
+			printf('1');
+        }
+    }
+    close_rtc(0);
 	return PASS; 
 }
-/* Checkpoint 2 tests */
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
 
 /* Test suite entry point */
-void launch_tests()
-{
-
-    TEST_OUTPUT("idt_test", idt_test());
+void launch_tests() {
+    //TEST_OUTPUT("idt_test", idt_test());
 
     // TEST_OUTPUT("idt_test", idt_test());
     // TEST_OUTPUT("Paging test",paging_test());
 
     // launch your tests here
-	// TEST_OUTPUT("RTC test", rtc_test());
+	TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
@@ -264,4 +283,5 @@ void launch_tests()
     // TEST_OUTPUT("vidmem_low_bound_test", vidmem_low_bound_test());
     // TEST_OUTPUT("null_test", null_test());
 }
+
 

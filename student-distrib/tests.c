@@ -224,12 +224,12 @@ int rtc_test(){
 int name_search_test(){
     TEST_HEADER;
     dentry_t entry; 
-    uint8_t * word = "cat";
+    uint8_t * word = (uint8_t * )"cat";
     if (read_dentry_by_name(word, &entry) == -1){
         return FAIL;
     }
 
-    word = "FFFF";
+    word = (uint8_t * )"FFFF";
     if (read_dentry_by_name(word, &entry) == -1){
         return PASS;
     }
@@ -283,12 +283,17 @@ int directory_read_test(){
 
 int read_data_test(){
     TEST_HEADER;
-    int8_t dir_name[6]; 
-    if (read_data(2, 10, &dir_name, 6) == 0){
-        return PASS;
-    }
+    int8_t dir_name[32]; 
+    
+    read_data(2, 10, &dir_name, 32);
+    if(!strlen(dir_name))
+        return FAIL;
 
-    return FAIL;
+    // read_data(4, 10, &dir_name, 32);
+    // if(!strlen(dir_name))
+    //     return FAIL;
+
+    return PASS;
     
 }
 

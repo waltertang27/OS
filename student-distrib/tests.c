@@ -333,7 +333,7 @@ void launch_tests()
     // TEST_OUTPUT("read by name test", name_search_test());
     //TEST_OUTPUT("Read Directory", directory_read_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
-     TEST_OUTPUT("Read Data Test", read_data_test());
+    // TEST_OUTPUT("Read Data Test", read_data_test());
      // TEST_OUTPUT("File Read Test", file_read_test());
 }
 

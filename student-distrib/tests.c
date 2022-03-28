@@ -3,12 +3,9 @@
 #include "lib.h"
 #include "paging.h"
 #include "rtc.h"
-<<<<<<< HEAD
 #include "terminal.h"
 #include "keyboard.h"
-=======
 #include "fs_system.h"
->>>>>>> 11b68a76ebfb87ae7bbd047ab5e5930d2ae6fa0d
 #define PASS 1
 #define FAIL 0
 

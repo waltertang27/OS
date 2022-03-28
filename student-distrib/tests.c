@@ -224,12 +224,12 @@ int rtc_test(){
 int name_search_test(){
     TEST_HEADER;
     dentry_t entry; 
-    uint8_t * word = "cat";
+    uint8_t * word = (uint8_t * )"cat";
     if (read_dentry_by_name(word, &entry) == -1){
         return FAIL;
     }
 
-    word = "FFFF";
+    word = (uint8_t * )"FFFF";
     if (read_dentry_by_name(word, &entry) == -1){
         return PASS;
     }
@@ -260,25 +260,44 @@ int idx_search_test(){
 
 int directory_read_test(){
     TEST_HEADER;
-    int8_t dir_name[32]; 
-    directory_read(0, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
+	int i; 
+    dentry_t dir_name;
+    open((uint8_t *)" ", 2);
 
-    directory_read(0, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
-    
-    directory_read(0, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
-    
-    directory_read(0, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
-
-
+	for(i = 0; i<17;i++){
+		directory_read(0, (dentry_t *)&dir_name, 54);
+		if(!strlen((int8_t *) dir_name.fileName))
+			return FAIL;
+		else{
+			//printf(" Filename: %s, File Type: %d, File Size %d \n ", dir_name.fileName,dir_name.fileType, startINode[dir_name.INodeNum].bLength);
+		}
+	}
     return PASS; 
+}
+
+int read_data_test(){
+    TEST_HEADER;
+    uint8_t dir_name[32]; 
+    
+    read_data(4, 10, dir_name, 32);
+
+    
+
+    // read_data(4, 10, &dir_name, 32);
+    // if(!strlen(dir_name))
+    //     return FAIL;
+
+    return PASS;
+    
+}
+
+int file_read_test(){
+    uint8_t buf[FOURKB];
+    int32_t bytes = FOURKB;
+    int32_t bytes_read = file_read(2, buf, bytes);
+
+    printf("size: %d", bytes_read);
+    return PASS;
 }
 
 
@@ -289,25 +308,26 @@ int directory_read_test(){
 /* Test suite entry point */
 void launch_tests()
 {
+    
+    /* CHECKPOINT 1 */
 
     // TEST_OUTPUT("idt_test", idt_test());
-
-    // TEST_OUTPUT("idt_test", idt_test());
-    // TEST_OUTPUT("Paging test",paging_test());
-
-    // launch your tests here
-    // TEST_OUTPUT("read by name test", name_search_test());
-    //   TEST_OUTPUT("Read Directory", directory_read_test());
-    // TEST_OUTPUT("Read by IDX Test", idx_search_test());
 	// TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
-    TEST_OUTPUT("paging_test", paging_test());
+    // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("null_test", null_test());
     // TEST_OUTPUT("before_kernel_memory", kernel_up_test());
     // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
     // TEST_OUTPUT("before_vidmem_memory", vidmem_up_test());
-    
+
+    /* CHECKPOINT 2 */
+
+    // TEST_OUTPUT("read by name test", name_search_test());
+    TEST_OUTPUT("Read Directory", directory_read_test());
+    // TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    // TEST_OUTPUT("Read Data Test", read_data_test());
+    //TEST_OUTPUT("File Read Test", file_read_test());
 }
 

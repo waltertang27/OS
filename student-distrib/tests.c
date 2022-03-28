@@ -270,7 +270,7 @@ int directory_read_test(){
 		if(!strlen((int8_t *) dir_name.fileName))
 			return FAIL;
 		else{
-		    printf(" Filename: %s, File Type: %d, File Size %d \n ", dir_name.fileName,dir_name.fileType, startINode[dir_name.INodeNum -3].bLength);
+		    printf(" Filename: %s, File Type: %d, File Size %d \n ", dir_name.fileName,dir_name.fileType, startINode[dir_name.INodeNum].bLength);
 		}
 	}
     return PASS; 

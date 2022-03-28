@@ -135,12 +135,10 @@ int paging_test()
 
 /* null_test()
 *
-* Cause blue screen if dereferencing 0 causes a page fault
+* Checks if deferencing NULL gives page fault exception
 * Inputs: None
 * Outputs: Page fault/FAIL
-* Side Effects: Halts the OS and displays errors
-* Coverage: page fault handling of location 0.
-* Files: paging.c
+* Side effects: Halts the OS and displays errors
  */
 int null_test()
 {
@@ -154,16 +152,14 @@ int null_test()
     return FAIL;
 }
 
-/* kernel_up_bound_test()
+/* kernel_up_test()
  *
- * Checks if there is a page fault from memory before the kernel
+ * Checks if there is a page fault exception from memory before the kernel
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: page fault handling from memory before the kernel
- * Files: paging.c
+ * Side effects: Halts the OS and displays errors
  */
-int kernel_up_bound_test()
+int kernel_up_test()
 {
     TEST_HEADER;
     char ref;
@@ -174,14 +170,12 @@ int kernel_up_bound_test()
 
 /* kernel_low_bound_test()
  *
- * Checks if there is a page fault from memory after the kernel
+ * Checks if there is a page fault exception from memory after the kernel
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: page fault handling from memory after the kernel
- * Files: paging.c
+ * Side effects: Halts the OS and displays errors
  */
-int kernel_low_bound_test()
+int kernel_low_test()
 {
     TEST_HEADER;
     char ref;
@@ -191,14 +185,12 @@ int kernel_low_bound_test()
 }
 /* vidmem_up_bound_test()
  *
- * Checks if there is a page fault from memory before the video memory
+ * Checks if there is a page fault exception from memory before the video memory
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: page fault handling from memory before the video memory
- * Files: paging.c
+ * Side effects: Halts the OS and displays errors
  */
-int vidmem_up_bound_test()
+int vidmem_up_test()
 {
     TEST_HEADER;
     char ref;
@@ -206,24 +198,6 @@ int vidmem_up_bound_test()
     ref = *pointer;
     return FAIL;
 }
-/* vidmem_low_bound_test()
- *
- * Checks if there is a page fault from memory after the video memory
- * Inputs: None
- * Outputs: Page fault/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: page fault handling from memory after the video memory
- * Files: paging.c
- */
-int vidmem_low_bound_test()
-{
-    TEST_HEADER;
-    char ref;
-    char *pointer = (char *)0x0B9000;
-    ref = *pointer;
-    return FAIL;
-}
-
 
 /* RTC Test
  *
@@ -301,6 +275,10 @@ int directory_read_test(){
     return PASS; 
 }
 
+int (){
+
+}
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -326,7 +304,6 @@ void launch_tests()
     // TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
     // TEST_OUTPUT("kernel_low_bound_test", kernel_low_bound_test());
     // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());
-    // TEST_OUTPUT("vidmem_low_bound_test", vidmem_low_bound_test());
     // TEST_OUTPUT("null_test", null_test());
 }
 

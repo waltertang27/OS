@@ -50,7 +50,7 @@ extern void rtc_handler(void){
 int32_t open_rtc (const uint8_t* filename) {
     if (filename == NULL)
         return -1;                  // if the filename does not exist, return -1
-    rtc_rate = MAX_FREQ / MIN_FREQ;
+    rtc_rate = MIN_FREQ;
     return 0;
 }
 
@@ -98,7 +98,7 @@ extern void rtc_freq (int32_t freq) {
 
 char rate_(uint32_t freq) {                                 // log2 operation
     char log2 = 0;
-    while (freq != 1) {
+    while (freq % 2 != 1) {
         freq >>= 1;
         log2++;
     }

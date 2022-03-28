@@ -225,6 +225,7 @@ void putc(uint8_t c) {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         
     }
+    
     else if(c == '\n' || c == '\r') {
         //screen_y++;
         //screen_x = 0;
@@ -245,50 +246,26 @@ void putc(uint8_t c) {
         
         screen_x = 0;
         screen_y = NUM_ROWS - 1;
-    }
-    else {
-
-        screen_y++;
-        screen_x = 0;
-    }
-       
-    
-        //screen_y++;
-        //screen_x = 0;
-  /*      if(screen_x == NUM_ROWS) {
-            int32_t i = 0;
-            for (i = 0; i < NUM_COLS; i++) {
-                *(uint8_t *)(video_mem + (i << 1)) = ' ';
-                *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
-            }
         }
-    */
-   }
+        else {
+            screen_y++;
+            screen_x = 0;
+        }
+    }
     else if(c == '\t') {
         screen_x++;
     } 
-  //  if(c == '\t') {
-  //      screen_x += 4;
-  //  }
-  /*
-    if(c == '\b' && screen_x > 0) {
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) >> 1)) = ' ';
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-        screen_x--;
-        //screen_x %= NUM_COLS;
-        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;  
-    }
-    */
-    //handles printing on a new line, if the characters overflow
+  
     else if(screen_x == (NUM_COLS - 1)) {
         if(screen_y == (NUM_ROWS - 1)) {
             int i;
             int j;
             for(i = 1; i < NUM_ROWS; i++) {
                 for(j = 0; j < NUM_COLS; j++) {
-                    if(i == NUM_ROWS - 1 && j == NUM_COLS - 1) {
+                    if((i == (NUM_ROWS - 1)) && (j == (NUM_COLS - 1))) {
                         *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = c;
                         *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+
                     }
                     *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1));
                     *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1) + 1) = ATTRIB;
@@ -302,22 +279,14 @@ void putc(uint8_t c) {
             screen_x = 0;
             screen_y = NUM_ROWS - 1;
 
-        }
+        } 
         else {
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-            screen_y += 1;
-            screen_x = 0;
-            
-        }
-       /* 
-        else {
             screen_y++;
             screen_x = 0;
-            }
-    
+            
         } 
-        */
         screen_x = 0;
     }
         

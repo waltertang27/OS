@@ -262,7 +262,7 @@ int directory_read_test(){
     TEST_HEADER;
 	int i; 
     dentry_t dir_name;
-    open(" ", 2);
+    open((uint8_t *)" ", 2);
 
 	for(i = 0; i<17;i++){
 		directory_read(0, (dentry_t *)&dir_name, 54);
@@ -272,14 +272,14 @@ int directory_read_test(){
 			//printf(" Filename: %s, File Type: %d, File Size %d \n ", dir_name.fileName,dir_name.fileType, startINode[dir_name.INodeNum].bLength);
 		}
 	}
-
+    return PASS; 
 }
 
 int read_data_test(){
     TEST_HEADER;
-    int8_t dir_name[32]; 
+    uint8_t dir_name[32]; 
     
-    read_data(4, 10, &dir_name, 32);
+    read_data(4, 10, dir_name, 32);
 
     
 
@@ -325,9 +325,9 @@ void launch_tests()
     /* CHECKPOINT 2 */
 
     // TEST_OUTPUT("read by name test", name_search_test());
-    // TEST_OUTPUT("Read Directory", directory_read_test());
+    //TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
-    TEST_OUTPUT("File Read Test", file_read_test());
+    //TEST_OUTPUT("File Read Test", file_read_test());
 }
 

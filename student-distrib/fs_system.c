@@ -109,10 +109,10 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     INode_t * curr_inode; 
     uint32_t * currBlock; 
     uint32_t bytes = 0;
-    uint32_t i, temp, blockOffset, bytesToCopy, end_of_file; 
+    uint32_t temp, blockOffset, bytesToCopy, end_of_file; 
     uint32_t file_byte_size; 
 
-    uint32_t start, end, index; 
+    //uint32_t start, end, index; 
     // Get a pointer to the inode we are going to use using the inodeIDX 
 
     curr_inode = &startINode[inodeIdx];
@@ -176,7 +176,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
 
     // read file
-    open(" ", fd);
+    open((uint8_t)&" ", fd);
     
     int32_t bytes = read_data(temp_global_array[fd].inode, temp_global_array[fd].file_position, buf, nbytes);
     return bytes;
@@ -186,10 +186,10 @@ int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
 // Read a directory entry and fill the buffer with the corresponding value
 int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
 { 
-    dentry_t currDir; 
-    int32_t error, bytes;
-
     
+    dentry_t currDir; 
+    int32_t error;
+
 
     // read into dentry
     error = read_dentry_by_index(temp_global_array[fd].file_position, &currDir);

@@ -26,7 +26,6 @@ extern void rtc_init(void){
     testing_RTC = 0; 
     
     rtc_rate = MIN_FREQ; // the initial frequency is set to 2 interrupts/second;
-    rtc_int = 1; // interrupts occur and not handled yet
     rtc_freq(MAX_FREQ);
     
     enable_irq(RTC_IRQ_NUM);
@@ -41,23 +40,23 @@ SIDE EFFECTS: RTC continiously fires
 */
 extern void rtc_handler(void){
     cli();
+    rtc_int = 1; // interrupts occur and not handled yet
     if(testing_RTC) {
         printf("Called handler \n");
-        open_rtc(2);
-        int i, j;
-        int32_t* freq;
-        int level = 5;
+        int i, j, freq;
+        int fd = open_rtc((uint8_t *)"rtc");
         int32_t list[5] = {2, 8, 32, 128, 512};
-        for (i = 0; i < level; i++) {
-            write_rtc(2, list + i, 4);
+        for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
+            j = i + list;
+            write_rtc(fd, j, 4);                   // the slowest to the fastest
             printf("Freqency: %d Hz \n", list[i]);
-            for (j = 0; j < list[i] ; j++) {
-                read_rtc(2, &list, 4);
-                printf('1');
+            for (freq = 0; freq < list[i] ; freq++) {
+                read_rtc(fd, freq, 4);
+                putc('1');
             }
             printf("\n");
         }
-        close_rtc(2);
+        close_rtc(fd);
     }
     //test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C

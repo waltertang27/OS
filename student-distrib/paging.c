@@ -28,13 +28,13 @@ void paging_init()
 			page_directory[i].user_supervisor = 0;
 			page_directory[i].page_table_addr = KERNEL_ADDR / ALIGN_BYTES;
 		}
-		else if (i == USER_INDEX)
-		{
-			// user memory
-			page_directory[i].present = 1;
-			page_directory[i].user_supervisor = 1;
-			page_directory[i].page_table_addr = USER_V / ALIGN_BYTES;
-		}
+		// else if (i == USER_INDEX)
+		// {
+		// 	// user memory
+		// 	page_directory[i].present = 1;
+		// 	page_directory[i].user_supervisor = 1;
+		// 	page_directory[i].page_table_addr = USER_V / ALIGN_BYTES;
+		// }
 		else
 		{
 			// not setting up page_table_addr
@@ -46,7 +46,7 @@ void paging_init()
 		page_directory[i].write_through = 0;
 		page_directory[i].cache_disable = 0;
 		page_directory[i].accessed = 0;
-		page_directory[i].reserved = 0;
+		page_directory[i].dirty = 0;
 
 		if (i == 0)
 		{
@@ -76,7 +76,7 @@ void paging_init()
 		page_table[i].cache_disable = 0;
 		page_table[i].accessed = 0;
 		page_table[i].dirty = 0;
-		page_table[i].reserved = 0;
+		page_table[i].attribute = 0; // ???
 		page_table[i].global = 0;
 		page_table[i].page_table_addr = i;
 	}
@@ -91,7 +91,7 @@ void paging_init()
 		video_mapping_pt[i].cache_disable = 1;
 		video_mapping_pt[i].accessed = 0;
 		video_mapping_pt[i].dirty = 0;
-		video_mapping_pt[i].reserved = 0;
+		video_mapping_pt[i].attribute = 0;
 		video_mapping_pt[i].global = 0;
 		video_mapping_pt[i].page_table_addr = i;
 	}

@@ -3,8 +3,12 @@
 #include "lib.h"
 #include "paging.h"
 #include "rtc.h"
+<<<<<<< HEAD
 #include "terminal.h"
 #include "keyboard.h"
+=======
+#include "fs_system.h"
+>>>>>>> 11b68a76ebfb87ae7bbd047ab5e5930d2ae6fa0d
 #define PASS 1
 #define FAIL 0
 
@@ -100,13 +104,9 @@ int paging_init_test()
 {
     TEST_HEADER;
 
-    if (page_directory[0].present != 1 || page_directory[KERNEL_INDEX].present != 1)
-    {
+    if (page_directory[0].present != 1 || page_directory[KERNEL_INDEX].present != 1){
         return FAIL;
     }
-    // if(page_table[1].present != 1 || page_table[20].present != 1 || page_table[1000].present != 1){
-    // 	return FAIL;
-    // }
 
     return PASS;
 }
@@ -124,117 +124,100 @@ int paging_test()
 {
     TEST_HEADER;
 
-    char result;
+    char ref;
 
-    char *pointer = (char *)0x400000; // kernel
-    result = *pointer;
+     // start of the kernel
+    char *pointer = (char *)KERNEL_ADDR;
+    ref = *pointer;
 
-    pointer = (char *)0x0B8000; // video memory
-    result = *pointer;
+     // start of the video memory
+    pointer = (char *)VID_ADDR;
+    ref = *pointer;
 
+    // end of the kernel 
     pointer = (char *)0x7FFFFF;
-    result = *pointer;
+    ref = *pointer;
 
     return PASS;
 }
 
-/* kernel_up_bound_test()
- *
- * Checks if there is a page fault from memory before the kernel
- * Inputs: None
- * Outputs: Page fault/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: page fault handling from memory before the kernel
- * Files: paging.c
- */
-int kernel_up_bound_test()
-{
-    TEST_HEADER;
-    char result;
-    char *pointer = (char *)0x3FFFFF;
-    result = *pointer;
-    return FAIL;
-}
-
-/* kernel_low_bound_test()
- *
- * Checks if there is a page fault from memory after the kernel
- * Inputs: None
- * Outputs: Page fault/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: page fault handling from memory after the kernel
- * Files: paging.c
- */
-int kernel_low_bound_test()
-{
-    TEST_HEADER;
-    char result;
-    char *pointer = (char *)0x800000;
-    result = *pointer;
-    return FAIL;
-}
-/* vidmem_up_bound_test()
- *
- * Checks if there is a page fault from memory before the video memory
- * Inputs: None
- * Outputs: Page fault/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: page fault handling from memory before the video memory
- * Files: paging.c
- */
-int vidmem_up_bound_test()
-{
-    TEST_HEADER;
-    char result;
-    char *pointer = (char *)0x0B7FFF;
-    result = *pointer;
-    return FAIL;
-}
-/* vidmem_low_bound_test()
- *
- * Checks if there is a page fault from memory after the video memory
- * Inputs: None
- * Outputs: Page fault/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: page fault handling from memory after the video memory
- * Files: paging.c
- */
-int vidmem_low_bound_test()
-{
-    TEST_HEADER;
-    char result;
-    char *pointer = (char *)0x0B9000;
-    result = *pointer;
-    return FAIL;
-}
-
 /* null_test()
 *
-* Cause blue screen if dereferencing 0 causes a page fault
+* Checks if deferencing NULL gives page fault exception
 * Inputs: None
 * Outputs: Page fault/FAIL
-* Side Effects: Halts the OS and displays errors
-* Coverage: page fault handling of location 0.
-* Files: paging.c
+* Side effects: Halts the OS and displays errors
+* Coverage: page fault exception
  */
 int null_test()
 {
     TEST_HEADER;
-    char result;
+    char ref;
 
+    // convert 0 to char pointer for NULL
 
     char *pointer = (char *)0;
-    result = *pointer;
+    ref = *pointer;
     return FAIL;
 }
+
+/* kernel_up_test()
+ *
+ * Checks if there is a page fault exception from memory before the kernel
+ * Inputs: None
+ * Outputs: Page fault/FAIL
+ * Side effects: halts the OS and displays errors
+ * Coverage: page fault exception
+ */
+int kernel_up_test()
+{
+    TEST_HEADER;
+    char ref;
+    char *pointer = (char *)0x3FFFFF;
+    ref = *pointer;
+    return FAIL;
+}
+
+/* kernel_low_test()
+ *
+ * Checks if there is a page fault exception from memory after the kernel
+ * Inputs: None
+ * Outputs: Page fault/FAIL
+ * Side effects: halts the OS and displays errors
+ * Coverage: page fault exception
+ */
+int kernel_low_test()
+{
+    TEST_HEADER;
+    char ref;
+    char *pointer = (char *)0x800000;
+    ref = *pointer;
+    return FAIL;
+}
+/* vidmem_up_test()
+ *
+ * Checks if there is a page fault exception from memory before the video memory
+ * Inputs: None
+ * Outputs: Page fault/FAIL
+ * Side effects: halts the OS and displays errors
+ * Coverage: page fault exception
+ */
+int vidmem_up_test()
+{
+    TEST_HEADER;
+    char ref;
+    char *pointer = (char *)0x0B7FFF;
+    ref = *pointer;
+    return FAIL;
+}
+
 /* RTC Test
  *
  * Asserts that the RTC handler is being called multiple times
  * Inputs: None
  * Outputs: PASS/FAIL
  * Side Effects: None
- * Coverage: Tests the RTC
- * Files: RTC.h RTC.c
+ * Coverage: RTC functions
  */
 int rtc_test(){
 	TEST_HEADER;
@@ -258,7 +241,6 @@ int terminal_test() {
 }
 
 
-
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -270,18 +252,11 @@ void launch_tests()
     //TEST_OUTPUT("idt_test", idt_test());
 
     // TEST_OUTPUT("idt_test", idt_test());
-    // TEST_OUTPUT("Paging test",paging_test());
-
-    // launch your tests here
 	// TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
-    // TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
-    // TEST_OUTPUT("kernel_low_bound_test", kernel_low_bound_test());
-    // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());
-    // TEST_OUTPUT("vidmem_low_bound_test", vidmem_low_bound_test());
     // TEST_OUTPUT("null_test", null_test());
     //TEST_OUTPUT("terminal test", terminal_test());
 }

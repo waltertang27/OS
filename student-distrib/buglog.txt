@@ -32,3 +32,24 @@ Solution: We added a bit called "unused" to fill the 32-bit page directory struc
 
 CHECKPOINT 3.2
 
+<<<<<<< HEAD
+=======
+Description: directory_read does not put the correct file type and file size in the dentry
+Where: fs_system.c
+Issue: INode addresses are not calculated correctly.
+Solution: After updating some code (specifically this line: startINode = (INode_t *)(fs_start + FOURKB)) we can print out some file sizes (but the sizes are not correct).
+Then we shifted the inode numbers by three and now we are able to print the correct file sizes.
+
+Description: read_data does not work properly. 
+Where: fs_system.c
+Issue: INode addresses are not calculated correctly, while loop is causing problems (# of bytes read is not updated properly), writing to the wrong buffer address 
+(should be buf + bytes)
+Solution: as of 3/28 4pm we haven't solved the issue yet.
+
+Description: system_x is not equal to 0
+Where: terminal.c
+Issue:
+Solution:
+
+
+>>>>>>> 11b68a76ebfb87ae7bbd047ab5e5930d2ae6fa0d

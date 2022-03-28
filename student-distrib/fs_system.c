@@ -109,12 +109,10 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     uint32_t bytes = 0;
     uint32_t i, temp, blockOffset; 
     curr_inode = &(startINode[inodeIdx]);
-    currBlock = curr_inode->blockData[0]; 
+    currBlock = curr_inode->blockData[0];
 
-    if(offset > FOURKB){
-        temp = offset / 4000 ;
-        blockOffset = offset % 4000 ; 
-    }
+    temp = offset / FOURKB;
+    blockOffset = offset % FOURKB;
 
     // Figure out the right starting block and where in that block to start 
 

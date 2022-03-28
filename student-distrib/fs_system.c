@@ -109,7 +109,7 @@ SIDE EFFECTS: From the given index and offset, the buffer is filled with bytes u
 */
 int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t length){
     
-    INode_t * curr_inode = &startINode[inodeIdx]; 
+    INode_t * curr_inode = &startINode[inodeIdx];   // INode_t* correct_inode = (INode_t*)(startBootBlock + 1 + inodeIdx)
     
     uint32_t numInodes = startBootBlock->InodesNum; 
     uint32_t bytes = 0;
@@ -124,7 +124,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
 
     //If you reach the limit for bytes you can copy before the entirety of a block
-    if (bytesToCopy > length){
+    if (bytesToCopy > length) {
         bytesToCopy = length; 
         end_of_file = 1;
     }  

@@ -153,9 +153,9 @@ void keyboard_init(void) {
     //update_cursor();
 }
 /*
-DESCRIPTION: handles the interrupts for keyboard
+DESCRIPTION: handles the interrupts for keyboard. stores the pressed key values into a buffer. 
 INPUTS: none
-OUTPUTS: none
+OUTPUTS: uses the functions in lib.c (puts) to print to screen. 
 RETURN VALUE: none
 SIDE EFFECTS: Displays the characters that are pressed on the keyboard to the screen
 */
@@ -252,7 +252,7 @@ extern void keyboard_handler(void) {
         return;
     }
     //0x26 is the value L where ctrl L clears the buffer
-    if(ctrl_flag == 1 && keycode == 0x26) {
+    if(ctrl_flag == 1 && keycode == L_KEY) {
         ctrl_l_detected = 1;
         buffer[0] = '\0';
         //for(i = 0; i < index; i++) {
@@ -266,7 +266,7 @@ extern void keyboard_handler(void) {
         return;
     }
     //checks for backspace
-    if(keycode == 0x0E) {
+    if(keycode == BACKSPACE) {
         if(index > 0) {
             int count = 3;
             backspace_detected = 1;
@@ -321,9 +321,9 @@ extern void keyboard_handler(void) {
 
 
     //prints for tab
-    if(keycode == 0x0F) {
+    if(keycode == TAB) {
         //printf("%s", "    ");
-        //adjusts space correctly based on if index might go out of bounds
+        //adjusts space correctly based on if index might go out of bounds; BUFFER_SIZE - NUM where num is the number of spaces left remaining in buffer
         //not out of bounds
         if(index <= BUFFER_SIZE - 5) {
             buffer[index] = '\t';

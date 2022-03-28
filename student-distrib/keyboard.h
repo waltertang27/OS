@@ -31,6 +31,9 @@
 #define LCTRL_RELEASED 0x9D
 
 #define ENTER 0x1C
+#define BACKSPACE 0x0E
+#define L_KEY 0x26
+#define TAB 0x0F
 
 //represents the index in keycode_to_char, when it is the original or (shifted) version of the key
 #define INDEX0 0

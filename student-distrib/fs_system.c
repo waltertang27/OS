@@ -104,26 +104,42 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
     INode_t * curr_inode; 
     uint32_t currBlock; 
-    
-    //Number of bytes copied 
     uint32_t bytes = 0;
-    uint32_t i, temp, blockOffset; 
-    curr_inode = &(startINode[inodeIdx]);
-    currBlock = curr_inode->blockData[0];
+    uint32_t i, temp, blockOffset, bytesToCopy; 
 
+    // Get a pointer to the inode we are going to use using the inodeIDX 
+    curr_inode = &(startINode[inodeIdx]);
+
+    // Calculate how many blocks and bytes you need to jump before starting your read
     temp = offset / FOURKB;
     blockOffset = offset % FOURKB;
 
     // Figure out the right starting block and where in that block to start 
+    curr_inode = &startINode[inodeIdx];
+    currBlock = curr_inode->blockData[temp];
 
-    // for(bytes = 0; bytes<length;bytes++){
+    // Copy from the offset to the end of that block
+    bytesToCopy = FOURKB - offset;
+
+    //If you reach the limit for bytes you can copy before the entirety of a block
+    if (bytesToCopy > length)
+        bytesToCopy = length; 
+    
 
 
-    //     blockNum =  curr_inode->blockData[i + offset];
+    memcpy(buf, currBlock + blockOffset,bytesToCopy) ; // This is definety wrong but you get what im trying to do
 
-    // }
+    bytesToCopy = FOURKB ; 
+    
+    while(bytes != length) // Add some condition to check if it is at the end of the file
+    {
+        currBlock = curr_inode->blockData[++temp];
 
-
+        if(bytesToCopy > length)
+            bytesToCopy = length; 
+        
+        memcpy(buf, currBlock,bytesToCopy);
+    }
 
     return 0;
 }

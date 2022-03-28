@@ -255,8 +255,10 @@ void putc(uint8_t c) {
     else if(c == '\t') {
         screen_x++;
     } 
+    /*
   
-    else if(screen_x == (NUM_COLS - 1)) {
+    else if(screen_x == NUM_COLS - 1) {
+        //printf("%u\n", screen_x);
         if(screen_y == (NUM_ROWS - 1)) {
             int i;
             int j;
@@ -269,6 +271,7 @@ void putc(uint8_t c) {
                     }
                     *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1));
                     *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1) + 1) = ATTRIB;
+
                     if(i == NUM_ROWS - 1) {
                         *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = ' ';
                         *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
@@ -278,6 +281,7 @@ void putc(uint8_t c) {
             }
             screen_x = 0;
             screen_y = NUM_ROWS - 1;
+            //screen_y++;
 
         } 
         else {
@@ -288,7 +292,7 @@ void putc(uint8_t c) {
             
         } 
         screen_x = 0;
-    }
+    } */
         
     else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
@@ -298,10 +302,9 @@ void putc(uint8_t c) {
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
 
     }
-    
- 
-    
+
     update_cursor();
+    
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);

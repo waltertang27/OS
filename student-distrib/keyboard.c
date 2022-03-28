@@ -226,15 +226,20 @@ extern void keyboard_handler(void) {
         return;
     }
     if(index >= BUFFER_SIZE) {
-        printf("%s", "char buffer is full!\n");
+        
         if(keycode == ENTER) {
             buffer[0] = '\0';
             index = 0;
+            putc('\n');
         }
+        //else {
+            //printf("%s", "char buffer is full!\n");
+        //}
         send_eoi(KEYBOARD_IRQ);
         sti();
         return;
     }
+
     if(keycode == ENTER) {
         enter_detected = 1;
         buffer[index] = '\n';

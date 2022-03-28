@@ -122,11 +122,11 @@ int paging_test()
     char ref;
 
      // start of the kernel
-    char *pointer = (char *)0x400000;
+    char *pointer = (char *)KERNEL_ADDR;
     ref = *pointer;
 
      // start of the video memory
-    pointer = (char *)0x0B8000;
+    pointer = (char *)VID_ADDR;
     ref = *pointer;
 
     // end of the kernel 
@@ -281,9 +281,6 @@ int directory_read_test(){
     return PASS; 
 }
 
-int (){
-
-}
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -300,16 +297,17 @@ void launch_tests()
 
     // launch your tests here
     // TEST_OUTPUT("read by name test", name_search_test());
-      TEST_OUTPUT("Read Directory", directory_read_test());
+    //   TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
 	// TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
-    // TEST_OUTPUT("paging_test", paging_test());
+    TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("null_test", null_test());
     // TEST_OUTPUT("before_kernel_memory", kernel_up_test());
     // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
     // TEST_OUTPUT("before_vidmem_memory", vidmem_up_test());
     
 }
+

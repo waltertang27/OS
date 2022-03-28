@@ -119,7 +119,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     uint32_t blockOffset = offset % FOURKB;;
     uint32_t end_of_file = 0; 
     uint32_t blockIDX = curr_inode->blockData[blocksSkipped]; 
-    uint32_t bytesToCopy = FOURKB - offset;
+    uint32_t bytesToCopy = FOURKB - blockOffset;
     uint8_t  * currBlock = (uint8_t *)( startBootBlock + numInodes + blockIDX);
 
 
@@ -136,7 +136,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
     if(end_of_file){
         end_of_file = 0; 
-        memcpy(buf, currBlock, bytesToCopy) ; 
+        memcpy(buf, currBlock , bytesToCopy) ; 
         bytes += bytesToCopy; 
         return bytes; 
     }
@@ -150,7 +150,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     while(bytes < length) // Add some condition to check if it is at the end of the file
     {
         blocksSkipped++;
-        currBlock = (uint32_t * )(startDataBlock + FOURKB * blocksSkipped);
+        currBlock = (uint8_t * )(startDataBlock + FOURKB * blocksSkipped);
 
         if (bytesToCopy > length - bytes ){
             bytesToCopy = length - bytes; 

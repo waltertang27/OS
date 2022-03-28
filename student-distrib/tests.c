@@ -3,8 +3,6 @@
 #include "lib.h"
 #include "paging.h"
 #include "rtc.h"
-#include "terminal.h"
-#include "keyboard.h"
 #include "fs_system.h"
 #define PASS 1
 #define FAIL 0
@@ -216,27 +214,105 @@ int vidmem_up_test()
  * Side Effects: None
  * Coverage: RTC functions
  */
+/* Checkpoint 2 tests */
+
+int name_search_test(){
+    TEST_HEADER;
+    dentry_t entry; 
+    uint8_t * word = (uint8_t * )"cat";
+    if (read_dentry_by_name(word, &entry) == -1){
+        return FAIL;
+    }
+
+    word = (uint8_t * )"FFFF";
+    if (read_dentry_by_name(word, &entry) == -1){
+        return PASS;
+    }
+    
+    return FAIL;
+}
+
+int idx_search_test(){
+    TEST_HEADER;
+    dentry_t entry, entry_2; 
+    //int i; 
+    if (read_dentry_by_index(5, &entry) == -1){
+        return FAIL;
+    }
+
+    if(strncmp((int8_t * ) entry.fileName, (int8_t * )"rtc",sizeof("rtc")))
+        return FAIL; 
+
+    if (read_dentry_by_index(2, &entry_2) == -1){
+        return FAIL;
+    }
+    if(! strncmp((int8_t * ) entry_2.fileName, (int8_t * )"grep",sizeof("grep")))
+        return FAIL; 
+    // for(i =0; i<62; i = i+3){
+    //     printf("Inode:%u Bytes:%u Inode:%u Bytes:%u Inode:%u Bytes:%u \n",i,startINode[i].bLength,i+1,startINode[i].bLength,i+2,startINode[i+2].bLength);
+    // }
+    return PASS;
+}
+
+int directory_read_test(){
+    TEST_HEADER;
+	int i; 
+    dentry_t dir_name;
+    open((uint8_t *)" ", 2);
+
+	for(i = 0; i<17;i++){
+		directory_read(0, (dentry_t *)&dir_name, 54);
+		if(!strlen((int8_t *) dir_name.fileName))
+			return FAIL;
+		else{
+		    printf(" Filename: %s, File Type: %d, File Size %d \n ", dir_name.fileName,dir_name.fileType, startINode[dir_name.INodeNum].bLength);
+		}
+	}
+    return PASS; 
+}
+
+int read_data_test(){
+    TEST_HEADER;
+    uint8_t DataBuf[300] ; 
+    memset(DataBuf,0,300);
+
+    dentry_t curr; 
+    read_dentry_by_index(10,&curr);
+
+    
+    read_data(curr.INodeNum, 0, DataBuf, 300);
+    // if(!strlen(dir_name))
+    //     return FAIL;
+
+    printf(" Buffer: %s \n",DataBuf);
+    return PASS;
+    
+}
+
+int file_read_test(){
+    uint8_t buf[FOURKB];
+    int32_t bytes = FOURKB;
+    int32_t bytes_read = file_read(2, buf, bytes);
+
+
+
+    printf("size: %d", bytes_read);
+    return PASS;
+}
+
+/* RTC Test
+ *
+ * Asserts that the RTC handler is being called multiple times
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: RTC functions
+ */
 int rtc_test(){
 	TEST_HEADER;
 	testing_RTC = 1; 
 	return PASS; 
 }
-/* Checkpoint 2 tests */
-
-int terminal_test() {
-    TEST_HEADER;
-    char buf[BUFFER_SIZE];
-    //terminal_open();
-    while(1) {
-        int32_t out = terminal_read(1, buf, strlen(buf));
-        if(out != 0) {
-            terminal_write(0, buf, strlen(buf));
-        }
-    }
-    //terminal_close();
-    return PASS;
-}
-
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -245,8 +321,8 @@ int terminal_test() {
 /* Test suite entry point */
 void launch_tests()
 {
-
-    //TEST_OUTPUT("idt_test", idt_test());
+    clear();
+    /* CHECKPOINT 1 */
 
     // TEST_OUTPUT("idt_test", idt_test());
 	// TEST_OUTPUT("RTC test", rtc_test());
@@ -255,6 +331,17 @@ void launch_tests()
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("null_test", null_test());
-    //TEST_OUTPUT("terminal test", terminal_test());
+    // TEST_OUTPUT("before_kernel_memory", kernel_up_test());
+    // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
+    // TEST_OUTPUT("before_vidmem_memory", vidmem_up_test());
+
+    /* CHECKPOINT 2 */
+
+    // TEST_OUTPUT("read by name test", name_search_test());
+    //TEST_OUTPUT("Read Directory", directory_read_test());
+    //TEST_OUTPUT("Read by IDX Test", idx_search_test());
+     //TEST_OUTPUT("Read Data Test", read_data_test());
+     // TEST_OUTPUT("File Read Test", file_read_test());
+
 }
 

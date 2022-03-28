@@ -150,7 +150,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
             end_of_file = 1; 
         }
 
-        memcpy(buf, currBlock, bytesToCopy);
+        memcpy(buf + bytes, currBlock, bytesToCopy);
         bytes += bytesToCopy; 
         
         if(end_of_file)

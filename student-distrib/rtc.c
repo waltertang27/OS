@@ -1,4 +1,3 @@
-
 #include "rtc.h" 
 
 uint32_t rtc_rate;
@@ -129,6 +128,7 @@ int32_t close_rtc (int32_t fd) {
 extern void rtc_freq (int32_t freq) {
     // int range;
     char rate; // frequency =  32768 >> (rate - 1);
+    // periodic interrupt rate 
     if (freq == 1024) 
     	rate = 0x06;	    //0110
     if (freq == 512) 

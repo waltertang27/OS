@@ -121,12 +121,15 @@ int paging_test()
 
     char ref;
 
-    char *pointer = (char *)0x400000; // kernel
+     // start of the kernel
+    char *pointer = (char *)0x400000;
     ref = *pointer;
 
-    pointer = (char *)0x0B8000; // video memory
+     // start of the video memory
+    pointer = (char *)0x0B8000;
     ref = *pointer;
 
+    // end of the kernel 
     pointer = (char *)0x7FFFFF;
     ref = *pointer;
 
@@ -139,6 +142,7 @@ int paging_test()
 * Inputs: None
 * Outputs: Page fault/FAIL
 * Side effects: Halts the OS and displays errors
+* Coverage: page fault exception
  */
 int null_test()
 {
@@ -157,7 +161,8 @@ int null_test()
  * Checks if there is a page fault exception from memory before the kernel
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side effects: Halts the OS and displays errors
+ * Side effects: halts the OS and displays errors
+ * Coverage: page fault exception
  */
 int kernel_up_test()
 {
@@ -168,12 +173,13 @@ int kernel_up_test()
     return FAIL;
 }
 
-/* kernel_low_bound_test()
+/* kernel_low_test()
  *
  * Checks if there is a page fault exception from memory after the kernel
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side effects: Halts the OS and displays errors
+ * Side effects: halts the OS and displays errors
+ * Coverage: page fault exception
  */
 int kernel_low_test()
 {
@@ -183,12 +189,13 @@ int kernel_low_test()
     ref = *pointer;
     return FAIL;
 }
-/* vidmem_up_bound_test()
+/* vidmem_up_test()
  *
  * Checks if there is a page fault exception from memory before the video memory
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side effects: Halts the OS and displays errors
+ * Side effects: halts the OS and displays errors
+ * Coverage: page fault exception
  */
 int vidmem_up_test()
 {
@@ -205,8 +212,7 @@ int vidmem_up_test()
  * Inputs: None
  * Outputs: PASS/FAIL
  * Side Effects: None
- * Coverage: Tests the RTC
- * Files: RTC.h RTC.c
+ * Coverage: RTC functions
  */
 int rtc_test(){
 	TEST_HEADER;
@@ -301,9 +307,9 @@ void launch_tests()
     // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
-    // TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
-    // TEST_OUTPUT("kernel_low_bound_test", kernel_low_bound_test());
-    // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());
     // TEST_OUTPUT("null_test", null_test());
+    // TEST_OUTPUT("before_kernel_memory", kernel_up_test());
+    // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
+    // TEST_OUTPUT("before_vidmem_memory", vidmem_up_test());
+    
 }
-

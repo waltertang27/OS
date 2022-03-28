@@ -260,25 +260,19 @@ int idx_search_test(){
 
 int directory_read_test(){
     TEST_HEADER;
-    int8_t dir_name[32]; 
-    directory_read(0, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
+	int i; 
+    dentry_t dir_name;
+    open(" ", 2);
 
-    directory_read(0, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
-    
-    directory_read(0, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
-    
-    directory_read(0, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
+	for(i = 0; i<17;i++){
+		directory_read(0, (dentry_t *)&dir_name, 54);
+		if(!strlen((int8_t *) dir_name.fileName))
+			return FAIL;
+		else{
+			//printf(" Filename: %s, File Type: %d, File Size %d \n ", dir_name.fileName,dir_name.fileType, startINode[dir_name.INodeNum].bLength);
+		}
+	}
 
-
-    return PASS; 
 }
 
 int read_data_test(){
@@ -287,9 +281,6 @@ int read_data_test(){
     
     read_data(4, 10, &dir_name, 32);
 
-    printf("=================================== \n");
-    printf("%d %d %d %d %d", dir_name[0], dir_name[1], dir_name[2], dir_name[3], dir_name[4]);
-    printf("=================================== \n");
     
 
     // read_data(4, 10, &dir_name, 32);
@@ -298,6 +289,15 @@ int read_data_test(){
 
     return PASS;
     
+}
+
+int file_read_test(){
+    uint8_t buf[FOURKB];
+    int32_t bytes = FOURKB;
+    int32_t bytes_read = file_read(2, buf, bytes);
+
+    printf("size: %d", bytes_read);
+    return PASS;
 }
 
 
@@ -327,6 +327,7 @@ void launch_tests()
     // TEST_OUTPUT("read by name test", name_search_test());
     // TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
-    TEST_OUTPUT("Read Data Test", read_data_test());
+    // TEST_OUTPUT("Read Data Test", read_data_test());
+    TEST_OUTPUT("File Read Test", file_read_test());
 }
 

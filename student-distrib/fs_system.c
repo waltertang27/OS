@@ -1,6 +1,11 @@
 #include "fs_system.h"
 
+file_descriptor_t temp_global_array[64];
 
+int32_t open(const uint8_t* filename, int fd){
+    temp_global_array[fd].file_position = 0;
+    return fd;
+}
 
 /*
 FileSystem_Init
@@ -14,12 +19,12 @@ void FileSystem_Init(uint32_t *fs_start){
     //Initialize all pointers for our file system when given the starting address of the file system 
     startBootBlock  = (boot_block_t * )fs_start;
     directoryStart = startBootBlock->dirEntries;
-    startINode = (INode_t *)(startBootBlock + 1);
+    startINode = (INode_t *)(fs_start + FOURKB);
     startDataBlock = (uint32_t *)(startINode + startBootBlock->InodesNum);
-
+    // printf("start I node Pointer %p ",startINode);
     // Initialize global variables that will be used for reads
     dentryIDX = 0; 
-    filePosition = 0; 
+    filePosition = 0;
 }
 
 
@@ -85,7 +90,6 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
     dentry->fileType = startBootBlock->dirEntries[index].fileType;
     dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum;
 
-
     return 0; 
 }
 
@@ -137,7 +141,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     
 
     memcpy(buf, currBlock, bytesToCopy) ; // This is definety wrong but you get what im trying to do
-    bytes +=bytesToCopy; 
+    bytes += bytesToCopy; 
 
     bytesToCopy = FOURKB; 
     
@@ -163,7 +167,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
             break; 
     }
 
-    return 0;
+    return bytes;
     
 }
 
@@ -171,11 +175,11 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 // read file and fill buffer 
 int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
 
-
     // read file
-    // int32_t bytes = read_data(/* where do we get the inode / offset? */, buf, nbytes);
-    // return bytes;
-    return 0; 
+    open(" ", fd);
+    
+    int32_t bytes = read_data(temp_global_array[fd].inode, temp_global_array[fd].file_position, buf, nbytes);
+    return bytes;
 }
 
 
@@ -185,15 +189,18 @@ int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
     dentry_t currDir; 
     int32_t error, bytes;
 
+    
+
     // read into dentry
-    error = read_dentry_by_index(dentryIDX, &currDir);
+    error = read_dentry_by_index(temp_global_array[fd].file_position, &currDir);
+	printf(" Filename: %s, File Type: %d, File Size %d \n ", currDir.fileName, currDir.fileType, startINode[currDir.INodeNum].bLength);
     if (error == -1){
         return 0;
     }
-    dentryIDX++;
+    temp_global_array[fd].file_position++;
     // void * can be anything
     // strncpy: Copies the first num characters of source to destination.
-    strncpy((int8_t * )buf, (int8_t * )(currDir.fileName), nbytes);
+    strncpy((int8_t * )buf, (int8_t * )&(currDir.fileName), nbytes);
     return nbytes;
 }
 
@@ -228,4 +235,3 @@ int32_t directory_close()
 {
     return 0;
 }
-

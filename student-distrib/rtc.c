@@ -150,15 +150,15 @@ extern void rtc_freq (int32_t freq) {
     if (freq == 2) 
     	rate = 0x0F;		//1111
     cli();
-    outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
+    outb(RTC_PORT_1, RTC_REG_A);                    // set index to register A
     unsigned char prev = inb(RTC_PORT_2);           // get initial value of register A
 /*
     if (rate >= MIN_RATE || rate <= MAX_RATE)       // rate will only be in the range from 3-15
         range = 1;
         return;
 */
-    outb(RTC_REG_A, RTC_PORT_1);                           // reset index to A
-    outb((prev & TOP_FOUR_BITMASK) | rate, RTC_PORT_2);    // write rate (the bottom 4 bits that represent the 
+    outb(RTC_PORT_1, RTC_REG_A);                           // reset index to A
+    outb(RTC_PORT_2, (prev & TOP_FOUR_BITMASK) | rate);    // write rate (the bottom 4 bits that represent the 
                                                            // periodic interrupt rate) to A.
     sti();
 }

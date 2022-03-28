@@ -240,7 +240,7 @@ int name_search_test(){
 int idx_search_test(){
     TEST_HEADER;
     dentry_t entry, entry_2; 
-    int i; 
+    // int i; 
     if (read_dentry_by_index(5, &entry) == -1){
         return FAIL;
     }
@@ -278,19 +278,20 @@ int directory_read_test(){
 
 int read_data_test(){
     TEST_HEADER;
-    uint8_t DataBuf[3000] ; 
-    memset(DataBuf,0,3000);
+    int bytesRead; 
+    uint8_t DataBuf[1000] ; 
+    memset(DataBuf,0,1000);
 
     dentry_t curr; 
     read_dentry_by_index(11,&curr);
 
 
-    read_data(curr.INodeNum, 0, DataBuf, 3000);
-    // if(!strlen(dir_name))
-    //     return FAIL;
+    bytesRead = read_data(curr.INodeNum, 0, DataBuf, 1000);
+    if(bytesRead == 0)
+        return FAIL;
 
-    printf(" Buffer: %s \n",DataBuf);
-    //giputs(DataBuf);
+    printf(" Buffer Size: %u \n %s \n",bytesRead, DataBuf);
+
     return PASS;
     
 }
@@ -333,7 +334,7 @@ void launch_tests()
     // TEST_OUTPUT("read by name test", name_search_test());
     //TEST_OUTPUT("Read Directory", directory_read_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
-    // TEST_OUTPUT("Read Data Test", read_data_test());
+    TEST_OUTPUT("Read Data Test", read_data_test());
      // TEST_OUTPUT("File Read Test", file_read_test());
 }
 

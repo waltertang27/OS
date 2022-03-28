@@ -158,7 +158,7 @@ int null_test()
  * Checks if there is a page fault exception from memory before the kernel
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side effects: Halts the OS and displays errors
+ * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
 int kernel_up_test()
@@ -175,7 +175,7 @@ int kernel_up_test()
  * Checks if there is a page fault exception from memory after the kernel
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side effects: Halts the OS and displays errors
+ * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
 int kernel_low_test()
@@ -191,7 +191,7 @@ int kernel_low_test()
  * Checks if there is a page fault exception from memory before the video memory
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side effects: Halts the OS and displays errors
+ * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
 int vidmem_up_test()

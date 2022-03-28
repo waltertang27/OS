@@ -281,6 +281,6 @@ void launch_tests()
     // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());
     // TEST_OUTPUT("vidmem_low_bound_test", vidmem_low_bound_test());
     // TEST_OUTPUT("null_test", null_test());
-    TEST_OUTPUT("terminal test", terminal_test());
+    //TEST_OUTPUT("terminal test", terminal_test());
 }
 

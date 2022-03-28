@@ -285,9 +285,12 @@ int read_data_test(){
     TEST_HEADER;
     int8_t dir_name[32]; 
     
-    read_data(2, 10, &dir_name, 32);
-    if(!strlen(dir_name))
-        return FAIL;
+    read_data(4, 10, &dir_name, 32);
+
+    printf("=================================== \n");
+    printf("%d %d %d %d %d", dir_name[0], dir_name[1], dir_name[2], dir_name[3], dir_name[4]);
+    printf("=================================== \n");
+    
 
     // read_data(4, 10, &dir_name, 32);
     // if(!strlen(dir_name))

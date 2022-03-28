@@ -279,14 +279,14 @@ int directory_read_test(){
 int read_data_test(){
     TEST_HEADER;
     int bytesRead; 
-    uint8_t DataBuf[1000] ; 
-    memset(DataBuf,0,1000);
+    uint8_t DataBuf[5] ; 
+    memset(DataBuf,0,5);
 
     dentry_t curr; 
     read_dentry_by_index(11,&curr);
 
 
-    bytesRead = read_data(curr.INodeNum, 0, DataBuf, 1000);
+    bytesRead = read_data(curr.INodeNum, 0, DataBuf, 5);
     if(bytesRead == 0)
         return FAIL;
 
@@ -332,9 +332,9 @@ void launch_tests()
     /* CHECKPOINT 2 */
 
     // TEST_OUTPUT("read by name test", name_search_test());
-    //TEST_OUTPUT("Read Directory", directory_read_test());
+    TEST_OUTPUT("Read Directory", directory_read_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
-    TEST_OUTPUT("Read Data Test", read_data_test());
+    // TEST_OUTPUT("Read Data Test", read_data_test());
      // TEST_OUTPUT("File Read Test", file_read_test());
 }
 

@@ -278,16 +278,23 @@ int directory_read_test(){
 
 int read_data_test(){
     TEST_HEADER;
-    uint8_t dir_name[32]; 
-    
-    read_data(4, 10, dir_name, 32);
+    uint8_t DataBuf[32] ; 
+    memset(DataBuf,0,32);
 
-    
+    dentry_t curr; 
+    read_dentry_by_index(10,&curr);
 
-    // read_data(4, 10, &dir_name, 32);
+    // while (1) {
+        
+    //     offset += read_data(...);
+    //     printf(buf);
+    // }
+
+    read_data(curr.INodeNum, 0, DataBuf, 32);
     // if(!strlen(dir_name))
     //     return FAIL;
 
+    printf(" Buffer: %s \n",DataBuf);
     return PASS;
     
 }
@@ -296,6 +303,8 @@ int file_read_test(){
     uint8_t buf[FOURKB];
     int32_t bytes = FOURKB;
     int32_t bytes_read = file_read(2, buf, bytes);
+
+
 
     printf("size: %d", bytes_read);
     return PASS;
@@ -326,9 +335,9 @@ void launch_tests()
     /* CHECKPOINT 2 */
 
     // TEST_OUTPUT("read by name test", name_search_test());
-    TEST_OUTPUT("Read Directory", directory_read_test());
+    //TEST_OUTPUT("Read Directory", directory_read_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
-    // TEST_OUTPUT("Read Data Test", read_data_test());
-    //TEST_OUTPUT("File Read Test", file_read_test());
+     TEST_OUTPUT("Read Data Test", read_data_test());
+     // TEST_OUTPUT("File Read Test", file_read_test());
 }
 

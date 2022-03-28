@@ -2,6 +2,7 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "paging.h"
+#include "idt.h"
 #include "rtc.h"
 #define PASS 1
 #define FAIL 0
@@ -249,13 +250,13 @@ int rtc_test(){
     int level = 5;
     int32_t list[5] = {2, 8, 32, 128, 512};
     for (i = 0; i < level; i++) {
-        freq = list + i;
-        printf("Freqency: %d Hz \n", *freq);
-        write_rtc(0, freq, 4);
-		for (j = 0; j < i; j++) {
-			read_rtc(0, freq, 4);
+        write_rtc(0, list + i, 4);
+        printf("Freqency: %d Hz \n", list[i]);
+		for (j = 0; j < list[i] ; j++) {
+			read_rtc(0, *list, 4);
 			printf('1');
         }
+		printf("\n");
     }
     close_rtc(0);
 	return PASS; 
@@ -266,7 +267,7 @@ int rtc_test(){
 
 /* Test suite entry point */
 void launch_tests() {
-    //TEST_OUTPUT("idt_test", idt_test());
+    TEST_OUTPUT("idt_test", idt_test());
 
     // TEST_OUTPUT("idt_test", idt_test());
     // TEST_OUTPUT("Paging test",paging_test());

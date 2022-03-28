@@ -55,10 +55,10 @@ int32_t open_rtc (const uint8_t* filename) {
 }
 
 int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
-    rtc_int = 0;
     sti();
     while (rtc_int != 1); // set a flag until the interrupt is handled (rtc_int = 0)
     cli();
+    rtc_int = 0;
     return 0;
 }
 
@@ -71,7 +71,7 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
     if (freq_int < MIN_FREQ || freq_int > MAX_FREQ || (freq_int & (freq_int - 1)) == 0) 
         return -1;
 
-    rtc_rate = MAX_FREQ / freq_int; 
+    rtc_rate = freq_int; 
     return 0;
 }
 
@@ -81,7 +81,6 @@ int32_t close_rtc (int32_t fd) {
 
 extern void rtc_freq (int32_t freq) {
     // int range;
-    // char rate = rate_(32768) - (rate_(freq) - 1);   // frequency =  32768 >> (rate - 1);
     char rate; // frequency =  32768 >> (rate - 1);
     if (freq == 1024) 
     	rate = 0x06;	    //0110
@@ -106,7 +105,6 @@ extern void rtc_freq (int32_t freq) {
     cli();
     outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
     unsigned char prev = inb(RTC_PORT_2);           // get initial value of register A
-    // freq &= 0x0F;                                   // get the lower 4 bits
 /*
     if (rate >= MIN_RATE || rate <= MAX_RATE)       // rate will only be in the range from 3-15
         range = 1;
@@ -118,15 +116,5 @@ extern void rtc_freq (int32_t freq) {
     sti();
 }
 
-/*
-char rate_(uint32_t freq) {                                 // log2 operation
-    char log2 = 0;
-    while (freq % 2 != 1) {
-        freq >>= 1;
-        log2++;
-    }
-    return log2;
-}
-*/
 
 

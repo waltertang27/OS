@@ -1,6 +1,9 @@
 
 #include "rtc.h" 
 
+uint32_t rtc_rate;
+volatile uint32_t rtc_int;
+
 /*
 DESCRIPTION: Initializes RTC registers and turn on IRQ 8
 INPUTS: none
@@ -38,8 +41,24 @@ SIDE EFFECTS: RTC continiously fires
 */
 extern void rtc_handler(void){
     cli();
-    if(testing_RTC)
+    if(testing_RTC) {
         printf("Called handler \n");
+        open_rtc(2);
+        int i, j;
+        int32_t* freq;
+        int level = 5;
+        int32_t list[5] = {2, 8, 32, 128, 512};
+        for (i = 0; i < level; i++) {
+            write_rtc(2, list + i, 4);
+            printf("Freqency: %d Hz \n", list[i]);
+            for (j = 0; j < list[i] ; j++) {
+                read_rtc(2, &list, 4);
+                printf('1');
+            }
+            printf("\n");
+        }
+        close_rtc(2);
+    }
     //test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C
     inb(RTC_PORT_2);		        // just throw away contents

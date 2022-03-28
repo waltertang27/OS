@@ -244,21 +244,6 @@ int vidmem_low_bound_test()
 int rtc_test(){
 	TEST_HEADER;
 	testing_RTC = 1; 
-    open_rtc(NULL);
-    int i, j;
-	int32_t* freq;
-    int level = 5;
-    int32_t list[5] = {2, 8, 32, 128, 512};
-    for (i = 0; i < level; i++) {
-        write_rtc(0, list + i, 4);
-        printf("Freqency: %d Hz \n", list[i]);
-		for (j = 0; j < list[i] ; j++) {
-			read_rtc(0, *list, 4);
-			printf('1');
-        }
-		printf("\n");
-    }
-    close_rtc(0);
 	return PASS; 
 }
 /* Checkpoint 3 tests */

@@ -130,11 +130,6 @@ char keycode_to_char[91][2] = {
 {0, 0} //F12 0x58
 };
 
-char* get_buffer() {
-    return buffer;
-}
-
-
 /*
 DESCRIPTION: initializes the keyboard for interrupts
 INPUTS: none

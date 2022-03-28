@@ -6,7 +6,7 @@
 #define RESERVED_BOOT_SPACE 52
 #define NUM_DIR_ENTRIES 64
 #define TOTAL_BLOCK_NUM 1023
-#define FOURKB 4000
+#define FOURKB 4096
 //Global pointers to start of different sections 
 
 

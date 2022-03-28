@@ -278,18 +278,19 @@ int directory_read_test(){
 
 int read_data_test(){
     TEST_HEADER;
-    uint8_t DataBuf[300] ; 
-    memset(DataBuf,0,300);
+    uint8_t DataBuf[3000] ; 
+    memset(DataBuf,0,3000);
 
     dentry_t curr; 
-    read_dentry_by_index(10,&curr);
+    read_dentry_by_index(11,&curr);
 
-    
-    read_data(curr.INodeNum, 0, DataBuf, 300);
+
+    read_data(curr.INodeNum, 0, DataBuf, 3000);
     // if(!strlen(dir_name))
     //     return FAIL;
 
     printf(" Buffer: %s \n",DataBuf);
+    //giputs(DataBuf);
     return PASS;
     
 }

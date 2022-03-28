@@ -118,11 +118,10 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     uint32_t blocksSkipped = offset / FOURKB; 
     uint32_t blockOffset = offset % FOURKB;;
     uint32_t end_of_file = 0; 
-    uint32_t blockIDX = curr_inode->blockData[0]; 
+    uint32_t blockIDX = curr_inode->blockData[blocksSkipped]; 
     uint32_t bytesToCopy = FOURKB - offset;
-    uint8_t  * currBlock = (uint8_t *)( startBootBlock + numInodes + blockIDX);;
+    uint8_t  * currBlock = (uint8_t *)( startBootBlock + numInodes + blockIDX);
 
-   
 
     //If you reach the limit for bytes you can copy before the entirety of a block
     if (bytesToCopy > length){
@@ -134,14 +133,13 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
         bytesToCopy = file_byte_size; 
         end_of_file = 1; 
     }
+
     if(end_of_file){
         end_of_file = 0; 
         memcpy(buf, currBlock, bytesToCopy) ; 
         bytes += bytesToCopy; 
-        // printf("First end of file reached \n");
         return bytes; 
     }
-
 
     //If you are reading more than 4kb 
     memcpy(buf, currBlock, bytesToCopy) ; 
@@ -151,8 +149,8 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     
     while(bytes < length) // Add some condition to check if it is at the end of the file
     {
-        temp++;
-        currBlock = (uint32_t * )(startDataBlock + FOURKB * temp);
+        blocksSkipped++;
+        currBlock = (uint32_t * )(startDataBlock + FOURKB * blocksSkipped);
 
         if (bytesToCopy > length - bytes ){
             bytesToCopy = length - bytes; 

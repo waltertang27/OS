@@ -14,6 +14,7 @@
 #include "rtc.h"
 #include "types.h" 
 #include "fs_system.h"
+#include "terminal.h"
 
 #define RUN_TESTS 
 

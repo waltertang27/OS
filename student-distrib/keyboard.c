@@ -268,12 +268,12 @@ extern void keyboard_handler(void) {
     //checks for backspace
     if(keycode == 0x0E) {
         if(index > 0) {
-            int count = 4;
+            int count = 3;
             backspace_detected = 1;
             //if we want to delete a tab
-            if(buffer[index] == '\t') {
+            if(buffer[index - 1] == '\t') {
                 while(count > 0 && index > 1) {
-                    if(buffer[index] == '\t') {
+                    if(buffer[index - 1] == '\t') {
                         index = index - 1;
                         count--;
                     }
@@ -282,22 +282,30 @@ extern void keyboard_handler(void) {
                     }
                 }
             }
+            /*
             if(index == 1) {
                 buffer[index - 1] = '\0';
                 buffer[index] = '\0';
                 index = index - 1;
-                putc(' ');
+                //putc(' ');
+                puts(buffer);
                 send_eoi(KEYBOARD_IRQ);
                 sti();
                 return;
             }
-            buffer[index - 1] = '\0';
-            buffer[index] = '\0';
+            */
+           // if(index == 0) {
+           //     buffer[index] = '\0'
+           // }
+            buffer[index] = '\b';
+            buffer[index + 1] = '\0';
+            backspace_detected = 1;
             //buffer[index - 1] = '\0;
-            //index = index - 1;
-            puts(buffer);
-            buffer[index - 1] = '\0';
             index = index - 1;
+            puts(buffer);
+
+            //buffer[index - 1] = '\0';
+            //index = index - 1;
             //puts(buffer);
             send_eoi(KEYBOARD_IRQ);
             sti();

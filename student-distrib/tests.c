@@ -4,6 +4,7 @@
 #include "paging.h"
 #include "rtc.h"
 #include "terminal.h"
+#include "keyboard.h"
 #define PASS 1
 #define FAIL 0
 
@@ -244,11 +245,12 @@ int rtc_test(){
 
 int terminal_test() {
     TEST_HEADER;
+    char buf[BUFFER_SIZE];
     //terminal_open();
     while(1) {
-        int32_t out = terminal_read();
+        int32_t out = terminal_read(1, buf, strlen(buf));
         if(out != 0) {
-            terminal_write();
+            terminal_write(0, buf, strlen(buf));
         }
     }
     //terminal_close();

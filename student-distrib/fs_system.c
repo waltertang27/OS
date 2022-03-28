@@ -90,7 +90,9 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 
     dentry->fileType = startBootBlock->dirEntries[index].fileType;
     dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum;
-    // printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
+
+    printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
+
     return 0; 
 }
 

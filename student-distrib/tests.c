@@ -240,21 +240,23 @@ int name_search_test(){
 int idx_search_test(){
     TEST_HEADER;
     dentry_t entry, entry_2; 
+    int i; 
     if (read_dentry_by_index(5, &entry) == -1){
         return FAIL;
     }
-    // printf("=================================== \n %s \n =========================================\n", entry.fileName);
+
     if(strncmp((int8_t * ) entry.fileName, (int8_t * )"rtc",sizeof("rtc")))
         return FAIL; 
 
     if (read_dentry_by_index(2, &entry_2) == -1){
         return FAIL;
     }
-    // printf("=================================== \n %s \n =========================================\n", entry.fileName);
     if(! strncmp((int8_t * ) entry_2.fileName, (int8_t * )"grep",sizeof("grep")))
         return FAIL; 
 
-
+    for(i =0; i<17; i++){
+        printf("InodeNum: %u Bytes %u nodeNum: %u Bytes %u \n",i,startINode[i].bLength,i+1,startINode[i].bLength);
+    }
     return PASS;
 }
 
@@ -325,8 +327,8 @@ void launch_tests()
     /* CHECKPOINT 2 */
 
     // TEST_OUTPUT("read by name test", name_search_test());
-    TEST_OUTPUT("Read Directory", directory_read_test());
-    // TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    //TEST_OUTPUT("Read Directory", directory_read_test());
+    TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
     //TEST_OUTPUT("File Read Test", file_read_test());
 }

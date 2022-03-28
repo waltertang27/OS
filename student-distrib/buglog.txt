@@ -46,10 +46,10 @@ Issue: INode addresses are not calculated correctly, while loop is causing probl
 (should be buf + bytes)
 Solution: as of 3/28 4pm we haven't solved the issue yet.
 
-Description: system_x is not equal to 0
-Where: terminal.c
-Issue:
-Solution:
+Description: cursor was not properly following after the backspace character
+Where: lib.c
+Issue: Since I was using a ' ' character to clear the character to be deleted by backspace, screen_x and screen_y were not being properly displayed. 
+Solution: I directly used backspace to edit the video memory to properly allocate space for backspace. 
 
 
 >>>>>>> 11b68a76ebfb87ae7bbd047ab5e5930d2ae6fa0d

@@ -101,14 +101,17 @@ RETURN VALUE: 0 on sucess 1 on failure
 SIDE EFFECTS: From the given index and offset, the buffer is filled with bytes until length is reached or end of file
 */
 int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t length){
-
+    
     INode_t * curr_inode; 
     uint32_t * currBlock; 
     uint32_t bytes = 0;
     uint32_t i, temp, blockOffset, bytesToCopy, end_of_file; 
     uint32_t file_byte_size; 
+
+    uint32_t start, end, index; 
     // Get a pointer to the inode we are going to use using the inodeIDX 
-    curr_inode = &(startINode[inodeIdx]);
+
+    curr_inode = &startINode[inodeIdx];
     file_byte_size = curr_inode->bLength;
 
     end_of_file = 0; 
@@ -118,8 +121,9 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     blockOffset = offset % FOURKB;
 
     // Figure out the right starting block and where in that block to start 
-    curr_inode = &startINode[inodeIdx];
-    currBlock = (int32_t *)(curr_inode->blockData[temp] + blockOffset) ;
+    
+    // currBlock = (int32_t *)(curr_inode->blockData[temp] + blockOffset) ;
+    currBlock = (uint32_t * )(startDataBlock + FOURKB * temp + blockOffset);
 
     // Copy from the offset to the end of that block
     bytesToCopy = FOURKB - offset;
@@ -135,11 +139,13 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     memcpy(buf, currBlock, bytesToCopy) ; // This is definety wrong but you get what im trying to do
     bytes +=bytesToCopy; 
 
-    bytesToCopy = FOURKB ; 
+    bytesToCopy = FOURKB; 
     
     while(bytes != length) // Add some condition to check if it is at the end of the file
     {
-        currBlock = curr_inode->blockData[++temp];
+        // currBlock = curr_inode->blockData[++temp];
+        temp++;
+        currBlock = (uint32_t * )(startDataBlock + FOURKB * temp);
 
         if(bytesToCopy > length)
             bytesToCopy = length;
@@ -158,6 +164,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     }
 
     return 0;
+    
 }
 
 

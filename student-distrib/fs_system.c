@@ -91,7 +91,7 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
     dentry->fileType = startBootBlock->dirEntries[index].fileType;
     dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum;
 
-    printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
+    // printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
 
     return 0; 
 }
@@ -196,14 +196,14 @@ int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
 
     // read into dentry
     error = read_dentry_by_index(temp_global_array[fd].file_position, &currDir);
-	// printf(" Filename: %s, File Type: %d, File Size %d \n ", currDir.fileName, currDir.fileType, startINode[currDir.INodeNum].bLength);
+    // printf(" Filename: %s, File Type: %d, File Size %d \n ", currDir.fileName,currDir.fileType, startINode[currDir.INodeNum -3].bLength);
     if (error == -1){
         return 0;
     }
     temp_global_array[fd].file_position++;
     // void * can be anything
     // strncpy: Copies the first num characters of source to destination.
-    strncpy((int8_t * )buf, (int8_t * )&(currDir.fileName), nbytes);
+    memcpy((int8_t * )buf, (int8_t * )&(currDir), nbytes);
     return nbytes;
 }
 

@@ -253,10 +253,9 @@ int idx_search_test(){
     }
     if(! strncmp((int8_t * ) entry_2.fileName, (int8_t * )"grep",sizeof("grep")))
         return FAIL; 
-
-    for(i =0; i<17; i++){
-        printf("InodeNum: %u Bytes %u nodeNum: %u Bytes %u \n",i,startINode[i].bLength,i+1,startINode[i].bLength);
-    }
+    // for(i =0; i<62; i = i+3){
+    //     printf("Inode:%u Bytes:%u Inode:%u Bytes:%u Inode:%u Bytes:%u \n",i,startINode[i].bLength,i+1,startINode[i].bLength,i+2,startINode[i+2].bLength);
+    // }
     return PASS;
 }
 
@@ -271,7 +270,7 @@ int directory_read_test(){
 		if(!strlen((int8_t *) dir_name.fileName))
 			return FAIL;
 		else{
-			//printf(" Filename: %s, File Type: %d, File Size %d \n ", dir_name.fileName,dir_name.fileType, startINode[dir_name.INodeNum].bLength);
+		    printf(" Filename: %s, File Type: %d, File Size %d \n ", dir_name.fileName,dir_name.fileType, startINode[dir_name.INodeNum -3].bLength);
 		}
 	}
     return PASS; 
@@ -310,7 +309,7 @@ int file_read_test(){
 /* Test suite entry point */
 void launch_tests()
 {
-    
+    clear();
     /* CHECKPOINT 1 */
 
     // TEST_OUTPUT("idt_test", idt_test());
@@ -327,8 +326,8 @@ void launch_tests()
     /* CHECKPOINT 2 */
 
     // TEST_OUTPUT("read by name test", name_search_test());
-    //TEST_OUTPUT("Read Directory", directory_read_test());
-    TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    TEST_OUTPUT("Read Directory", directory_read_test());
+    //TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
     //TEST_OUTPUT("File Read Test", file_read_test());
 }

@@ -221,6 +221,14 @@ int rtc_test(){
 }
 /* Checkpoint 2 tests */
 
+/* Name seach
+ *
+ * Asserts that a dentry can be found given a name
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: 
+ */
 int name_search_test(){
     TEST_HEADER;
     dentry_t entry; 
@@ -237,6 +245,15 @@ int name_search_test(){
     return FAIL;
 }
 
+
+/* idx sEARCH 
+ *
+ * Asserts that a dentry can be found given a idx
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: 
+ */
 int idx_search_test(){
     TEST_HEADER;
     dentry_t entry, entry_2; 
@@ -259,6 +276,14 @@ int idx_search_test(){
     return PASS;
 }
 
+/* directory read test 
+ *
+ * Prints the directory and coresponding location
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: 
+ */
 int directory_read_test(){
     TEST_HEADER;
 	int i; 
@@ -276,6 +301,14 @@ int directory_read_test(){
     return PASS; 
 }
 
+/* Read test 
+ *
+ * Prints data read from a specific index
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: 
+ */
 int read_data_test(){
     TEST_HEADER;
     int bytesRead; 

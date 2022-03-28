@@ -278,19 +278,14 @@ int directory_read_test(){
 
 int read_data_test(){
     TEST_HEADER;
-    uint8_t DataBuf[32] ; 
-    memset(DataBuf,0,32);
+    uint8_t DataBuf[300] ; 
+    memset(DataBuf,0,300);
 
     dentry_t curr; 
     read_dentry_by_index(10,&curr);
 
-    // while (1) {
-        
-    //     offset += read_data(...);
-    //     printf(buf);
-    // }
-
-    read_data(curr.INodeNum, 0, DataBuf, 32);
+    
+    read_data(curr.INodeNum, 0, DataBuf, 300);
     // if(!strlen(dir_name))
     //     return FAIL;
 

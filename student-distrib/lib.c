@@ -286,10 +286,10 @@ void putc(uint8_t c) {
             int j;
             for(i = 1; i < NUM_ROWS; i++) {
                 for(j = 0; j < NUM_COLS; j++) {
-                    //if(i == NUM_ROWS - 1 && j == NUM_COLS - 1) {
-                    //    *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = c;
-                    //    *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
-                    //}
+                    if(i == NUM_ROWS - 1 && j == NUM_COLS - 1) {
+                        *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = c;
+                        *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+                    }
                     *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1));
                     *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1) + 1) = ATTRIB;
                     if(i == NUM_ROWS - 1) {
@@ -318,6 +318,7 @@ void putc(uint8_t c) {
     
         } 
         */
+        screen_x = 0;
     }
         
     else {

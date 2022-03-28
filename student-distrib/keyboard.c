@@ -227,6 +227,10 @@ extern void keyboard_handler(void) {
     }
     if(index >= BUFFER_SIZE) {
         printf("%s", "char buffer is full!\n");
+        if(keycode == ENTER) {
+            buffer[0] = '\0';
+            index = 0;
+        }
         send_eoi(KEYBOARD_IRQ);
         sti();
         return;

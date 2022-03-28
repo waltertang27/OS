@@ -291,7 +291,7 @@ extern void keyboard_handler(void) {
                 sti();
                 return;
             }
-            buffer[index - 1] = ' ';
+            buffer[index - 1] = '\0';
             buffer[index] = '\0';
             //buffer[index - 1] = '\0;
             //index = index - 1;

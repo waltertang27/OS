@@ -192,10 +192,10 @@ void enable_cursor(void) {
 void update_cursor(void) {
     //get cursor position
     uint16_t loc = screen_y * NUM_COLS + screen_x;
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint8_t) (loc & 0xFF));
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, (uint8_t) ((loc >> 8) & 0xFF));
+    outb(0x0F, 0x3D4);
+    outb((uint8_t) (loc & 0xFF), 0x3D5);
+    outb(0x0E, 0x3D4);
+    outb((uint8_t) ((loc >> 8) & 0xFF), 0x3D5);
 }
 
 /* void putc(uint8_t c);
@@ -225,6 +225,23 @@ void putc(uint8_t c) {
     else if(c == '\t') {
         screen_x++;
     } 
+    else if(screen_y == NUM_ROWS - 1) {
+        *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + (NUM_COLS - 1) << 1))) = c;
+        *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS - 1) + (NUM_COLS - 1) << 1)) + 1) = ATTRIB;
+        int i;
+        int j;
+        for(i = 1; i < NUM_ROWS; i++) {
+            for(j = 0; j < NUM_COLS; j++) {
+                *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1)) =
+                    *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1));
+                    *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1) + 1) = ATTRIB;
+                    if(i == NUM_ROWS - 1) {
+                        *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = ' ';
+                        *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+                    }
+            }
+        }
+    }
 
   //  if(c == '\t') {
   //      screen_x += 4;
@@ -247,7 +264,7 @@ void putc(uint8_t c) {
 
     }
     char_index++;
-    //update_cursor();
+    update_cursor();
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);

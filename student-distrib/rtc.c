@@ -66,6 +66,11 @@ extern void rtc_handler(void){
     sti();
 }
 
+/* open_rtc
+ * Input:  filename - file name of the string
+ * Return Value: 0 on success, -1 on failure
+ * Function: Open the RTC devices. 
+ */
 int32_t open_rtc (const uint8_t* filename) {
     if (filename == NULL)
         return -1;                  // if the filename does not exist, return -1
@@ -73,6 +78,13 @@ int32_t open_rtc (const uint8_t* filename) {
     return 0;
 }
 
+/* read_rtc
+ * Inputs:  fd     - file descriptor
+ *          buf    - data pointer
+ *          nbytes - length of bytes taken
+ * Return Value: 0 on success, -1 on failure
+ * Function: Sleep until receiving an interrupt and read the interrupt rate  
+ */
 int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
     sti();
     while (rtc_int != 1); // set a flag until the interrupt is handled (rtc_int = 0)
@@ -81,6 +93,13 @@ int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
     return 0;
 }
 
+/* write_rtc
+ * Inputs:  fd     - file descriptor
+ *          buf    - data pointer
+ *          nbytes - length of bytes taken
+ * Return Value: 0 on success, -1 on failure
+ * Function: Write the interrupt rate  
+ */
 int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
     // the system call will only accept a 4-byte integer for specifying the interrupt rate
     if (buf == NULL || nbytes != 4)
@@ -94,10 +113,20 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
     return 0;
 }
 
+/* close_rtc
+ * Input:  fd - file descriptor
+ * Return Value: 0 on success, -1 on failure
+ * Function: Close the RTC devices. 
+ */
 int32_t close_rtc (int32_t fd) {
     return 0;
 }
 
+/* rtc_freq
+ * Inputs: freq -- frequency that is to be changed
+ * Return Value: none
+ * Function: Output rate from input frequency and change the freq of rtc 
+ */
 extern void rtc_freq (int32_t freq) {
     // int range;
     char rate; // frequency =  32768 >> (rate - 1);

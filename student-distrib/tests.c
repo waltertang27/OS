@@ -267,13 +267,18 @@ int name_search_test(){
         return FAIL;
     }
     
+    if(!read_dentry_by_name(word,NULL))
+        return FAIL;
+
+    if (!read_dentry_by_name(" ", &entry))
+        return FAIL;
+
     return PASS;
 }
 
 int idx_search_test(){
     TEST_HEADER;
     dentry_t entry, entry_2; 
-    //int i; 
     if (read_dentry_by_index(5, &entry) == -1){
         return FAIL;
     }
@@ -286,13 +291,16 @@ int idx_search_test(){
     }
     if(! strncmp((int8_t * ) entry_2.fileName, (int8_t * )"grep",sizeof("grep")))
         return FAIL; 
-    
-    
 
-    
-    // for(i =0; i<62; i = i+3){
-    //     printf("Inode:%u Bytes:%u Inode:%u Bytes:%u Inode:%u Bytes:%u \n",i,startINode[i].bLength,i+1,startINode[i].bLength,i+2,startINode[i+2].bLength);
-    // }
+    if(!read_dentry_by_index(63,&entry))
+        return FAIL; 
+
+    if(!read_dentry_by_index(4,NULL))
+        return FAIL;
+
+    if (!read_dentry_by_index(-5, &entry))
+        return FAIL;
+        
     return PASS;
 }
 

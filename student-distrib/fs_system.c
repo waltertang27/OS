@@ -55,10 +55,11 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
     int fileNameLength = strlen((int8_t *)fname);
 
     if(fileNameLength > MAX_FILE_NAME){
-        return -1; 
         printf("Filename was too long");
+        return -1; 
     }
-    if(dentry == NULL)
+
+    if(dentry == NULL || fname == NULL)
         return -1; 
 
 
@@ -95,14 +96,18 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 */
 int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 {
-    if (index > NUM_DIR_ENTRIES -1 )
+    if (index > NUM_DIR_ENTRIES-1 || index <0 )
         return -1;
 
-    int8_t *currWord = (int8_t *)  startBootBlock->dirEntries[index].fileName;
+    if(dentry == NULL)
+        return -1; 
+
+
+    int8_t *currWord = (int8_t *)  directoryStart[index].fileName;
     strcpy((int8_t *) dentry->fileName, currWord);
 
-    dentry->fileType = startBootBlock->dirEntries[index].fileType;
-    dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum;
+    dentry->fileType = directoryStart[index].fileType;
+    dentry->INodeNum = directoryStart[index].INodeNum;
 
     // printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
 

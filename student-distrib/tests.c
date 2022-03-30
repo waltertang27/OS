@@ -342,7 +342,7 @@ int directory_read_test(){
 int read_data_test_1(){
     TEST_HEADER;
     dentry_t curr;
-
+    int i; 
     //Create a buffer of 300 bytes and set everything equal to 0 
     uint8_t DataBuf[300] ; 
     memset(DataBuf,0,300);
@@ -356,22 +356,28 @@ int read_data_test_1(){
         return FAIL;
     }
     else
-        printf(" Buffer: \n %s \n",DataBuf);
+        //printf(" Buffer: \n %s \n",DataBuf);
     
+
+
     read_dentry_by_name("grep",&curr);
 
     if(read_data(curr.INodeNum,0,DataBuf,300) != 300){
+
         return FAIL;
     }
-    else
-        printf(" Buffer: \n %s \n",DataBuf);
-
+    else{
+        printf("Buffer: \n");
+        for(i = 0; i<300; i++)
+            if (DataBuf[i] != '\0')
+                putc(DataBuf[i]);
+    }
 
     if(read_data(curr.INodeNum,10,DataBuf,300) != 300-10){
         return FAIL;
     }
     else
-        printf(" Buffer: \n %s \n",DataBuf);
+        // printf(" Buffer: \n %s \n",DataBuf);
 
     return PASS;   
 }
@@ -453,7 +459,7 @@ void launch_tests()
     // TEST_OUTPUT("Read Directory", directory_read_test());
     
     TEST_OUTPUT("Read Data Test", read_data_test_1());
-   // TEST_OUTPUT("Read Data Test", read_data_test_2());
+    //TEST_OUTPUT("Read Data Test", read_data_test_2());
     //TEST_OUTPUT("File Read Test", file_read_test());
 
 }

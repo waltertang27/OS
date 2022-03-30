@@ -49,14 +49,15 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 {
     int i;
     // int filledDentry = -1; 
-    uint8_t *currName;
-
+    uint8_t currName[32];
+    memset((void*)currName,0,32); 
     
     int fileNameLength = strlen((int8_t *)fname);
+    // printf("%s length: %d \n", fname,fileNameLength);
 
     if(fileNameLength > MAX_FILE_NAME){
-        printf("Filename was too long");
-        return -1; 
+        memcpy((void *)currName,(const void*)fname,32);
+        printf("Filename was too long concatonated to %s \n",currName);
     }
 
     if(dentry == NULL || fname == NULL)
@@ -64,7 +65,7 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 
 
     for (i = 0; i < NUM_DIR_ENTRIES; i++){
-        currName = directoryStart[i].fileName;
+        strncpy(currName,directoryStart[i].fileName,sizeof(directoryStart[i].fileName)); 
         if (strlen((int8_t *)currName) != fileNameLength)
             continue;
         
@@ -141,12 +142,12 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
 
     //If you reach the limit for bytes you can copy before the entirety of a block
-    if (bytesToCopy > length) {
+    if (bytesToCopy > length - offset) {
         bytesToCopy = length - offset; 
         end_of_file = 1;
     }  
 
-    if(bytesToCopy > file_byte_size){
+    if(bytesToCopy > file_byte_size - offset){
         bytesToCopy = file_byte_size - offset; 
         end_of_file = 1; 
     }

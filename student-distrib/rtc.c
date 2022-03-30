@@ -1,4 +1,3 @@
-
 #include "rtc.h" 
 
 uint32_t rtc_rate;
@@ -47,11 +46,11 @@ extern void rtc_handler(void){
         int fd = open_rtc((uint8_t *)"rtc");
         int32_t list[5] = {2, 8, 32, 128, 512};
         for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
-            j = i + list;
-            write_rtc(fd, j, 4);                   // the slowest to the fastest
+            j = (int32_t)i + (int32_t)list;
+            write_rtc((int32_t) fd, (const void *)j, (int32_t)4);                   // the slowest to the fastest
             printf("Freqency: %d Hz \n", list[i]);
             for (freq = 0; freq < list[i] ; freq++) {
-                read_rtc(fd, freq, 4);
+                read_rtc((int32_t) fd, (void*)freq,(int32_t) 4);
                 putc('1');
             }
             printf("\n");
@@ -129,6 +128,7 @@ int32_t close_rtc (int32_t fd) {
 extern void rtc_freq (int32_t freq) {
     // int range;
     char rate; // frequency =  32768 >> (rate - 1);
+    // periodic interrupt rate and Square-Wave Output Frequency 
     if (freq == 1024) 
     	rate = 0x06;	    //0110
     if (freq == 512) 

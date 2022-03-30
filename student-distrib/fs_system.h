@@ -35,7 +35,7 @@ typedef struct INode {
 
 boot_block_t * startBootBlock;
 INode_t * startINode ;
-uint32_t * startDataBlock; 
+int8_t  * startDataBlock; 
 dentry_t * directoryStart ; 
 
 //File position is how many bytes of the current dentry have been read 

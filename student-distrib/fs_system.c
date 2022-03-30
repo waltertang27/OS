@@ -48,7 +48,7 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 {
     int i;
-    int filledDentry = -1; 
+    // int filledDentry = -1; 
     uint8_t *currName;
 
     
@@ -96,7 +96,7 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 */
 int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 {
-    if (index > NUM_DIR_ENTRIES-1 || index <0 )
+    if (index > (NUM_DIR_ENTRIES - 1))
         return -1;
 
     if(dentry == NULL)

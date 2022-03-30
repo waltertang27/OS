@@ -47,44 +47,38 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 */
 int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 {
-    int i,flag;
+    int i;
+    // int filledDentry = -1; 
     uint8_t currName[32];
-    uint8_t concat[32];
-
-    if (dentry == NULL || fname == NULL)
-        return -1;
-
-    flag = 0; 
-
-  
+    uint8_t concat[32]; 
     
     int fileNameLength = strlen((int8_t *)fname);
-
     // printf("%s length: %d \n", fname,fileNameLength);
+
+    strncpy((void *)concat,(const void*)fname,32);
     
     if(fileNameLength > MAX_FILE_NAME){
-        flag = 1; 
-        fileNameLength = 32;
-        memset((void *)currName, 0, 32);
+        printf("Filename was too long concatonated to %s \n",concat);
+        fileNameLength = 32; 
     }
 
-    strncpy((void *)concat, (const void *)fname, fileNameLength);
-
-    if(flag)
-        printf("Filename was too long concatonated to %s \n", concat);
+    if(dentry == NULL || fname == NULL)
+        return -1; 
 
 
     for (i = 0; i < NUM_DIR_ENTRIES; i++){
+        memset((void*)currName,0,32); 
+        strncpy((int8_t *)currName,(int8_t *)directoryStart[i].fileName,32); 
 
-        strncpy(currName,directoryStart[i].fileName,32);
-
-        printf("i: %d, currname: %s \n",i,currName);
-        if(strnncmp((int8_t *)currName, (int8_t *)concat),fileNameLength)
+        if (strncmp((int8_t *)currName, (int8_t *)concat, 32)){
+          //  printf("i: %d, currname: %s \n",i,currName);
             continue;
+        }
         else{
+           // printf("Else i: %d, currname: %s \n",i,currName);
             dentry->fileType = directoryStart[i].fileType;
             dentry->INodeNum = directoryStart[i].INodeNum;
-            strncpy((int8_t *)dentry->fileName, (int8_t *)currName,fileNameLength);
+            strncpy((int8_t *)dentry->fileName, (int8_t *)currName,32);
             return 0 ;
         }
     }

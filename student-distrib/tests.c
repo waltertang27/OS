@@ -250,16 +250,7 @@ int name_search_test(){
     }
     
 
-//  Keeps failing test 
-    word = (uint8_t *)"verylargetextwithverylongname.txt";
-    code = read_dentry_by_name(word, &entry);
 
-    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.tx", sizeof("verylargetextwithverylongname.tx"))))
-    {
-        return FAIL;
-    }
-
-    printf("  %s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
 
 
     word = (uint8_t *)"FFFF";
@@ -312,6 +303,22 @@ int idx_search_test(){
         return FAIL;
 
     return PASS;
+}
+
+int long_text_test(){
+    TEST_HEADER;
+
+    //  Keeps failing test 
+   uint8_t* word = (uint8_t *)"verylargetextwithverylongname.txt";
+   dentry_t entry; 
+   int code = read_dentry_by_name(word, &entry);
+
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.txt", 32)))
+    {
+        return FAIL;
+    }
+    return PASS;
+
 }
 
 int directory_read_test(){
@@ -403,6 +410,7 @@ void launch_tests()
     /* CHECKPOINT 2 */
 
     TEST_OUTPUT("read by name test", name_search_test());
+    TEST_OUTPUT("Long file test",long_text_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
    // TEST_OUTPUT("Read Directory", directory_read_test());
     

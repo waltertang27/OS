@@ -212,19 +212,24 @@ int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
 
 // Read a directory entry and fill the buffer with the corresponding value
 int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
-{ 
-    
+{
+    if(fd == NULL || buf == NULL || nbytes < 0 || nbytes == NULL)
+        return -1; 
+
     dentry_t currDir; 
     int32_t error;
 
 
     // read into dentry
     error = read_dentry_by_index(temp_global_array[fd].file_position, &currDir);
-    // printf(" Filename: %s, File Type: %d, File Size %d \n ", currDir.fileName,currDir.fileType, startINode[currDir.INodeNum -3].bLength);
+    
     if (error == -1){
         return 0;
     }
+
+
     temp_global_array[fd].file_position++;
+
     // void * can be anything
     // strncpy: Copies the first num characters of source to destination.
     memcpy((int8_t * )buf, (int8_t * )&(currDir), nbytes);

@@ -300,7 +300,7 @@ int idx_search_test(){
 
     if (!read_dentry_by_index(-5, &entry))
         return FAIL;
-        
+
     return PASS;
 }
 
@@ -308,6 +308,7 @@ int directory_read_test(){
     TEST_HEADER;
 	int i; 
     dentry_t dir_name;
+    //Start at file 0 
     open((uint8_t *)" ", 2);
 
 	for(i = 0; i<17;i++){
@@ -323,18 +324,20 @@ int directory_read_test(){
 
 int read_data_test(){
     TEST_HEADER;
+    dentry_t curr;
+
+    //Create a buffer of 300 bytes and set everything equal to 0 
     uint8_t DataBuf[300] ; 
     memset(DataBuf,0,300);
 
-    dentry_t curr; 
+    //Index 10 is frame0.txt 
     read_dentry_by_index(10,&curr);
 
-    
-    read_data(curr.INodeNum, 0, DataBuf, 300);
-    // if(!strlen(dir_name))
-    //     return FAIL;
 
+    read_data(curr.INodeNum, 0, DataBuf, 300);
     printf(" Buffer: %s \n",DataBuf);
+
+    
     return PASS;
     
 }
@@ -389,7 +392,7 @@ void launch_tests()
 
     //TEST_OUTPUT("read by name test", name_search_test());
     //TEST_OUTPUT("Read Directory", directory_read_test());
-    TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    //TEST_OUTPUT("Read by IDX Test", idx_search_test());
     //TEST_OUTPUT("Read Data Test", read_data_test());
     //TEST_OUTPUT("File Read Test", file_read_test());
 

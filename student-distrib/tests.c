@@ -167,8 +167,8 @@ int kernel_high_test()
 
     char ref;
 
-    char * temp = (char * ) 0x3FFFFF;
-    ref = * temp;
+    // char * temp = (char * ) 0x3FFFFF;
+    // ref = * temp;
     char * temp = (char * ) 0x3FF998;
     ref = * temp;
     return FAIL;
@@ -188,8 +188,8 @@ int kernel_low_test()
 
     char ref;
 
-    char * temp = (char * ) 0x800000;
-    ref = * temp;
+    // char * temp = (char * ) 0x800000;
+    // ref = * temp;
 
     char * temp = (char * ) 0x800365;
     ref = * temp;

@@ -243,7 +243,24 @@ int vidmem_low_bound_test()
 /* Checkpoint 2 tests */
 int rtc_test(){
 	TEST_HEADER;
-	testing_RTC = 1; 
+	testing_RTC = 1;
+    if(testing_RTC) {
+        printf("Called handler \n");
+        int i, j, freq;
+        int fd = open_rtc((uint8_t *)"rtc");
+        int32_t list[5] = {2, 8, 32, 128, 512};
+        for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
+            j = (int32_t)i + (int32_t)list;
+            write_rtc((int32_t) fd, (const void *)j, (int32_t)4);                   // the slowest to the fastest
+            // printf("Freqency: %d Hz \n", list[i]);
+            for (freq = 0; freq < list[i] ; freq++) {
+                read_rtc((int32_t) fd, (void*)freq,(int32_t) 4);
+                putc('1');
+            }
+            printf("\n");
+        }
+        // close_rtc(fd);
+    }
 	return PASS; 
 }
 /* Checkpoint 3 tests */

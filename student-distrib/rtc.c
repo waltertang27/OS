@@ -40,23 +40,23 @@ SIDE EFFECTS: RTC continiously fires
 extern void rtc_handler(void){
     cli();
     rtc_int = 1; // interrupts occur and not handled yet
-    if(testing_RTC) {
-        printf("Called handler \n");
-        int i, j, freq;
-        int fd = open_rtc((uint8_t *)"rtc");
-        int32_t list[5] = {2, 8, 32, 128, 512};
-        for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
-            j = (int32_t)i + (int32_t)list;
-            write_rtc((int32_t) fd, (const void *)j, (int32_t)4);                   // the slowest to the fastest
-            printf("Freqency: %d Hz \n", list[i]);
-            for (freq = 0; freq < list[i] ; freq++) {
-                read_rtc((int32_t) fd, (void*)freq,(int32_t) 4);
-                putc('1');
-            }
-            printf("\n");
-        }
-        close_rtc(fd);
-    }
+    // if(testing_RTC) {
+    //     printf("Called handler \n");
+    //     int i, j, freq;
+    //     int fd = open_rtc((uint8_t *)"rtc");
+    //     int32_t list[5] = {2, 8, 32, 128, 512};
+    //     for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
+    //         j = (int32_t)i + (int32_t)list;
+    //         write_rtc((int32_t) fd, (const void *)j, (int32_t)4);                   // the slowest to the fastest
+    //         // printf("Freqency: %d Hz \n", list[i]);
+    //         for (freq = 0; freq < list[i] ; freq++) {
+    //             read_rtc((int32_t) fd, (void*)freq,(int32_t) 4);
+    //             putc('1');
+    //         }
+    //         printf("\n");
+    //     }
+    //     // close_rtc(fd);
+    // }
     //test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C
     inb(RTC_PORT_2);		        // just throw away contents
@@ -87,7 +87,7 @@ int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
     sti();
     while (rtc_int != 1); // set a flag until the interrupt is handled (rtc_int = 0)
     cli();
-    rtc_int = 0;
+    // rtc_int = 0;
     return 0;
 }
 

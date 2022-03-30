@@ -345,7 +345,7 @@ int read_data_test(){
 
     printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
 
-    if(read_data(curr.INodeNum, 0, DataBuf, 300) == 187){
+    if(read_data(curr.INodeNum, 10, DataBuf, 300) == 187 - 10){
         printf(" Buffer: %s \n",DataBuf);
         return PASS; 
     }

@@ -137,23 +137,23 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
     uint32_t blockIDX = curr_inode->blockData[blocksSkipped];               //The index of the start block
     uint32_t bytesToCopy = FOURKB - blockOffset;                            //The amount of bytes to copy to go from the offset to the end of the block 
-    void*  currBlock = (dataBlock + ((blockIDX + offset) * FOURKB));          //Pointer to the first byte in the block INCLUDING the offset 
+    void*  currBlock = (dataBlock + ((blockIDX ) * FOURKB) + offset);          //Pointer to the first byte in the block INCLUDING the offset 
 
 
     //If you reach the limit for bytes you can copy before the entirety of a block
     if (bytesToCopy > length) {
-        bytesToCopy = length; 
+        bytesToCopy = length - offset; 
         end_of_file = 1;
     }  
 
     if(bytesToCopy > file_byte_size){
-        bytesToCopy = file_byte_size; 
+        bytesToCopy = file_byte_size - offset; 
         end_of_file = 1; 
     }
 
     if(end_of_file){
         end_of_file = 0; 
-        memcpy((void *)buf, (const *) currBlock , bytesToCopy) ; 
+        memcpy((void *)buf, (const void*) currBlock , bytesToCopy) ; 
         bytes += bytesToCopy; 
         return bytes; 
     }
@@ -167,7 +167,8 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     while(bytes < length) // While you have not copied all the bytes
     {
         blocksSkipped++;
-        currBlock = (uint8_t * )(startDataBlock + FOURKB * blocksSkipped);
+        blockIDX = curr_inode->blockData[blocksSkipped];    
+        currBlock = (dataBlock + (blockIDX  * FOURKB) );   
 
         //If 4k is larger than the file or what you have left
         if (bytesToCopy > length - bytes ){

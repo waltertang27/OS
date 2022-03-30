@@ -32,8 +32,6 @@ Solution: We added a bit called "unused" to fill the 32-bit page directory struc
 
 CHECKPOINT 3.2
 
-<<<<<<< HEAD
-=======
 Description: directory_read does not put the correct file type and file size in the dentry
 Where: fs_system.c
 Issue: INode addresses are not calculated correctly.
@@ -55,4 +53,11 @@ Description: texts are not printed out with different frequencies.
 Where: rtc.c
 Issue: When we ran the test, there is only one '1' appeared on the screen.
 Solution: We have not solved yet.
->>>>>>> 11b68a76ebfb87ae7bbd047ab5e5930d2ae6fa0d
+
+Description: terminal overflow. when typing more than 80 characters into the terminal, a new line is supposed to appear to display the extra characters. However, the entire
+	line is printed out on the second line.
+Where: terminal.c, lib.c, keyboard.c
+Issue: The keyboard handler is printing the entire buffer on the new line, even after we switched lines. In other words, we switched to a new line but did not clear the 
+	buffer.
+Solution: By using a second buffer to store the extra characters, we can print out only the second line's content while also saving the first line's content.
+

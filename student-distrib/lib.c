@@ -2,6 +2,7 @@
  * vim:ts=4 noexpandtab */
 
 #include "lib.h"
+#include "keyboard.h"
 
 #define VIDEO       0xB8000
 #define NUM_COLS    80
@@ -13,6 +14,8 @@ static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
 int char_index;
+
+int next_line;
 
 /* void clear(void);
  * Inputs: void
@@ -217,12 +220,24 @@ void update_cursor(void) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
+
+    
+
+
     if(c == '\b') {
-        screen_x--;
-        screen_x %= NUM_COLS;
-        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+
+        if (screen_x == 0 && next_line == 1){
+            screen_y--;
+            next_line = 0;
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + 78) << 1)) = ' ';
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + 78) << 1) + 1) = ATTRIB;
+        } else {
+            screen_x--;
+            screen_x %= NUM_COLS;
+            screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
         
     }
     
@@ -253,47 +268,23 @@ void putc(uint8_t c) {
         }
     }
     else if(c == '\t') {
-        screen_x++;
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
     } 
-    /*
-  
-    else if(screen_x == NUM_COLS - 1) {
-        //printf("%u\n", screen_x);
-        if(screen_y == (NUM_ROWS - 1)) {
-            int i;
-            int j;
-            for(i = 1; i < NUM_ROWS; i++) {
-                for(j = 0; j < NUM_COLS; j++) {
-                    if((i == (NUM_ROWS - 1)) && (j == (NUM_COLS - 1))) {
-                        *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = c;
-                        *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+    /* */
 
-                    }
-                    *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1));
-                    *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1) + 1) = ATTRIB;
+    
 
-                    if(i == NUM_ROWS - 1) {
-                        *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = ' ';
-                        *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
-                        
-                    }
-                }
-            }
-            screen_x = 0;
-            screen_y = NUM_ROWS - 1;
-            //screen_y++;
-
-        } 
-        else {
-            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-            screen_y++;
-            screen_x = 0;
-            
-        } 
-        screen_x = 0;
-    } */
-        
     else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
@@ -302,6 +293,56 @@ void putc(uint8_t c) {
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
 
     }
+
+    if (screen_x >= NUM_COLS - 1) {
+
+
+        screen_y = screen_y + 1;
+        screen_x = 0;
+
+        next_line = 1;
+
+        // printf("%u\n", screen_x);
+        // if(screen_y == (NUM_ROWS - 1)) {
+        //     int i;
+        //     int j;
+        //     for(i = 1; i < NUM_ROWS; i++) {
+        //         for(j = 0; j < NUM_COLS; j++) {
+        //             if((i == (NUM_ROWS - 1)) && (j == (NUM_COLS - 1))) {
+        //                 *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = c;
+        //                 *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+
+        //             }
+        //             *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1));
+        //             *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1) + 1) = ATTRIB;
+
+        //             if(i == NUM_ROWS - 1) {
+        //                 *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = ' ';
+        //                 *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+                        
+        //             }
+        //         }
+        //     }
+        //     screen_x = 0;
+        //     screen_y = NUM_ROWS - 1;
+        //     //screen_y++;
+
+        // } 
+        // else {
+        //     *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        //     *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        //     screen_y++;
+        //     screen_x = 0;
+            
+        // } 
+        // screen_x = 0;
+    }
+  
+    
+
+    /* */
+        
+    
 
     update_cursor();
     

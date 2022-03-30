@@ -2,8 +2,7 @@
 #include "terminal.h"
 
 
-char terminal_buffer[BUFFER_SIZE];
-int terminal_index = 0;
+
 
 //extern char buffer[BUFFER_SIZE];
 //extern int index;
@@ -43,20 +42,75 @@ RETURN VALUE: number of bytes read
 SIDE EFFECTS: 
 */
 int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
-    while(1) {
-        if(enter_detected == 1) {
-            puts(buffer);
-            memcpy(terminal_buffer, enter_buffer, strlen(enter_buffer) + 1);
-            terminal_index = enter_index;
+    // while(1) {
+    //     if(enter_detected == 1) {
+    //         puts(buffer);
+    //         memcpy(terminal_buffer, enter_buffer, strlen(enter_buffer) + 1);
+    //         terminal_index = enter_index;
+    //         break;
+    //     }
+    // }
+    // enter_detected = 0;
+    // //puts(buffer);
+    // //printf("%u\n", terminal_index);
+    // return terminal_index;
+
+    if (buf == NULL){
+        return -1;
+    }
+
+    char byte;
+    int bytes_read = 0;
+
+    while (1) {
+        if (enter_detected == 1) {
+            cli();
+
+            if (nbytes > BUFFER_SIZE){
+                nbytes = BUFFER_SIZE;
+            }
+
+            for (terminal_index = 0; terminal_index < nbytes; terminal_index++) {
+
+                // get data from terminal buffer
+                ((char * ) buf)[terminal_index] = terminal_buffer[terminal_index];
+                bytes_read++;
+
+                // for cleaner code
+                byte = ((char * ) buf)[terminal_index];
+
+                // if enter (\n) is read, finish
+                if (byte == '\n') {
+                    break;
+                } else { // edge case: already read nbytes, adding new line
+                    if (nbytes < BUFFER_SIZE){
+                        if (terminal_index == nbytes - 1){
+                            ((char * ) buf)[terminal_index] = '\n';
+                            break;
+                        }
+                    }
+                }
+                
+            }
+
+            // clear terminal buffer
+            for (terminal_index = 0; terminal_index < BUFFER_SIZE; terminal_index++) {
+                terminal_buffer[terminal_index] = '\0';
+            }
+
+            enter_detected = 0;
+            // puts(buffer);
+            // printf("%u\n", terminal_index);
+            // return terminal_index;
+            sti();
             break;
         }
     }
-    enter_detected = 0;
-    //puts(buffer);
-    //printf("%u\n", terminal_index);
-    return terminal_index;
+    // printf("size: %d", bytes_read);
+    return bytes_read;
 
 }
+
 /*
 DESCRIPTION: terminal_write for terminal driver; writes the data from the terminal_buffer
 INPUTS: int32_t fd - file descriptor for terminal_write
@@ -67,14 +121,37 @@ RETURN VALUE: number of bytes read
 SIDE EFFECTS: writes data to screen
 */
 int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
-    //puts("write started\n");
+    // puts("write started\n");
+    // cli();
+    // puts(terminal_buffer);
+    // terminal_index = 0;
+    // terminal_buffer[terminal_index] = '\0';
+    // sti();
+    // return terminal_index;
+    char byte;
+
+    if (buf == NULL){
+        return -1;
+    }
+    
     cli();
-    puts(terminal_buffer);
-    terminal_index = 0;
-    terminal_buffer[terminal_index] = '\0';
+    for (terminal_index = 0; terminal_index < nbytes; terminal_index++) {
+        // void can be anything
+        byte = ((char * ) buf)[terminal_index];
+
+        // printf(byte);
+        // putc(byte); 
+
+        // dpn't print NULL
+        if (byte != '\0'){
+            putc(byte); // print
+        }
+    }
     sti();
-    return terminal_index;
+    return nbytes;
 }
 
-
+// void set_terminal_buffer(){
+//     terminal_buffer[0] = 'q';
+// }
 

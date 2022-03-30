@@ -4,6 +4,7 @@
 #include "paging.h"
 #include "rtc.h"
 #include "fs_system.h"
+#include "terminal.h"
 #define PASS 1
 #define FAIL 0
 
@@ -64,27 +65,15 @@ int idt_test()
 int division_by_zero_test()
 {
     TEST_HEADER;
-    int a = 0;
-    int b = 1 / a;
-    b = b + 1; // avoid warning
+    int num1, num2;
+
+
+    num1 = 0;
+    num2 = 1 / num1;
+    num2 = num2 + 1; // avoid warning
     return FAIL;
 }
 
-/* syscall_test()
- *
- * Cause blue screen
- * Inputs: None
- * Outputs: PASS/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: Exception handling
- * Files: idt.c
- */
-int syscall_test()
-{
-    TEST_HEADER;
-    __asm__("int    $0x80");
-    return FAIL;
-}
 
 /* paging_init_test()
  *
@@ -99,7 +88,11 @@ int paging_init_test()
 {
     TEST_HEADER;
 
-    if (page_directory[0].present != 1 || page_directory[KERNEL_INDEX].present != 1){
+    if (page_directory[0].present != 1){
+        return FAIL;
+    }
+
+    if (page_directory[1].present != 1){
         return FAIL;
     }
 
@@ -122,16 +115,20 @@ int paging_test()
     char ref;
 
      // start of the kernel
-    char *pointer = (char *)KERNEL_ADDR;
-    ref = *pointer;
+    char * temp = (char * )KERNEL_ADDR;
+    ref = *  temp;
 
      // start of the video memory
-    pointer = (char *)VID_ADDR;
-    ref = *pointer;
+    temp = (char *  )VID_ADDR;
+    ref = * temp;
+
+    // middle of the kernel 
+    temp = (char * )0x6BF312;
+    ref = * temp;
 
     // end of the kernel 
-    pointer = (char *)0x7FFFFF;
-    ref = *pointer;
+    temp = (char * )0x7FFFFF;
+    ref = * temp;
 
     return PASS;
 }
@@ -147,16 +144,17 @@ int paging_test()
 int null_test()
 {
     TEST_HEADER;
+
     char ref;
 
     // convert 0 to char pointer for NULL
 
-    char *pointer = (char *)0;
-    ref = *pointer;
+    char * temp = (char * ) 0x0;
+    ref = * temp;
     return FAIL;
 }
 
-/* kernel_up_test()
+/* kernel_high_test()
  *
  * Checks if there is a page fault exception from memory before the kernel
  * Inputs: None
@@ -164,12 +162,16 @@ int null_test()
  * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
-int kernel_up_test()
+int kernel_high_test()
 {
     TEST_HEADER;
+
     char ref;
-    char *pointer = (char *)0x3FFFFF;
-    ref = *pointer;
+
+    // char * temp = (char * ) 0x3FFFFF;
+    // ref = * temp;
+    char * temp = (char * ) 0x3FF998;
+    ref = * temp;
     return FAIL;
 }
 
@@ -184,25 +186,32 @@ int kernel_up_test()
 int kernel_low_test()
 {
     TEST_HEADER;
+
     char ref;
-    char *pointer = (char *)0x800000;
-    ref = *pointer;
+
+    // char * temp = (char * ) 0x800000;
+    // ref = * temp;
+
+    char * temp = (char * ) 0x800365;
+    ref = * temp;
     return FAIL;
 }
-/* vidmem_up_test()
+/* video_mem_test()
  *
- * Checks if there is a page fault exception from memory before the video memory
+ * Checks if there is a page fault exception from memory outside of the video memory
  * Inputs: None
  * Outputs: Page fault/FAIL
  * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
-int vidmem_up_test()
+int video_mem_test()
 {
     TEST_HEADER;
+
     char ref;
-    char *pointer = (char *)0x0B7FFF;
-    ref = *pointer;
+
+    char * temp = (char * ) 0x0B7ABC;
+    ref = * temp;
     return FAIL;
 }
 
@@ -430,6 +439,43 @@ int rtc_test(){
 	return PASS; 
 }
 
+
+/* RTC Test
+ *
+ * Tests the terminal_read and terminal_write functions
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: prints out the data read by terminal_read
+ * Coverage: Terminal functions
+ */
+int terminal_rw_test(){
+    TEST_HEADER;
+
+    char buffer[FOURKB];
+    int32_t bytes;
+    
+    // used for testing. not needed now. uncommenting this line may cause warnings
+    // set_terminal_buffer();
+
+    while (1) {
+        // test terminal read and write
+        bytes = terminal_read(2, buffer, 10);
+        if (bytes != 10){
+            return FAIL;
+        }
+        terminal_write(2, buffer, bytes);
+
+        bytes = terminal_read(2, buffer, 300);
+        if (bytes > 128){
+            return FAIL;
+        }
+        terminal_write(2, buffer, bytes);
+        break;
+    }
+    return PASS;
+}
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -443,13 +489,12 @@ void launch_tests()
     // TEST_OUTPUT("idt_test", idt_test());
 	// TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
-    // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("null_test", null_test());
-    // TEST_OUTPUT("before_kernel_memory", kernel_up_test());
+    // TEST_OUTPUT("before_kernel_memory", kernel_high_test());
     // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
-    // TEST_OUTPUT("before_vidmem_memory", vidmem_up_test());
+    // TEST_OUTPUT("video memory test", video_mem_test());
 
     /* CHECKPOINT 2 */
 
@@ -461,6 +506,12 @@ void launch_tests()
     TEST_OUTPUT("Read Data Test", read_data_test_1());
     //TEST_OUTPUT("Read Data Test", read_data_test_2());
     //TEST_OUTPUT("File Read Test", file_read_test());
+    // TEST_OUTPUT("read by name test", name_search_test());
+    // TEST_OUTPUT("Read Directory", directory_read_test());
+    // TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    // TEST_OUTPUT("Read Data Test", read_data_test());
+    // TEST_OUTPUT("File Read Test", file_read_test());
 
+    TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
 }
 

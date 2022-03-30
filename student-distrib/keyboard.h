@@ -48,6 +48,11 @@
 extern char enter_buffer[BUFFER_SIZE];
 
 extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
+extern char terminal_buffer[BUFFER_SIZE];
+extern int terminal_index;
+
+extern int clear_buffer;
+
 extern int index;     //index of what we want to display till
 extern int enter_index;
 //buffer[index] = '\0';

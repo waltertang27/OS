@@ -251,15 +251,15 @@ int name_search_test(){
     
 
 //  Keeps failing test 
-    // word = (uint8_t *)"verylargetextwithverylongname.txt";
-    // code = read_dentry_by_name(word, &entry);
+    word = (uint8_t *)"verylargetextwithverylongname.txt";
+    code = read_dentry_by_name(word, &entry);
 
-    // if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.tx", sizeof("verylargetextwithverylongname.tx"))))
-    // {
-    //     return FAIL;
-    // }
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.tx", sizeof("verylargetextwithverylongname.tx"))))
+    {
+        return FAIL;
+    }
 
-    // printf("  %s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
+    printf("  %s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
 
 
     word = (uint8_t *)"FFFF";

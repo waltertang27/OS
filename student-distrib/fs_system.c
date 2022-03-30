@@ -50,14 +50,17 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
     int i;
     // int filledDentry = -1; 
     uint8_t currName[32];
+    uint8_t concat[32]; 
     memset((void*)currName,0,32); 
     
     int fileNameLength = strlen((int8_t *)fname);
     // printf("%s length: %d \n", fname,fileNameLength);
 
+    strncpy((void *)concat,(const void*)fname,32);
+    
     if(fileNameLength > MAX_FILE_NAME){
-        memcpy((void *)currName,(const void*)fname,32);
-        printf("Filename was too long concatonated to %s \n",currName);
+        printf("Filename was too long concatonated to %s \n",concat);
+        fileNameLength = 32; 
     }
 
     if(dentry == NULL || fname == NULL)
@@ -65,18 +68,18 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 
 
     for (i = 0; i < NUM_DIR_ENTRIES; i++){
-        strncpy(currName,directoryStart[i].fileName,sizeof(directoryStart[i].fileName)); 
+        strncpy(currName,directoryStart[i].fileName,32); 
+
         if (strlen((int8_t *)currName) != fileNameLength)
             continue;
         
-        else if (strncmp((int8_t *)currName, (int8_t *)fname, sizeof(fname)))
+        else if (strncmp((int8_t *)currName, (int8_t *)concat, sizeof(concat)))
             continue;
 
         else{
-            // They should have the same name lol so ima copy the useful stuff
             dentry->fileType = directoryStart[i].fileType;
             dentry->INodeNum = directoryStart[i].INodeNum;
-            strcpy((int8_t *)dentry->fileName, (int8_t *)directoryStart[i].fileName);
+            strncpy((int8_t *)dentry->fileName, (int8_t *)currName,32);
 
             return 0 ;
         }

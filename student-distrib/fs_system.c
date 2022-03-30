@@ -127,20 +127,18 @@ SIDE EFFECTS: From the given index and offset, the buffer is filled with bytes u
 */
 int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t length){
     
-    INode_t * curr_inode = &startINode[inodeIdx];   // INode_t* correct_inode = (INode_t*)(startBootBlock + 1 + inodeIdx)
-    
-    uint32_t numInodes = startBootBlock->InodesNum; 
-    uint32_t bytes = 0;
-    uint32_t file_byte_size = curr_inode->bLength; 
+    INode_t * curr_inode = startINode + inodeIdx;   //Pointer to the start of the block we will be copying 
+    uint32_t numInodes = startBootBlock->InodesNum; //The number of iNodes total in the file system 
+    uint32_t bytes = 0;                             //Running total of bytes copied 
+    uint32_t file_byte_size = curr_inode->bLength;  //The total size of the file you are copying in bytes
+    uint32_t blocksSkipped = offset / FOURKB;       //How many blocks to skip from the starting block
+    uint32_t blockOffset = offset % FOURKB;         //After skippin blocks how many bytes need to be skipped 
+    uint32_t end_of_file = 0;                       //Flag to stop copying 
 
-    uint32_t blocksSkipped = offset / FOURKB; 
-    uint32_t blockOffset = offset % FOURKB;;
-    uint32_t end_of_file = 0; 
 
-    //Block that you start at
-    uint32_t blockIDX = curr_inode->blockData[blocksSkipped]; 
-    uint32_t bytesToCopy = FOURKB - blockOffset;
-    uint8_t  * currBlock = (uint8_t *)( startBootBlock + numInodes + blockIDX);
+    uint32_t blockIDX = curr_inode->blockData[blocksSkipped];               //The index of the start block
+    uint32_t bytesToCopy = FOURKB - blockOffset;                            //The amount of bytes to copy to go from the offset to the end of the block 
+    uint8_t  * currBlock = (uint8_t *)( startDataBlock + blockIDX + offset); //Pointer to the first byte in the block INCLUDING the offset 
 
 
     //If you reach the limit for bytes you can copy before the entirety of a block

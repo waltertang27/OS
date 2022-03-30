@@ -296,7 +296,6 @@ int idx_search_test(){
     
     // printf("  %s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
 
-
     if (read_dentry_by_index(2, &entry_2) == -1){
         return FAIL;
     }
@@ -344,12 +343,14 @@ int read_data_test(){
     //Index 10 is frame0.txt 
     read_dentry_by_index(10,&curr);
 
+    printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
 
-    read_data(curr.INodeNum, 0, DataBuf, 300);
-    printf(" Buffer: %s \n",DataBuf);
-
+    if(read_data(curr.INodeNum, 0, DataBuf, 300) == 187){
+        printf(" Buffer: %s \n",DataBuf);
+        return PASS; 
+    }
     
-    return PASS;
+    return FAIL;
     
 }
 
@@ -403,9 +404,9 @@ void launch_tests()
 
     //TEST_OUTPUT("read by name test", name_search_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
-
-    TEST_OUTPUT("Read Directory", directory_read_test());
-    // TEST_OUTPUT("Read Data Test", read_data_test());
+    //TEST_OUTPUT("Read Directory", directory_read_test());
+    
+    TEST_OUTPUT("Read Data Test", read_data_test());
     //TEST_OUTPUT("File Read Test", file_read_test());
 
 }

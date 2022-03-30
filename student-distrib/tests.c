@@ -228,7 +228,7 @@ int name_search_test(){
         return FAIL;
     }
 
-    printf("%s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
+    printf("  %s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
 
     word = (uint8_t *)"FFFF";
     if (read_dentry_by_name(word, &entry) == -1){
@@ -343,7 +343,7 @@ void launch_tests()
 
     /* CHECKPOINT 2 */
 
-    // TEST_OUTPUT("read by name test", name_search_test());
+    TEST_OUTPUT("read by name test", name_search_test());
     //TEST_OUTPUT("Read Directory", directory_read_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
      //TEST_OUTPUT("Read Data Test", read_data_test());

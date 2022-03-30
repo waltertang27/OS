@@ -321,8 +321,8 @@ int long_text_test(){
    uint8_t* word = (uint8_t *)"verylargetextwithverylongname.txt";
    dentry_t entry; 
    int code = read_dentry_by_name(word, &entry);
-
-    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.txt", 32)))
+    printf("Name: %s \n",entry.fileName); 
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.tx", 32)))
     {
         return FAIL;
     }
@@ -365,7 +365,7 @@ int read_data_test_1(){
         return FAIL;
     }
     else
-        //printf(" Buffer: \n %s \n",DataBuf);
+        printf(" Buffer: \n %s \n",DataBuf);
     
 
 
@@ -386,7 +386,7 @@ int read_data_test_1(){
         return FAIL;
     }
     else
-        // printf(" Buffer: \n %s \n",DataBuf);
+        printf(" Buffer: \n %s \n",DataBuf);
 
     return PASS;   
 }
@@ -394,18 +394,22 @@ int read_data_test_1(){
 int read_data_test_2(){
     TEST_HEADER;
     dentry_t curr;
-
+    int i; 
     //Create a buffer of 300 bytes and set everything equal to 0 
     uint8_t DataBuf[5000] ; 
-    memset(DataBuf,0,5000);        
+    memset(DataBuf,0,5000);  
     read_dentry_by_name("grep",&curr);
     printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
     
     if(read_data(curr.INodeNum,0,DataBuf,5000) != 5000){
         return FAIL;
     }
-    else
-        printf(" Buffer: \n %s \n",DataBuf);
+    else{
+        printf("Buffer: \n");
+        for(i = 0; i<5000; i++)
+            if (DataBuf[i] != '\0')
+                putc(DataBuf[i]);
+    }
 
     return PASS; 
 
@@ -499,11 +503,11 @@ void launch_tests()
     /* CHECKPOINT 2 */
 
     //TEST_OUTPUT("read by name test", name_search_test());
-    //TEST_OUTPUT("Long file test",long_text_test());
+    TEST_OUTPUT("Long file test",long_text_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Directory", directory_read_test());
     
-    TEST_OUTPUT("Read Data Test", read_data_test_1());
+    //TEST_OUTPUT("Read Data Test", read_data_test_1());
     //TEST_OUTPUT("Read Data Test", read_data_test_2());
     //TEST_OUTPUT("File Read Test", file_read_test());
     // TEST_OUTPUT("read by name test", name_search_test());
@@ -512,6 +516,6 @@ void launch_tests()
     // TEST_OUTPUT("Read Data Test", read_data_test());
     // TEST_OUTPUT("File Read Test", file_read_test());
 
-    TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
+   // TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
 }
 

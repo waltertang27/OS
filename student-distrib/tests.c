@@ -391,7 +391,8 @@ int terminal_rw_test(){
 
 /* Test suite entry point */
 void launch_tests() {
-    TEST_OUTPUT("idt_test", idt_test());
+    clear(); 
+    //TEST_OUTPUT("idt_test", idt_test());
 
     // TEST_OUTPUT("idt_test", idt_test());
     // TEST_OUTPUT("Paging test",paging_test());
@@ -414,7 +415,7 @@ void launch_tests() {
     // TEST_OUTPUT("Read Data Test", read_data_test());
     // TEST_OUTPUT("File Read Test", file_read_test());
 
-    TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
+    //TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
 }
 
 

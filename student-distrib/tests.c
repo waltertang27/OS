@@ -220,11 +220,17 @@ int name_search_test(){
     TEST_HEADER;
     dentry_t entry; 
     uint8_t * word = (uint8_t * )"cat";
-    if (read_dentry_by_name(word, &entry) == -1){
+    int code; 
+    code = read_dentry_by_name(word, &entry) ;
+    
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"cat", sizeof("cat"))))
+    {
         return FAIL;
     }
 
-    word = (uint8_t * )"FFFF";
+    printf("%s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
+
+    word = (uint8_t *)"FFFF";
     if (read_dentry_by_name(word, &entry) == -1){
         return PASS;
     }

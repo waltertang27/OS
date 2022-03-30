@@ -19,12 +19,17 @@ void FileSystem_Init(uint32_t *fs_start){
     //Initialize all pointers for our file system when given the starting address of the file system 
     startBootBlock  = (boot_block_t * )fs_start;
 
-   // directoryStart = startBootBlock->dirEntries;
+    //directoryStart[0] would give the first entry 
+    directoryStart = startBootBlock->dirEntries;
+
+    //The block that follows the boot block is 4KB after it 
     startINode = (INode_t *)(fs_start + FOURKB);
-  //  startDataBlock = (uint32_t *)(startINode + startBootBlock->InodesNum);
-    // printf("start I node Pointer %p ",startINode);
+
+    //Add the number of inode from the starting pointer to get a pointer to the first block 
+    startDataBlock = (int8_t *)(startINode + startBootBlock->InodesNum);
+
     // Initialize global variables that will be used for reads
-    dentryIDX = 0; 
+    currDentry = directoryStart[0] ;
     filePosition = 0;
 }
 
@@ -47,27 +52,34 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 
     
     int fileNameLength = strlen((int8_t *)fname);
+
     if(fileNameLength > MAX_FILE_NAME){
         return -1; 
         printf("Filename was too long");
     }
+    if(dentry == NULL)
+        return -1; 
+
 
     for (i = 0; i < NUM_DIR_ENTRIES; i++){
-        currName = startBootBlock->dirEntries[i].fileName;
+        currName = directoryStart[i].fileName;
         if (strlen((int8_t *)currName) != fileNameLength)
             continue;
+        
         else if (strncmp((int8_t *)currName, (int8_t *)fname, sizeof(fname)))
             continue;
+
         else{
-            // They should have the same name lol so ima copy the useful stuff 
-            dentry->fileType = startBootBlock->dirEntries[i].fileType; 
-            dentry->INodeNum = startBootBlock->dirEntries[i].INodeNum; 
-            filledDentry = 0; 
-            break;
+            // They should have the same name lol so ima copy the useful stuff
+            dentry->fileType = directoryStart[i].fileType;
+            dentry->INodeNum = directoryStart[i].INodeNum;
+            strcpy((int8_t *)dentry->fileName, (int8_t *)directoryStart[i].fileName);
+
+            return 0 ;
         }
     }
-
-    return filledDentry; 
+    return -1; 
+    
 }
 
 

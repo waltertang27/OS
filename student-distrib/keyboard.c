@@ -165,7 +165,7 @@ SIDE EFFECTS: Displays the characters that are pressed on the keyboard to the sc
 */
 extern void keyboard_handler(void) {
 
-    int loop;
+    //int loop;
     cli();
     uint32_t keycode = inb(KEYBOARD_DATA_PORT);
 
@@ -335,7 +335,7 @@ extern void keyboard_handler(void) {
            //     buffer[index] = '\0'
            // }
             terminal_buffer[index] = '\b';
-            buffer[index + 1] = '\0';
+            terminal_buffer[index + 1] = '\0';
             buffer[index] = '\b';
             buffer[index + 1] = '\0';
             backspace_detected = 1;
@@ -405,6 +405,9 @@ extern void keyboard_handler(void) {
         } */
         buffer[index] = '\t';
         buffer[index + 1] = '\0';
+        terminal_buffer[index] = '\t';
+        terminal_buffer[index + 1] = '\0';
+        index++;
         puts(buffer);
         send_eoi(KEYBOARD_IRQ);
         sti();

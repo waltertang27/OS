@@ -268,7 +268,18 @@ void putc(uint8_t c) {
         }
     }
     else if(c == '\t') {
-        screen_x++;
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
     } 
     /* */
 

@@ -321,7 +321,7 @@ int long_text_test(){
    uint8_t* word = (uint8_t *)"verylargetextwithverylongname.txt";
    dentry_t entry; 
    int code = read_dentry_by_name(word, &entry);
-    printf("Name: %s \n",entry.fileName); 
+    // printf("Name: %s \n",entry.fileName); 
     if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.tx", 32)))
     {
         return FAIL;
@@ -348,7 +348,7 @@ int directory_read_test(){
     return PASS; 
 }
 
-int read_data_test_1(){
+int read_data_test_no_offset(){
     TEST_HEADER;
     dentry_t curr;
     int i; 
@@ -361,7 +361,7 @@ int read_data_test_1(){
 
     printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
 
-    if(read_data(curr.INodeNum, 10, DataBuf, 300) != 187 - 10){
+    if(read_data(curr.INodeNum, 0, DataBuf, 300) != 187){
         return FAIL;
     }
     else
@@ -382,34 +382,33 @@ int read_data_test_1(){
                 putc(DataBuf[i]);
     }
 
-    if(read_data(curr.INodeNum,10,DataBuf,300) != 300-10){
-        return FAIL;
-    }
-    else
-        printf(" Buffer: \n %s \n",DataBuf);
-
-    return PASS;   
-}
-
-int read_data_test_2(){
-    TEST_HEADER;
-    dentry_t curr;
-    int i; 
     //Create a buffer of 300 bytes and set everything equal to 0 
-    uint8_t DataBuf[5000] ; 
-    memset(DataBuf,0,5000);  
+    uint8_t DataBuf2[5000] ; 
+    memset(DataBuf2,0,5000);  
     read_dentry_by_name("grep",&curr);
     printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
     
-    if(read_data(curr.INodeNum,0,DataBuf,5000) != 5000){
+    if(read_data(curr.INodeNum,0,DataBuf2,5000) != 5000){
         return FAIL;
     }
     else{
         printf("Buffer: \n");
         for(i = 0; i<5000; i++)
-            if (DataBuf[i] != '\0')
-                putc(DataBuf[i]);
+            if (DataBuf2[i] != '\0')
+                putc(DataBuf2[i]);
     }
+
+
+
+
+    return PASS;   
+}
+
+int read_data_test_with_offset(){
+    TEST_HEADER;
+    dentry_t curr;
+    int i; 
+
 
     return PASS; 
 
@@ -503,11 +502,11 @@ void launch_tests()
     /* CHECKPOINT 2 */
 
     //TEST_OUTPUT("read by name test", name_search_test());
-    TEST_OUTPUT("Long file test",long_text_test());
+    //TEST_OUTPUT("Long file test",long_text_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Directory", directory_read_test());
     
-    //TEST_OUTPUT("Read Data Test", read_data_test_1());
+    TEST_OUTPUT("Read Data Test", read_data_test_no_offset());
     //TEST_OUTPUT("Read Data Test", read_data_test_2());
     //TEST_OUTPUT("File Read Test", file_read_test());
     // TEST_OUTPUT("read by name test", name_search_test());

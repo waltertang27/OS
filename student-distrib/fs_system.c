@@ -142,8 +142,8 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
 
     //If you reach the limit for bytes you can copy before the entirety of a block
-    if (bytesToCopy > length - offset) {
-        bytesToCopy = length - offset; 
+    if (bytesToCopy > length) {
+        bytesToCopy = length; 
         end_of_file = 1;
     }  
 
@@ -178,8 +178,8 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
             end_of_file = 1;
         }  
 
-        if(bytesToCopy > file_byte_size - bytes){
-            bytesToCopy = file_byte_size - bytes ; 
+        if(bytesToCopy > file_byte_size - bytes - offset){
+            bytesToCopy = file_byte_size - bytes - offset ; 
             end_of_file = 1; 
         }
 

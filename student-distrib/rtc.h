@@ -29,3 +29,4 @@ extern void rtc_freq (int32_t freq);
 
 int testing_RTC; 
 
+int testing_RTC; 

@@ -30,3 +30,34 @@ Where: kernel.c, paging.c
 Issue: After investigating, we found out there are only 31 bits allocated in the page directory struct.
 Solution: We added a bit called "unused" to fill the 32-bit page directory struct.
 
+CHECKPOINT 3.2
+
+Description: directory_read does not put the correct file type and file size in the dentry
+Where: fs_system.c
+Issue: INode addresses are not calculated correctly.
+Solution: After updating some code (specifically this line: startINode = (INode_t *)(fs_start + FOURKB)) we can print out some file sizes (but the sizes are not correct).
+Then we shifted the inode numbers by three and now we are able to print the correct file sizes.
+
+Description: read_data does not work properly. 
+Where: fs_system.c
+Issue: INode addresses are not calculated correctly, while loop is causing problems (# of bytes read is not updated properly), writing to the wrong buffer address 
+(should be buf + bytes)
+Solution: as of 3/28 4pm we haven't solved the issue yet.
+
+Description: cursor was not properly following after the backspace character
+Where: lib.c
+Issue: Since I was using a ' ' character to clear the character to be deleted by backspace, screen_x and screen_y were not being properly displayed. 
+Solution: I directly used backspace to edit the video memory to properly allocate space for backspace. 
+
+Description: texts are not printed out with different frequencies.
+Where: rtc.c
+Issue: When we ran the test, there is only one '1' appeared on the screen.
+Solution: We have not solved yet.
+
+Description: terminal overflow. when typing more than 80 characters into the terminal, a new line is supposed to appear to display the extra characters. However, the entire
+	line is printed out on the second line.
+Where: terminal.c, lib.c, keyboard.c
+Issue: The keyboard handler is printing the entire buffer on the new line, even after we switched lines. In other words, we switched to a new line but did not clear the 
+	buffer.
+Solution: By using a second buffer to store the extra characters, we can print out only the second line's content while also saving the first line's content.
+

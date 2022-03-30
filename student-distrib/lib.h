@@ -6,6 +6,7 @@
 #define _LIB_H
 
 #include "types.h"
+#include "keyboard.h"
 
 int32_t printf(int8_t *format, ...);
 void putc(uint8_t c);
@@ -14,6 +15,8 @@ int8_t *itoa(uint32_t value, int8_t* buf, int32_t radix);
 int8_t *strrev(int8_t* s);
 uint32_t strlen(const int8_t* s);
 void clear(void);
+void update_cursor(void);
+//void enable_cursor(void);
 
 void* memset(void* s, int32_t c, uint32_t n);
 void* memset_word(void* s, int32_t c, uint32_t n);

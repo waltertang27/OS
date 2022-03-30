@@ -2,6 +2,7 @@
  * vim:ts=4 noexpandtab */
 
 #include "lib.h"
+#include "keyboard.h"
 
 #define VIDEO       0xB8000
 #define NUM_COLS    80
@@ -11,6 +12,10 @@
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
+
+int char_index;
+
+int next_line;
 
 /* void clear(void);
  * Inputs: void
@@ -22,6 +27,9 @@ void clear(void) {
         *(uint8_t *)(video_mem + (i << 1)) = ' ';
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
     }
+    screen_x = 0;
+    screen_y = 0;
+    update_cursor();
 }
 
 /* Standard printf().
@@ -156,11 +164,55 @@ format_char_switch:
  *    Function: Output a string to the console */
 int32_t puts(int8_t* s) {
     register int32_t index = 0;
+    //if(s[0] == '\0') {
+    //    screen_x = -1;
+    //    return 0;
+    //}
     while (s[index] != '\0') {
         putc(s[index]);
         index++;
     }
+    //screen_x = 0;
+    
+    //update_cursor();
     return index;
+}
+/*
+void enable_cursor(void) {
+    //outb(0x3D4, 0x09);
+    //outb(0x3D5, 0x0F);
+    //outb(0x3D4, 0x0B);
+    //outb(0x3D5, 0x0F);
+    //outb(0x3D4, 0x0A);
+    //outb(0x3D5, 0x0E);
+    
+    
+
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, (inb(0x3D5) & 0xC0) | 0);
+    outb(0x3D4, 0x0B);
+    outb(0x3D5, (inb(0x3D5) & 0xE0) | 15);
+}
+*/
+
+void update_cursor(void) {
+    //get cursor position
+    //int temp = 0;
+    /*
+    if(backspace_detected == 1 && screen_x > 0) {
+        screen_x -= 1;
+        temp = 1;
+    }
+    backspace_detected = 0;
+    */
+    uint16_t loc = screen_y * NUM_COLS + screen_x;
+    outb(0x0F, 0x3D4);
+    outb((uint8_t) (loc & 0xFF), 0x3D5);
+    outb(0x0E, 0x3D4);
+    outb((uint8_t) ((loc >> 8) & 0xFF), 0x3D5);
+    //if(temp == 1) {
+    //    screen_x += 1;
+    //}
 }
 
 /* void putc(uint8_t c);
@@ -168,16 +220,132 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
-    if(c == '\n' || c == '\r') {
-        screen_y++;
+
+    
+
+
+    if(c == '\b') {
+
+        if (screen_x == 0 && next_line == 1){
+            screen_y--;
+            next_line = 0;
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + 78) << 1)) = ' ';
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + 78) << 1) + 1) = ATTRIB;
+        } else {
+            screen_x--;
+            screen_x %= NUM_COLS;
+            screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
+        
+    }
+    
+    else if(c == '\n' || c == '\r') {
+        //screen_y++;
+        //screen_x = 0;
+        if(screen_y == NUM_ROWS - 1) {
+        int i;
+        int j;
+        for(i = 1; i < NUM_ROWS; i++) {
+            for(j = 0; j < NUM_COLS; j++) {
+                *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1));
+                *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1) + 1) = ATTRIB;
+                if(i == NUM_ROWS - 1) {
+                    *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = ' ';
+                    *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+                    
+                }
+            }
+        }
+        
         screen_x = 0;
-    } else {
+        screen_y = NUM_ROWS - 1;
+        }
+        else {
+            screen_y++;
+            screen_x = 0;
+        }
+    }
+    else if(c == '\t') {
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+        if(screen_x <= NUM_COLS - 1) {
+            screen_x++;
+        }
+    } 
+    /* */
+
+    
+
+    else {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         screen_x++;
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+
     }
+
+    if (screen_x >= NUM_COLS - 1) {
+
+
+        screen_y = screen_y + 1;
+        screen_x = 0;
+
+        next_line = 1;
+
+        // printf("%u\n", screen_x);
+        // if(screen_y == (NUM_ROWS - 1)) {
+        //     int i;
+        //     int j;
+        //     for(i = 1; i < NUM_ROWS; i++) {
+        //         for(j = 0; j < NUM_COLS; j++) {
+        //             if((i == (NUM_ROWS - 1)) && (j == (NUM_COLS - 1))) {
+        //                 *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = c;
+        //                 *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+
+        //             }
+        //             *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1));
+        //             *(uint8_t *)(video_mem + ((NUM_COLS * (i - 1) + j) << 1) + 1) = ATTRIB;
+
+        //             if(i == NUM_ROWS - 1) {
+        //                 *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1)) = ' ';
+        //                 *(uint8_t *)(video_mem + ((NUM_COLS * i + j) << 1) + 1) = ATTRIB;
+                        
+        //             }
+        //         }
+        //     }
+        //     screen_x = 0;
+        //     screen_y = NUM_ROWS - 1;
+        //     //screen_y++;
+
+        // } 
+        // else {
+        //     *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        //     *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        //     screen_y++;
+        //     screen_x = 0;
+            
+        // } 
+        // screen_x = 0;
+    }
+  
+    
+
+    /* */
+        
+    
+
+    update_cursor();
+    
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);

@@ -195,15 +195,15 @@ int kernel_low_test()
     ref = * temp;
     return FAIL;
 }
-/* video_mem_high_test()
+/* video_mem_test()
  *
- * Checks if there is a page fault exception from memory before the video memory
+ * Checks if there is a page fault exception from memory outside of the video memory
  * Inputs: None
  * Outputs: Page fault/FAIL
  * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
-int video_mem_high_test()
+int video_mem_test()
 {
     TEST_HEADER;
 
@@ -377,7 +377,7 @@ void launch_tests()
     // TEST_OUTPUT("null_test", null_test());
     // TEST_OUTPUT("before_kernel_memory", kernel_high_test());
     // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
-    // TEST_OUTPUT("before_vidmem_memory", video_mem_high_test());
+    // TEST_OUTPUT("video memory test", video_mem_test());
 
     /* CHECKPOINT 2 */
 

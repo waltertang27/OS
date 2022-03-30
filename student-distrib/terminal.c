@@ -95,7 +95,7 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
 
             // clear terminal buffer
             for (terminal_index = 0; terminal_index < BUFFER_SIZE; terminal_index++) {
-                terminal_buffer[terminal_index] = ' ';
+                terminal_buffer[terminal_index] = '\0';
             }
 
             enter_detected = 0;

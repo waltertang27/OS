@@ -285,6 +285,17 @@ int idx_search_test(){
 
     if(strncmp((int8_t * ) entry.fileName, (int8_t * )"rtc",sizeof("rtc")))
         return FAIL; 
+    
+
+    if (read_dentry_by_index(10, &entry) == -1){
+        return FAIL;
+    }
+
+    if(strncmp((int8_t * ) entry.fileName, (int8_t * )"frame0.txt",sizeof("frame0.txt")))
+        return FAIL; 
+    
+    // printf("  %s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
+
 
     if (read_dentry_by_index(2, &entry_2) == -1){
         return FAIL;
@@ -390,11 +401,11 @@ void launch_tests()
 
     /* CHECKPOINT 2 */
 
-    TEST_OUTPUT("read by name test", name_search_test());
-    TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    //TEST_OUTPUT("read by name test", name_search_test());
+    //TEST_OUTPUT("Read by IDX Test", idx_search_test());
 
-    //TEST_OUTPUT("Read Directory", directory_read_test());
-    //TEST_OUTPUT("Read Data Test", read_data_test());
+    TEST_OUTPUT("Read Directory", directory_read_test());
+    // TEST_OUTPUT("Read Data Test", read_data_test());
     //TEST_OUTPUT("File Read Test", file_read_test());
 
 }

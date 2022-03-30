@@ -4,6 +4,7 @@
 #include "paging.h"
 #include "rtc.h"
 #include "fs_system.h"
+#include "terminal.h"
 #define PASS 1
 #define FAIL 0
 

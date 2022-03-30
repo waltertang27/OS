@@ -369,11 +369,11 @@ extern void keyboard_handler(void) {
     }
 
 
-    //prints for tab
     if(keycode == TAB) {
         //printf("%s", "    ");
         //adjusts space correctly based on if index might go out of bounds; BUFFER_SIZE - NUM where num is the number of spaces left remaining in buffer
         //not out of bounds
+        /*
         if(index <= BUFFER_SIZE - 5) {
             buffer[index] = '\t';
             buffer[index + 1] = '\t';
@@ -402,8 +402,10 @@ extern void keyboard_handler(void) {
             buffer[index] = '\t';
             buffer[index + 1] = '\0';
             index = index + 1;
-        }
-        
+        } */
+        buffer[index] = '\t';
+        buffer[index + 1] = '\0';
+        puts(buffer);
         send_eoi(KEYBOARD_IRQ);
         sti();
         return;

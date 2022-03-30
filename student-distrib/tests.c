@@ -148,7 +148,7 @@ int null_test()
 
     // convert 0 to char pointer for NULL
 
-    char * temp = (char * )0;
+    char * temp = (char * ) 0x0;
     ref = * temp;
     return FAIL;
 }
@@ -167,9 +167,9 @@ int kernel_high_test()
 
     char ref;
 
-    char * temp = (char * )0x3FFFFF;
+    char * temp = (char * ) 0x3FFFFF;
     ref = * temp;
-    char * temp = (char * )0x3FF998;
+    char * temp = (char * ) 0x3FF998;
     ref = * temp;
     return FAIL;
 }
@@ -188,10 +188,10 @@ int kernel_low_test()
 
     char ref;
 
-    char * temp = (char * )0x800000;
+    char * temp = (char * ) 0x800000;
     ref = * temp;
 
-    char * temp = (char * )0x800365;
+    char * temp = (char * ) 0x800365;
     ref = * temp;
     return FAIL;
 }
@@ -209,7 +209,7 @@ int video_mem_high_test()
 
     char ref;
 
-    char * temp = (char * )0x0B7ABC;
+    char * temp = (char * ) 0x0B7ABC;
     ref = * temp;
     return FAIL;
 }

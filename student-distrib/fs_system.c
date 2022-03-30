@@ -71,7 +71,6 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
         strncpy((int8_t *)currName,(int8_t *)directoryStart[i].fileName,32); 
 
         if (strncmp((int8_t *)currName, (int8_t *)concat, 32)){
-          //  printf("i: %d, currname: %s \n",i,currName);
             continue;
         }
         else{
@@ -138,7 +137,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     void * dataBlock  = (void*)startDataBlock;      //Void pointer to start of the data block
 
     uint32_t blockIDX = curr_inode->blockData[blocksSkipped];               //The index of the start block
-    uint32_t bytesToCopy = FOURKB - blockOffset;                            //The amount of bytes to copy to go from the offset to the end of the block 
+    uint8_t bytesToCopy = FOURKB - blockOffset;                            //The amount of bytes to copy to go from the offset to the end of the block 
     void*  currBlock = (dataBlock + ((blockIDX ) * FOURKB) + offset);          //Pointer to the first byte in the block INCLUDING the offset 
 
 
@@ -168,6 +167,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     
     while(bytes < length) // While you have not copied all the bytes
     {
+       // printf("Entered while loop with bytes: %u \n");
         blocksSkipped++;
         blockIDX = curr_inode->blockData[blocksSkipped];    
         currBlock = (dataBlock + (blockIDX  * FOURKB) );   

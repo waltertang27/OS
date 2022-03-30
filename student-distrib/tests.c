@@ -339,7 +339,7 @@ int directory_read_test(){
     return PASS; 
 }
 
-int read_data_test(){
+int read_data_test_1(){
     TEST_HEADER;
     dentry_t curr;
 
@@ -352,14 +352,52 @@ int read_data_test(){
 
     printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
 
-    if(read_data(curr.INodeNum, 10, DataBuf, 300) == 187 - 10){
-        printf(" Buffer: %s \n",DataBuf);
-        return PASS; 
+    if(read_data(curr.INodeNum, 10, DataBuf, 300) != 187 - 10){
+        return FAIL;
     }
+    else
+        printf(" Buffer: \n %s \n",DataBuf);
     
-    return FAIL;
-    
+    read_dentry_by_name("grep",&curr);
+
+    if(read_data(curr.INodeNum,0,DataBuf,300) != 300){
+        return FAIL;
+    }
+    else
+        printf(" Buffer: \n %s \n",DataBuf);
+
+
+    if(read_data(curr.INodeNum,10,DataBuf,300) != 300-10){
+        return FAIL;
+    }
+    else
+        printf(" Buffer: \n %s \n",DataBuf);
+
+    return PASS;   
 }
+
+int read_data_test_2(){
+    TEST_HEADER;
+    dentry_t curr;
+
+    //Create a buffer of 300 bytes and set everything equal to 0 
+    uint8_t DataBuf[5000] ; 
+    memset(DataBuf,0,5000);        
+    read_dentry_by_name("grep",&curr);
+    printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
+    
+    if(read_data(curr.INodeNum,0,DataBuf,5000) != 5000){
+        return FAIL;
+    }
+    else
+        printf(" Buffer: \n %s \n",DataBuf);
+
+    return PASS; 
+
+}
+
+
+
 
 int file_read_test(){
     uint8_t buf[FOURKB];
@@ -409,12 +447,13 @@ void launch_tests()
 
     /* CHECKPOINT 2 */
 
-    TEST_OUTPUT("read by name test", name_search_test());
-    TEST_OUTPUT("Long file test",long_text_test());
+    //TEST_OUTPUT("read by name test", name_search_test());
+    //TEST_OUTPUT("Long file test",long_text_test());
     //TEST_OUTPUT("Read by IDX Test", idx_search_test());
-   // TEST_OUTPUT("Read Directory", directory_read_test());
+    // TEST_OUTPUT("Read Directory", directory_read_test());
     
-    //TEST_OUTPUT("Read Data Test", read_data_test());
+    TEST_OUTPUT("Read Data Test", read_data_test_1());
+   // TEST_OUTPUT("Read Data Test", read_data_test_2());
     //TEST_OUTPUT("File Read Test", file_read_test());
 
 }

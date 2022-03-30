@@ -16,6 +16,7 @@ RETURN VALUE: none
 SIDE EFFECTS: startBootBloc, diectoryStart, startINode, and startDataBlock will have adresses filled in 
 */
 void FileSystem_Init(uint32_t *fs_start){
+
     //Initialize all pointers for our file system when given the starting address of the file system 
     startBootBlock  = (boot_block_t * )fs_start;
 
@@ -23,7 +24,7 @@ void FileSystem_Init(uint32_t *fs_start){
     directoryStart = startBootBlock->dirEntries;
 
     //The block that follows the boot block is 4KB after it 
-    startINode = (INode_t *)(fs_start + FOURKB);
+    startINode = (INode_t *)(startBootBlock + 1);
 
     //Add the number of inode from the starting pointer to get a pointer to the first block 
     startDataBlock = (int8_t *)(startINode + startBootBlock->InodesNum);
@@ -101,7 +102,7 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
     strcpy((int8_t *) dentry->fileName, currWord);
 
     dentry->fileType = startBootBlock->dirEntries[index].fileType;
-    dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum -3 ;
+    dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum;
 
     // printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
 

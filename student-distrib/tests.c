@@ -228,14 +228,46 @@ int name_search_test(){
         return FAIL;
     }
 
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"cat", sizeof("cat"))))
+    {
+        return FAIL;
+    }
+
+    word = (uint8_t *)"fish";
+    code = read_dentry_by_name(word, &entry);
+
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"fish", sizeof("fish"))))
+    {
+        return FAIL;
+    }
+
+    word = (uint8_t *)"frame0.txt";
+    code = read_dentry_by_name(word, &entry);
+
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"frame0.txt", sizeof("frame0.txt"))))
+    {
+        return FAIL;
+    }
+
+
+/* Keeps failing test 
+    uint8_t *word = (uint8_t *)"verylargetextwithverylongname.txt";
+    code = read_dentry_by_name(word, &entry);
+
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.txt", sizeof("verylargetextwithverylongname.txt"))))
+    {
+        return FAIL;
+    }
+
     printf("  %s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
 
+*/
     word = (uint8_t *)"FFFF";
-    if (read_dentry_by_name(word, &entry) == -1){
-        return PASS;
+    if (read_dentry_by_name(word, &entry) != -1){
+        return FAIL;
     }
     
-    return FAIL;
+    return PASS;
 }
 
 int idx_search_test(){
@@ -254,6 +286,10 @@ int idx_search_test(){
     }
     if(! strncmp((int8_t * ) entry_2.fileName, (int8_t * )"grep",sizeof("grep")))
         return FAIL; 
+    
+    
+
+    
     // for(i =0; i<62; i = i+3){
     //     printf("Inode:%u Bytes:%u Inode:%u Bytes:%u Inode:%u Bytes:%u \n",i,startINode[i].bLength,i+1,startINode[i].bLength,i+2,startINode[i+2].bLength);
     // }
@@ -343,11 +379,11 @@ void launch_tests()
 
     /* CHECKPOINT 2 */
 
-    TEST_OUTPUT("read by name test", name_search_test());
+    //TEST_OUTPUT("read by name test", name_search_test());
     //TEST_OUTPUT("Read Directory", directory_read_test());
-    //TEST_OUTPUT("Read by IDX Test", idx_search_test());
-     //TEST_OUTPUT("Read Data Test", read_data_test());
-     // TEST_OUTPUT("File Read Test", file_read_test());
+    TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    //TEST_OUTPUT("Read Data Test", read_data_test());
+    //TEST_OUTPUT("File Read Test", file_read_test());
 
 }
 

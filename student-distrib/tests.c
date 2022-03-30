@@ -73,23 +73,6 @@ int division_by_zero_test()
     return FAIL;
 }
 
-/* syscall_test()
- *
- * Cause blue screen
- * Inputs: None
- * Outputs: PASS/FAIL
- * Side Effects: Halts the OS and displays errors
- * Coverage: Exception handling
- * Files: idt.c
- */
-int syscall_test()
-{
-    TEST_HEADER;
-
-    // syscall
-    __asm__("int $0x80");
-    return FAIL;
-}
 
 /* paging_init_test()
  *
@@ -375,7 +358,6 @@ void launch_tests()
     // TEST_OUTPUT("idt_test", idt_test());
 	// TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
-    // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("null_test", null_test());

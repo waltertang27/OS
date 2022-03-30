@@ -27,6 +27,9 @@ extern int enter_detected;
 
 char buffer[BUFFER_SIZE];
 char enter_buffer[BUFFER_SIZE];
+char terminal_buffer[BUFFER_SIZE];
+int terminal_index;
+
 int index;
 int enter_index;
 int enter_detected;
@@ -141,6 +144,7 @@ void keyboard_init(void) {
     enable_irq(KEYBOARD_IRQ);   //enables the irq for keyboard (irq num is 1 according to google)
     buffer[0] = '\0';
     index = 0;
+    terminal_index = 0;
     enter_detected = 0;
     backspace_detected = 0;
     ctrl_l_detected = 0;
@@ -368,6 +372,8 @@ extern void keyboard_handler(void) {
         if(shift_flag == 1) {
             char temp = keycode_to_char[keycode][INDEX0];
             if(temp >= 'a' && temp <= 'z') {
+                terminal_buffer[terminal_index] = keycode_to_char[keycode][INDEX0];
+                terminal_index++;
                 buffer[index] = keycode_to_char[keycode][INDEX0];
                 buffer[index + 1] = '\0';
                 index = index + 1;
@@ -380,6 +386,8 @@ extern void keyboard_handler(void) {
         //checks if it is a letter, if so, display the uppercase version
         if(temp >= 'a' && temp <= 'z') {
             //printf("%c", keycode_to_char[keycode][INDEX1]);
+            terminal_buffer[terminal_index] = keycode_to_char[keycode][INDEX1];
+            terminal_index++;
             buffer[index] = keycode_to_char[keycode][INDEX1];
             buffer[index + 1] = '\0';
             index = index + 1;
@@ -390,6 +398,8 @@ extern void keyboard_handler(void) {
         }
         //otherwise, display original
         else {
+            terminal_buffer[terminal_index] = keycode_to_char[keycode][INDEX0];
+            terminal_index++;
             //printf("%c", keycode_to_char[keycode][INDEX0]);
             buffer[index] = keycode_to_char[keycode][INDEX0];
             buffer[index + 1] = '\0';
@@ -402,6 +412,8 @@ extern void keyboard_handler(void) {
     }
     //if shift is held
     if(shift_flag == 1 && index <= BUFFER_SIZE - 2) {
+        terminal_buffer[terminal_index] = keycode_to_char[keycode][INDEX1];
+        terminal_index++;
         
         //printf("%c", keycode_to_char[keycode][INDEX1]);
         buffer[index] = keycode_to_char[keycode][INDEX1];
@@ -414,6 +426,10 @@ extern void keyboard_handler(void) {
     }
 
     //printf("%c", keycode_to_char[keycode][INDEX0]);
+    terminal_buffer[terminal_index] = keycode_to_char[keycode][INDEX0];
+    terminal_index++;
+
+
     buffer[index] = keycode_to_char[keycode][INDEX0];
     buffer[index + 1] = '\0';
     index = index + 1;

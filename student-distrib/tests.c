@@ -153,7 +153,7 @@ int null_test()
     return FAIL;
 }
 
-/* kernel_up_test()
+/* kernel_high_test()
  *
  * Checks if there is a page fault exception from memory before the kernel
  * Inputs: None
@@ -161,13 +161,15 @@ int null_test()
  * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
-int kernel_up_test()
+int kernel_high_test()
 {
     TEST_HEADER;
 
     char ref;
 
     char * temp = (char * )0x3FFFFF;
+    ref = * temp;
+    char * temp = (char * )0x3FF998;
     ref = * temp;
     return FAIL;
 }
@@ -188,9 +190,12 @@ int kernel_low_test()
 
     char * temp = (char * )0x800000;
     ref = * temp;
+
+    char * temp = (char * )0x800365;
+    ref = * temp;
     return FAIL;
 }
-/* vidmem_up_test()
+/* video_mem_high_test()
  *
  * Checks if there is a page fault exception from memory before the video memory
  * Inputs: None
@@ -198,13 +203,13 @@ int kernel_low_test()
  * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
-int vidmem_up_test()
+int video_mem_high_test()
 {
     TEST_HEADER;
 
     char ref;
 
-    char * temp = (char * )0x0B7FFF;
+    char * temp = (char * )0x0B7ABC;
     ref = * temp;
     return FAIL;
 }
@@ -317,6 +322,15 @@ int rtc_test(){
 	return PASS; 
 }
 
+
+/* RTC Test
+ *
+ * Tests the terminal_read and terminal_write functions
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: prints out the data read by terminal_read
+ * Coverage: Terminal functions
+ */
 int terminal_rw_test(){
     TEST_HEADER;
 
@@ -361,9 +375,9 @@ void launch_tests()
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("null_test", null_test());
-    // TEST_OUTPUT("before_kernel_memory", kernel_up_test());
+    // TEST_OUTPUT("before_kernel_memory", kernel_high_test());
     // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
-    // TEST_OUTPUT("before_vidmem_memory", vidmem_up_test());
+    // TEST_OUTPUT("before_vidmem_memory", video_mem_high_test());
 
     /* CHECKPOINT 2 */
 

@@ -16,15 +16,21 @@ RETURN VALUE: none
 SIDE EFFECTS: startBootBloc, diectoryStart, startINode, and startDataBlock will have adresses filled in 
 */
 void FileSystem_Init(uint32_t *fs_start){
+
     //Initialize all pointers for our file system when given the starting address of the file system 
     startBootBlock  = (boot_block_t * )fs_start;
 
-   // directoryStart = startBootBlock->dirEntries;
-    startINode = (INode_t *)(fs_start + FOURKB);
-  //  startDataBlock = (uint32_t *)(startINode + startBootBlock->InodesNum);
-    // printf("start I node Pointer %p ",startINode);
+    //directoryStart[0] would give the first entry 
+    directoryStart = startBootBlock->dirEntries;
+
+    //The block that follows the boot block is 4KB after it 
+    startINode = (INode_t *)(startBootBlock + 1);
+
+    //Add the number of inode from the starting pointer to get a pointer to the first block 
+    startDataBlock = (int8_t *)(startINode + startBootBlock->InodesNum);
+
     // Initialize global variables that will be used for reads
-    dentryIDX = 0; 
+    currDentry = directoryStart[0] ;
     filePosition = 0;
 }
 
@@ -42,32 +48,43 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
 {
     int i;
-    int filledDentry = -1; 
-    uint8_t *currName;
-
+    // int filledDentry = -1; 
+    uint8_t currName[32];
+    uint8_t concat[32]; 
     
+    memset((void*)concat,0,32); 
+
     int fileNameLength = strlen((int8_t *)fname);
+    // printf("%s length: %d \n", fname,fileNameLength);
+
+    strncpy((void *)concat,(const void*)fname,32);
+    
     if(fileNameLength > MAX_FILE_NAME){
-        return -1; 
-        printf("Filename was too long");
+        printf("Filename was too long concatonated to %s \n",concat);
+        fileNameLength = 32; 
     }
+
+    if(dentry == NULL || fname == NULL)
+        return -1; 
+
 
     for (i = 0; i < NUM_DIR_ENTRIES; i++){
-        currName = startBootBlock->dirEntries[i].fileName;
-        if (strlen((int8_t *)currName) != fileNameLength)
+        memset((void*)currName,0,32); 
+        strncpy((int8_t *)currName,(int8_t *)directoryStart[i].fileName,32); 
+
+        if (strncmp((int8_t *)currName, (int8_t *)concat, 32)){
             continue;
-        else if (strncmp((int8_t *)currName, (int8_t *)fname, sizeof(fname)))
-            continue;
+        }
         else{
-            // They should have the same name lol so ima copy the useful stuff 
-            dentry->fileType = startBootBlock->dirEntries[i].fileType; 
-            dentry->INodeNum = startBootBlock->dirEntries[i].INodeNum; 
-            filledDentry = 0; 
-            break;
+           // printf("Else i: %d, currname: %s \n",i,currName);
+            dentry->fileType = directoryStart[i].fileType;
+            dentry->INodeNum = directoryStart[i].INodeNum;
+            strncpy((int8_t *)dentry->fileName, (int8_t *)currName,32);
+            return 0 ;
         }
     }
-
-    return filledDentry; 
+    return -1; 
+    
 }
 
 
@@ -82,14 +99,18 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 */
 int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 {
-    if (index > NUM_DIR_ENTRIES -1 )
+    if (index > (NUM_DIR_ENTRIES - 1))
         return -1;
 
-    int8_t *currWord = (int8_t *)  startBootBlock->dirEntries[index].fileName;
+    if(dentry == NULL)
+        return -1; 
+
+
+    int8_t *currWord = (int8_t *)  directoryStart[index].fileName;
     strcpy((int8_t *) dentry->fileName, currWord);
 
-    dentry->fileType = startBootBlock->dirEntries[index].fileType;
-    dentry->INodeNum = startBootBlock->dirEntries[index].INodeNum -3 ;
+    dentry->fileType = directoryStart[index].fileType;
+    dentry->INodeNum = directoryStart[index].INodeNum;
 
     // printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
 
@@ -109,21 +130,25 @@ SIDE EFFECTS: From the given index and offset, the buffer is filled with bytes u
 */
 int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t length){
     
-    INode_t * curr_inode = &startINode[inodeIdx];   // INode_t* correct_inode = (INode_t*)(startBootBlock + 1 + inodeIdx)
+    INode_t * curr_inode = startINode + inodeIdx;   //Pointer to the start of the block we will be copying 
+    uint32_t bytes = 0;                             //Running total of bytes copied 
+    uint32_t file_byte_size = curr_inode->bLength;  //The total size of the file you are copying in bytes
+    uint32_t blocksSkipped = offset / FOURKB;       //How many blocks to skip from the starting block
+    uint32_t blockOffset = offset % FOURKB;         //After skippin blocks how many bytes need to be skipped 
+    uint32_t end_of_file = 0;                       //Flag to stop copying 
+    void * dataBlock  = (void*)startDataBlock;      //Void pointer to start of the data block
+
+    uint32_t blockIDX = curr_inode->blockData[blocksSkipped];               //The index of the start block
+    uint32_t bytesToCopy = FOURKB - blockOffset;                            //The amount of bytes to copy to go from the offset to the end of the block 
+    void*  currBlock = (dataBlock + ((blockIDX ) * FOURKB) + offset);          //Pointer to the first byte in the block INCLUDING the offset 
+
+
+    if(blocksSkipped * FOURKB + blockOffset > file_byte_size){
+        // printf("Skipped: %u offset: %u \n",blocksSkipped,blockOffset); 
+        return 0; 
+    }
+     
     
-    uint32_t numInodes = startBootBlock->InodesNum; 
-    uint32_t bytes = 0;
-    uint32_t file_byte_size = curr_inode->bLength; 
-
-    uint32_t blocksSkipped = offset / FOURKB; 
-    uint32_t blockOffset = offset % FOURKB;;
-    uint32_t end_of_file = 0; 
-
-    //Block that you start at
-    uint32_t blockIDX = curr_inode->blockData[blocksSkipped]; 
-    uint32_t bytesToCopy = FOURKB - blockOffset;
-    uint8_t  * currBlock = (uint8_t *)( startBootBlock + numInodes + blockIDX);
-
 
     //If you reach the limit for bytes you can copy before the entirety of a block
     if (bytesToCopy > length) {
@@ -131,28 +156,30 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
         end_of_file = 1;
     }  
 
-    if(bytesToCopy > file_byte_size){
-        bytesToCopy = file_byte_size; 
+    if(bytesToCopy > file_byte_size - offset){
+        bytesToCopy = file_byte_size - offset; 
         end_of_file = 1; 
     }
 
     if(end_of_file){
         end_of_file = 0; 
-        memcpy(buf, currBlock , bytesToCopy) ; 
+        memcpy((void *)buf, (const void*) currBlock , bytesToCopy) ; 
         bytes += bytesToCopy; 
         return bytes; 
     }
 
     //If you are reading more than 4kb 
-    memcpy(buf, currBlock, bytesToCopy) ; 
+    memcpy((void *)buf, (const void*)currBlock, bytesToCopy) ; 
     bytes += bytesToCopy; 
 
     bytesToCopy = FOURKB; 
     
     while(bytes < length) // While you have not copied all the bytes
     {
+       // printf("Entered while loop with bytes: %u \n",bytes);
         blocksSkipped++;
-        currBlock = (uint8_t * )(startDataBlock + FOURKB * blocksSkipped);
+        blockIDX = curr_inode->blockData[blocksSkipped];    
+        currBlock = (dataBlock + (blockIDX  * FOURKB) );   
 
         //If 4k is larger than the file or what you have left
         if (bytesToCopy > length - bytes ){
@@ -160,14 +187,14 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
             end_of_file = 1;
         }  
 
-        if(bytesToCopy > file_byte_size - bytes){
-            bytesToCopy = file_byte_size - bytes ; 
+        if(bytesToCopy > file_byte_size - bytes - offset){
+            bytesToCopy = file_byte_size - bytes - offset ; 
             end_of_file = 1; 
         }
 
         if(end_of_file){
             end_of_file = 0; 
-            memcpy(buf, currBlock + offset, bytesToCopy) ; 
+            memcpy(buf + bytes, currBlock + offset, bytesToCopy) ; 
             bytes += bytesToCopy; 
             return bytes; 
         }
@@ -194,19 +221,24 @@ int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
 
 // Read a directory entry and fill the buffer with the corresponding value
 int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
-{ 
-    
+{
+  //  if(fd == NULL || buf == NULL || nbytes < 0 || nbytes == NULL)
+     //   return -1; 
+
     dentry_t currDir; 
     int32_t error;
 
 
     // read into dentry
     error = read_dentry_by_index(temp_global_array[fd].file_position, &currDir);
-    // printf(" Filename: %s, File Type: %d, File Size %d \n ", currDir.fileName,currDir.fileType, startINode[currDir.INodeNum -3].bLength);
+    
     if (error == -1){
         return 0;
     }
+
+
     temp_global_array[fd].file_position++;
+
     // void * can be anything
     // strncpy: Copies the first num characters of source to destination.
     memcpy((int8_t * )buf, (int8_t * )&(currDir), nbytes);

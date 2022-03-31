@@ -229,44 +229,112 @@ int name_search_test(){
     TEST_HEADER;
     dentry_t entry; 
     uint8_t * word = (uint8_t * )"cat";
-    if (read_dentry_by_name(word, &entry) == -1){
+    int code; 
+    code = read_dentry_by_name(word, &entry) ;
+    
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"cat", sizeof("cat"))))
+    {
         return FAIL;
     }
 
-    word = (uint8_t * )"FFFF";
-    if (read_dentry_by_name(word, &entry) == -1){
-        return PASS;
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"cat", sizeof("cat"))))
+    {
+        return FAIL;
+    }
+
+    word = (uint8_t *)"fish";
+    code = read_dentry_by_name(word, &entry);
+
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"fish", sizeof("fish"))))
+    {
+        return FAIL;
+    }
+
+    word = (uint8_t *)"frame0.txt";
+    code = read_dentry_by_name(word, &entry);
+
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"frame0.txt", sizeof("frame0.txt"))))
+    {
+        return FAIL;
     }
     
-    return FAIL;
+
+
+
+
+    word = (uint8_t *)"FFFF";
+    if (read_dentry_by_name(word, &entry) != -1){
+        return FAIL;
+    }
+    
+    if(!read_dentry_by_name(word,NULL))
+        return FAIL;
+
+    if (!read_dentry_by_name((uint8_t *)" ", &entry))
+        return FAIL;
+
+    return PASS;
 }
 
 int idx_search_test(){
     TEST_HEADER;
     dentry_t entry, entry_2; 
-    //int i; 
     if (read_dentry_by_index(5, &entry) == -1){
         return FAIL;
     }
 
     if(strncmp((int8_t * ) entry.fileName, (int8_t * )"rtc",sizeof("rtc")))
         return FAIL; 
+    
+
+    if (read_dentry_by_index(10, &entry) == -1){
+        return FAIL;
+    }
+
+    if(strncmp((int8_t * ) entry.fileName, (int8_t * )"frame0.txt",sizeof("frame0.txt")))
+        return FAIL; 
+    
+    // printf("  %s  found at inode %u with file size %u \n", entry.fileName, entry.INodeNum, startINode[entry.INodeNum]); 
 
     if (read_dentry_by_index(2, &entry_2) == -1){
         return FAIL;
     }
     if(! strncmp((int8_t * ) entry_2.fileName, (int8_t * )"grep",sizeof("grep")))
         return FAIL; 
-    // for(i =0; i<62; i = i+3){
-    //     printf("Inode:%u Bytes:%u Inode:%u Bytes:%u Inode:%u Bytes:%u \n",i,startINode[i].bLength,i+1,startINode[i].bLength,i+2,startINode[i+2].bLength);
-    // }
+
+    if(!read_dentry_by_index(63,&entry))
+        return FAIL; 
+
+    if(!read_dentry_by_index(4,NULL))
+        return FAIL;
+
+    if (!read_dentry_by_index(-5, &entry))
+        return FAIL;
+
     return PASS;
+}
+
+int long_text_test(){
+    TEST_HEADER;
+
+    //  Keeps failing test 
+   uint8_t* word = (uint8_t *)"verylargetextwithverylongname.txt";
+   dentry_t entry; 
+   int code = read_dentry_by_name(word, &entry);
+    // printf("Name: %s \n",entry.fileName); 
+    if ((code == -1) || (strncmp((int8_t *)entry.fileName, (int8_t *)"verylargetextwithverylongname.tx", 32)))
+    {
+        return FAIL;
+    }
+    return PASS;
+
 }
 
 int directory_read_test(){
     TEST_HEADER;
 	int i; 
     dentry_t dir_name;
+    //Start at file 0 
     open((uint8_t *)" ", 2);
 
 	for(i = 0; i<17;i++){
@@ -280,23 +348,178 @@ int directory_read_test(){
     return PASS; 
 }
 
-int read_data_test(){
+int read_data_test_no_offset(){
     TEST_HEADER;
+    dentry_t curr;
+    int i; 
+    //Create a buffer of 300 bytes and set everything equal to 0 
     uint8_t DataBuf[300] ; 
     memset(DataBuf,0,300);
 
-    dentry_t curr; 
+    //Index 10 is frame0.txt 
     read_dentry_by_index(10,&curr);
 
-    
-    read_data(curr.INodeNum, 0, DataBuf, 300);
-    // if(!strlen(dir_name))
-    //     return FAIL;
+    //printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
 
-    printf(" Buffer: %s \n",DataBuf);
-    return PASS;
+    if(read_data(curr.INodeNum, 0, DataBuf, 300) != 187){
+        return FAIL;
+    }
+    else{
+        printf(" Buffer: \n %s \n",DataBuf);
+        printf("Test 1 passed \n");
+    }
+
+
+    read_dentry_by_name((uint8_t*)"grep",&curr);
+
+    if(read_data(curr.INodeNum,0,DataBuf,300) != 300){
+
+        return FAIL;
+    }
+    else{
+        // printf("Buffer: \n");
+        // for(i = 0; i<300; i++)
+        //     if (DataBuf[i] != '\0')
+        //         putc(DataBuf[i]);
+        printf("\n");
+        printf("Test 2 passed \n");
+    }
+
+    //Create a buffer of 300 bytes and set everything equal to 0 
+    uint8_t DataBuf2[5000] ; 
+    memset(DataBuf2,0,5000);  
+    read_dentry_by_name((uint8_t*)"grep",&curr);
+   // printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
     
+    if(read_data(curr.INodeNum,0,DataBuf2,5000) != 5000){
+        return FAIL;
+    }
+    else{
+        // printf("Buffer: \n");
+        // for(i = 0; i<5000; i++)
+        //     if (DataBuf2[i] != '\0')
+        //         putc(DataBuf2[i]);
+       printf("Test 3 passed \n");
+    }
+
+
+
+    uint8_t DataBuf3[7000] ; 
+    memset(DataBuf3,0,7000);  
+    read_dentry_by_name((uint8_t*)"grep",&curr);
+    // printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
+    
+    if(read_data(curr.INodeNum,0,DataBuf3,7000) != 6149){
+        return FAIL;
+    }
+    else{
+        // printf("Buffer: \n");
+        // for(i = 0; i<6149; i++)
+        //     if (DataBuf3[i] != '\0')
+        //         putc(DataBuf3[i]);
+        printf("\n");
+        printf("Test 4 passed \n");
+    }
+    return PASS;   
 }
+
+int read_data_test_with_offset(){
+    TEST_HEADER;
+    dentry_t curr;
+    int i; 
+    //Create a buffer of 300 bytes and set everything equal to 0 
+    uint8_t DataBuf[300] ; 
+    memset(DataBuf,0,300);
+
+    //Index 10 is frame0.txt 
+    read_dentry_by_index(10,&curr);
+
+    // printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
+
+    if(read_data(curr.INodeNum, 100, DataBuf, 300) != 87){
+        return FAIL;
+    }
+    else{
+        // printf(" Buffer: \n %s \n",DataBuf);
+        printf("Test 1 Passed \n");
+    }
+    
+
+    read_dentry_by_name((const uint8_t*)"grep",&curr);
+    memset(DataBuf,0,300);
+
+    if(read_data(curr.INodeNum,50,DataBuf,300) != 300){
+        return FAIL;
+    }
+    else{
+        // printf("Buffer: \n");
+        // for(i = 0; i<300; i++)
+        //     if (DataBuf[i] != '\0')
+        //         putc(DataBuf[i]);
+        printf("\n");
+        printf("Test 2 Passed \n");
+
+    }
+
+    //Create a buffer of 300 bytes and set everything equal to 0 
+    uint8_t DataBuf2[5000] ; 
+    memset(DataBuf2,0,5000);  
+    read_dentry_by_name((const uint8_t*)"grep",&curr);
+    printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
+    
+    if(read_data(curr.INodeNum,2000,DataBuf2,5000) != 6149 - 2000){
+        return FAIL;
+    }
+    else{
+        // printf("Buffer: \n");
+        // for(i = 0; i<5000; i++)
+        //     if (DataBuf2[i] != '\0')
+        //         putc(DataBuf2[i]);
+        printf("Test 3 Passed \n");
+
+    }
+
+
+    uint8_t DataBuf3[3000] ; 
+    memset(DataBuf3,0,3000);  
+    read_dentry_by_name((const uint8_t*)"grep",&curr);
+   // printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
+    
+    if(read_data(curr.INodeNum,5000,DataBuf3,3000) != 1149){
+        printf("%d \n", read_data(curr.INodeNum,5000,DataBuf3,3000));
+        return FAIL;
+    }
+    else{
+        // printf("Buffer: \n");
+        // for(i = 0; i<6149; i++)
+        //     if (DataBuf3[i] != '\0')
+        //         putc(DataBuf3[i]);
+        // printf("\n");
+        printf("Test 4 Passed \n");
+    }
+
+    uint8_t DataBuf4[7000] ; 
+    memset(DataBuf4,0,7000);  
+    read_dentry_by_name((const uint8_t*)"grep",&curr);
+    // printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
+    
+    if(read_data(curr.INodeNum,7000,DataBuf4,7000) != 0){
+        printf("%d \n",read_data(curr.INodeNum,7000,DataBuf4,7000));
+        return FAIL;
+    }
+    else{
+        // printf("Buffer: \n");
+        // for(i = 0; i<6149; i++)
+        //     if (DataBuf4[i] != '\0')
+        //         putc(DataBuf4[i]);
+        printf("\n");
+        printf("Test 5 Passed \n");
+    }
+    return PASS;   
+}
+
+
+
 
 int file_read_test(){
     uint8_t buf[FOURKB];
@@ -382,12 +605,20 @@ void launch_tests()
 
     /* CHECKPOINT 2 */
 
-    // TEST_OUTPUT("read by name test", name_search_test());
+    //TEST_OUTPUT("read by name test", name_search_test());
+    //TEST_OUTPUT("Long file test",long_text_test());
+    //TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Directory", directory_read_test());
+    
+    //TEST_OUTPUT("Read Data Test", read_data_test_no_offset());
+    //TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
+    //TEST_OUTPUT("File Read Test", file_read_test());
+    // TEST_OUTPUT("read by name test", name_search_test());
+    TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
     // TEST_OUTPUT("File Read Test", file_read_test());
 
-    TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
+   // TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
 }
 

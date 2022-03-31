@@ -527,7 +527,7 @@ int file_read_test(){
     uint8_t buf[fileSize];
     int32_t bytes_read = file_read(directoryStart[10].INodeNum, buf, fileSize);
 
-    printf("Bytes read: %d", bytes_read);
+    printf("Bytes read: %d fileSize: %d \n" , bytes_read,fileSize);
     return PASS;
 }
 

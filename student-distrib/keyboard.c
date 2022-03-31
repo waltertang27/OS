@@ -269,9 +269,11 @@ extern void keyboard_handler(void) {
         if (index >= 80){
             second_line_buffer[index - 80] = '\n';
             second_line_buffer[index - 80 + 1] = '\0';
-            puts(second_line_buffer);
+            //puts(second_line_buffer);
+            putc(second_line_buffer[index - 80]);
         } else {
-            puts(buffer);
+            //puts(buffer);
+            putc(buffer[index]);
         }
 
 
@@ -344,8 +346,10 @@ extern void keyboard_handler(void) {
                 second_line_buffer[index - 80 + 1] = '\b';
                 second_line_buffer[index - 80 + 1 + 1] = '\0';
                 puts(second_line_buffer);
+                putc(second_line_buffer[index - 80 + 1]);
             } else {
-                puts(buffer);
+                //puts(buffer);
+                putc(buffer[index]);
             }
 
             index = index - 1;
@@ -361,7 +365,8 @@ extern void keyboard_handler(void) {
             return;
         }
         else {
-            puts(buffer);
+            //puts(buffer);
+            putc(buffer[index + 1]);
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
@@ -408,7 +413,8 @@ extern void keyboard_handler(void) {
         terminal_buffer[index] = '\t';
         terminal_buffer[index + 1] = '\0';
         index++;
-        puts(buffer);
+        //puts(buffer);
+        putc(buffer[index - 1]);
         send_eoi(KEYBOARD_IRQ);
         sti();
         return;
@@ -425,9 +431,11 @@ extern void keyboard_handler(void) {
                 if (index >= 80){
                     second_line_buffer[index - 80] = keycode_to_char[keycode][INDEX0];
                     second_line_buffer[index - 80 + 1] = '\0';
-                    puts(second_line_buffer);
+                    //puts(second_line_buffer);
+                    putc(second_line_buffer[index - 80]);
                 } else {
-                    puts(buffer);
+                    //puts(buffer);
+                    putc(buffer[index - 1]);
                 }
                 send_eoi(KEYBOARD_IRQ);
                 sti();
@@ -444,9 +452,11 @@ extern void keyboard_handler(void) {
             if (index >= 80){
                 second_line_buffer[index - 80] = keycode_to_char[keycode][INDEX1];
                 second_line_buffer[index - 80 + 1] = '\0';
-                puts(second_line_buffer);
+                //puts(second_line_buffer);
+                putc(second_line_buffer[index - 80]);
             } else {
-                puts(buffer);
+                //puts(buffer);
+                putc(buffer[index - 1]);
             }
             send_eoi(KEYBOARD_IRQ);
             sti();
@@ -462,9 +472,11 @@ extern void keyboard_handler(void) {
             if (index >= 80){
                 second_line_buffer[index - 80] = keycode_to_char[keycode][INDEX0];
                 second_line_buffer[index - 80 + 1] = '\0';
-                puts(second_line_buffer);
+                //puts(second_line_buffer);
+                putc(second_line_buffer[index - 80]);
             } else {
-                puts(buffer);
+                //puts(buffer);
+                putc(buffer[index - 1]);
             }
             send_eoi(KEYBOARD_IRQ);
             sti();
@@ -482,9 +494,11 @@ extern void keyboard_handler(void) {
         if (index >= 80){
             second_line_buffer[index - 80] = keycode_to_char[keycode][INDEX1];
             second_line_buffer[index - 80 + 1] = '\0';
-            puts(second_line_buffer);
+            //puts(second_line_buffer);
+            putc(second_line_buffer[index - 80]);
         } else {
-            puts(buffer);
+           // puts(buffer);
+           putc(buffer[index - 1]);
         }
         send_eoi(KEYBOARD_IRQ);
         sti();
@@ -501,9 +515,11 @@ extern void keyboard_handler(void) {
     if (index >= 80){
         second_line_buffer[index - 80] = keycode_to_char[keycode][INDEX0];
         second_line_buffer[index - 80 + 1] = '\0';
-        puts(second_line_buffer);
+        //puts(second_line_buffer);
+        putc(second_line_buffer[index - 80]);
     } else {
-        puts(buffer);
+        //puts(buffer);
+        putc(buffer[index - 1]);
     }
 
     send_eoi(KEYBOARD_IRQ);

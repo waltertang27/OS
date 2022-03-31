@@ -1,18 +1,8 @@
 //  to do in 6.3.1
 #include "syscall.h"
 
-#define STDIN 0
-#define STDOUT 1
-#define FD_START_INDEX 2 // file descriptor start index, not including stdin (0) or stdout (1).
-
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4
-
-#define MAGIC_1 0x7f
-#define MAGIC_2 0x45
-#define MAGIC_3 0x4c
-#define MAGIC_4 0x46
-
 
 int32_t halt(uint8_t status){
     /* The halt system call terminates a process, returning the specified value to its parent process. The system call handler

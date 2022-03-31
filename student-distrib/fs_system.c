@@ -215,6 +215,10 @@ int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
     open((uint8_t*)&" ", fd);
     
     int32_t bytes = read_data(temp_global_array[fd].inode, temp_global_array[fd].file_position, buf, nbytes);
+    if(bytes == -1)
+        return -1; 
+    temp_global_array[fd].file_position += bytes; 
+    
     return bytes;
 }
 

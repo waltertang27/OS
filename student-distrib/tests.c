@@ -522,13 +522,12 @@ int read_data_test_with_offset(){
 
 
 int file_read_test(){
-    uint8_t buf[FOURKB];
-    int32_t bytes = FOURKB;
-    int32_t bytes_read = file_read(2, buf, bytes);
 
+    uint32_t fileSize =  startINode[directoryStart[10].INodeNum].bLength ;
+    uint8_t buf[fileSize];
+    int32_t bytes_read = file_read(directoryStart[10].INodeNum, buf, fileSize);
 
-
-    printf("size: %d", bytes_read);
+    printf("Bytes read: %d", bytes_read);
     return PASS;
 }
 
@@ -614,10 +613,10 @@ void launch_tests()
     //TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
     //TEST_OUTPUT("File Read Test", file_read_test());
     // TEST_OUTPUT("read by name test", name_search_test());
-    TEST_OUTPUT("Read Directory", directory_read_test());
+    //TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
-    // TEST_OUTPUT("File Read Test", file_read_test());
+    TEST_OUTPUT("File Read Test", file_read_test());
 
    // TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
 }

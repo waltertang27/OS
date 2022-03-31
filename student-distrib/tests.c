@@ -251,14 +251,55 @@ int rtc_test(){
         int fd = open_rtc((uint8_t *)"rtc");
         int32_t list[5] = {2, 8, 32, 128, 512};
         for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
-            const void* j = i + list;
-            write_rtc((int32_t) fd, j, 4);    // the slowest to the fastest
+            write_rtc((int32_t) fd, i + list, 4);    // the slowest to the fastest
             for (freq = 0; freq < 10 ; freq++) {
-                read_rtc((int32_t) fd, (void*)j, 4);
+                read_rtc((int32_t) fd, i + list, 4);
                 putc('1');
             }
             printf("\n");
         }
+        // if (i = 0) {
+        //     write_rtc((int32_t)fd, list, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+
+        // if (i = 1) {
+        //     write_rtc((int32_t)fd, list + 1, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list + 1, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+
+        // if (i = 2) {
+        //     write_rtc((int32_t)fd, list + 2, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list + 2, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+        // if (i = 3) {
+        //     write_rtc((int32_t)fd, list + 3, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list + 3, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+        // if (i = 4) {
+        //     write_rtc((int32_t)fd, list + 4, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list + 4, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
     }
 	return PASS; 
 }

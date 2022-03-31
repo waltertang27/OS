@@ -25,8 +25,8 @@ extern void rtc_init(void){
     testing_RTC = 0; 
     
     // the initial frequency is set to 2 interrupts/second;
-    rtc_freq(2);
-    
+    rtc_freq(MAX_FREQ);
+    rtc_int = 0;
     enable_irq(RTC_IRQ_NUM);
 }
 

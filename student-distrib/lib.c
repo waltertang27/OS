@@ -172,7 +172,7 @@ int32_t puts(int8_t* s) {
         putc(s[index]);
         index++;
     }
-   // screen_x = 0;
+    //screen_x = 0;
     
     //update_cursor();
     return index;

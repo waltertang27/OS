@@ -359,14 +359,15 @@ int read_data_test_no_offset(){
     //Index 10 is frame0.txt 
     read_dentry_by_index(10,&curr);
 
-    printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
+    //printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
 
     if(read_data(curr.INodeNum, 0, DataBuf, 300) != 187){
         return FAIL;
     }
-    else
+    else{
         printf(" Buffer: \n %s \n",DataBuf);
-    
+        printf("Test 1 passed \n");
+    }
 
 
     read_dentry_by_name((uint8_t*)"grep",&curr);
@@ -376,18 +377,19 @@ int read_data_test_no_offset(){
         return FAIL;
     }
     else{
-        printf("Buffer: \n");
-        for(i = 0; i<300; i++)
-            if (DataBuf[i] != '\0')
-                putc(DataBuf[i]);
+        // printf("Buffer: \n");
+        // for(i = 0; i<300; i++)
+        //     if (DataBuf[i] != '\0')
+        //         putc(DataBuf[i]);
         printf("\n");
+        printf("Test 2 passed \n");
     }
 
     //Create a buffer of 300 bytes and set everything equal to 0 
     uint8_t DataBuf2[5000] ; 
     memset(DataBuf2,0,5000);  
     read_dentry_by_name((uint8_t*)"grep",&curr);
-    printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
+   // printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
     
     if(read_data(curr.INodeNum,0,DataBuf2,5000) != 5000){
         return FAIL;
@@ -397,7 +399,7 @@ int read_data_test_no_offset(){
         // for(i = 0; i<5000; i++)
         //     if (DataBuf2[i] != '\0')
         //         putc(DataBuf2[i]);
-        printf("Worked \n");
+       printf("Test 3 passed \n");
     }
 
 
@@ -416,6 +418,7 @@ int read_data_test_no_offset(){
         //     if (DataBuf3[i] != '\0')
         //         putc(DataBuf3[i]);
         printf("\n");
+        printf("Test 4 passed \n");
     }
     return PASS;   
 }
@@ -431,13 +434,13 @@ int read_data_test_with_offset(){
     //Index 10 is frame0.txt 
     read_dentry_by_index(10,&curr);
 
-    printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
+    // printf("Name: %s, size %u \n",curr.fileName,startINode[curr.INodeNum].bLength); 
 
     if(read_data(curr.INodeNum, 100, DataBuf, 300) != 87){
         return FAIL;
     }
     else{
-        printf(" Buffer: \n %s \n",DataBuf);
+        // printf(" Buffer: \n %s \n",DataBuf);
         printf("Test 1 Passed \n");
     }
     
@@ -449,10 +452,10 @@ int read_data_test_with_offset(){
         return FAIL;
     }
     else{
-        printf("Buffer: \n");
-        for(i = 0; i<300; i++)
-            if (DataBuf[i] != '\0')
-                putc(DataBuf[i]);
+        // printf("Buffer: \n");
+        // for(i = 0; i<300; i++)
+        //     if (DataBuf[i] != '\0')
+        //         putc(DataBuf[i]);
         printf("\n");
         printf("Test 2 Passed \n");
 
@@ -477,12 +480,13 @@ int read_data_test_with_offset(){
     }
 
 
-    uint8_t DataBuf3[7000] ; 
-    memset(DataBuf3,0,7000);  
+    uint8_t DataBuf3[3000] ; 
+    memset(DataBuf3,0,3000);  
     read_dentry_by_name((const uint8_t*)"grep",&curr);
-    // printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
+   // printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
     
-    if(read_data(curr.INodeNum,7000,DataBuf3,7000) != 0){
+    if(read_data(curr.INodeNum,5000,DataBuf3,3000) != 1149){
+        printf("%d \n", read_data(curr.INodeNum,5000,DataBuf3,3000));
         return FAIL;
     }
     else{
@@ -490,8 +494,26 @@ int read_data_test_with_offset(){
         // for(i = 0; i<6149; i++)
         //     if (DataBuf3[i] != '\0')
         //         putc(DataBuf3[i]);
-        printf("\n");
+        // printf("\n");
         printf("Test 4 Passed \n");
+    }
+
+    uint8_t DataBuf4[7000] ; 
+    memset(DataBuf4,0,7000);  
+    read_dentry_by_name((const uint8_t*)"grep",&curr);
+    // printf("File found: %s Size:%u \n",curr.fileName,startINode[curr.INodeNum].bLength);
+    
+    if(read_data(curr.INodeNum,7000,DataBuf4,7000) != 0){
+        printf("%d \n",read_data(curr.INodeNum,7000,DataBuf4,7000));
+        return FAIL;
+    }
+    else{
+        // printf("Buffer: \n");
+        // for(i = 0; i<6149; i++)
+        //     if (DataBuf4[i] != '\0')
+        //         putc(DataBuf4[i]);
+        printf("\n");
+        printf("Test 5 Passed \n");
     }
     return PASS;   
 }
@@ -589,10 +611,10 @@ void launch_tests()
     // TEST_OUTPUT("Read Directory", directory_read_test());
     
     //TEST_OUTPUT("Read Data Test", read_data_test_no_offset());
-    TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
+    //TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
     //TEST_OUTPUT("File Read Test", file_read_test());
     // TEST_OUTPUT("read by name test", name_search_test());
-    // TEST_OUTPUT("Read Directory", directory_read_test());
+    TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
     // TEST_OUTPUT("File Read Test", file_read_test());

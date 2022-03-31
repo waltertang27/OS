@@ -52,6 +52,8 @@ int32_t read_dentry_by_name(const uint8_t *fname, dentry_t *dentry)
     uint8_t currName[32];
     uint8_t concat[32]; 
     
+    memset((void*)concat,0,32); 
+
     int fileNameLength = strlen((int8_t *)fname);
     // printf("%s length: %d \n", fname,fileNameLength);
 
@@ -140,6 +142,13 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
     uint32_t bytesToCopy = FOURKB - blockOffset;                            //The amount of bytes to copy to go from the offset to the end of the block 
     void*  currBlock = (dataBlock + ((blockIDX ) * FOURKB) + offset);          //Pointer to the first byte in the block INCLUDING the offset 
 
+
+    if(blocksSkipped * FOURKB + blockOffset > file_byte_size){
+        // printf("Skipped: %u offset: %u \n",blocksSkipped,blockOffset); 
+        return 0; 
+    }
+     
+    
 
     //If you reach the limit for bytes you can copy before the entirety of a block
     if (bytesToCopy > length) {

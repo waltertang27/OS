@@ -227,10 +227,22 @@ void putc(uint8_t c) {
     if(c == '\b') {
 
         if (screen_x == 0 && next_line == 1){
-            screen_y--;
+            // screen_y--;
             next_line = 0;
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + 78) << 1)) = ' ';
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + 78) << 1) + 1) = ATTRIB;
+
+            screen_x--;
+            screen_x %= NUM_COLS;
+            screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+
+            screen_x--;
+            screen_x %= NUM_COLS;
+            screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
+            *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         } else {
             screen_x--;
             screen_x %= NUM_COLS;

@@ -604,20 +604,20 @@ void launch_tests()
 
     /* CHECKPOINT 2 */
 
-    //TEST_OUTPUT("read by name test", name_search_test());
-    //TEST_OUTPUT("Long file test",long_text_test());
-    //TEST_OUTPUT("Read by IDX Test", idx_search_test());
+    // TEST_OUTPUT("read by name test", name_search_test());
+    // TEST_OUTPUT("Long file test",long_text_test());
+    // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Directory", directory_read_test());
     
-    //TEST_OUTPUT("Read Data Test", read_data_test_no_offset());
-    //TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
-    //TEST_OUTPUT("File Read Test", file_read_test());
+    // TEST_OUTPUT("Read Data Test", read_data_test_no_offset());
+    // TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
+    // TEST_OUTPUT("File Read Test", file_read_test());
     // TEST_OUTPUT("read by name test", name_search_test());
-    //TEST_OUTPUT("Read Directory", directory_read_test());
+    TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
-    TEST_OUTPUT("File Read Test", file_read_test());
+    // TEST_OUTPUT("File Read Test", file_read_test());
 
-   // TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
+    // TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
 }
 

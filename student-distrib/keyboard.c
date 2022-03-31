@@ -342,10 +342,10 @@ extern void keyboard_handler(void) {
             buffer[index + 1] = '\0';
             backspace_detected = 1;
             //buffer[index - 1] = '\0;
-            if (index >= 79){
+            if (index >= 80){
                 second_line_buffer[index - 80 + 1] = '\b';
                 second_line_buffer[index - 80 + 1 + 1] = '\0';
-                puts(second_line_buffer);
+                // puts(second_line_buffer);
                 putc(second_line_buffer[index - 80 + 1]);
             } else {
                 //puts(buffer);

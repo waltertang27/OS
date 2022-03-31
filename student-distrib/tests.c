@@ -593,7 +593,7 @@ void launch_tests()
     /* CHECKPOINT 1 */
 
     // TEST_OUTPUT("idt_test", idt_test());
-	// TEST_OUTPUT("RTC test", rtc_test());
+    // TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());

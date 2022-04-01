@@ -4,6 +4,9 @@
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4
 
+int32_t id = 0;
+int32_t curr_id = 0;
+
 int32_t halt(uint8_t status){
     /* The halt system call terminates a process, returning the specified value to its parent process. The system call handler
     itself is responsible for expanding the 8-bit argument from BL into the 32-bit return value to the parent program’s
@@ -49,6 +52,7 @@ int32_t execute (const uint8_t* command){
     uint8_t * memory;
     // uint8_t * inode;
     dentry_t dentry;
+    pcb_t * pcb;
 
     /* 
         Part 1: Parsing command and args.
@@ -116,8 +120,10 @@ int32_t execute (const uint8_t* command){
     read_data(dentry.inode_num, 0, memory, ???);
 
     /* Create PCB */
-
-    // what
+    pcb = get_pcb(id);
+    pcb.process_id = id;
+    curr_id = id;
+    id++;
 
     /* Prepare for Context Switch */
 

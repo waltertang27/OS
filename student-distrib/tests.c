@@ -154,64 +154,46 @@ int null_test()
     return FAIL;
 }
 
-/* kernel_high_test()
+/* out_of_bounds_test()
  *
- * Checks if there is a page fault exception from memory before the kernel
+ * Checks if there is a page fault exception from memory out of bounds
  * Inputs: None
  * Outputs: Page fault/FAIL
  * Side effects: halts the OS and displays errors
  * Coverage: page fault exception
  */
-int kernel_high_test()
+int out_of_bounds_test()
 {
     TEST_HEADER;
 
     char ref;
 
+    /* ONE TEST AT A TIME */
+
+    /* test 1 */
+    // char * temp = (char * ) 0x0B7ABC;
+    // ref = * temp;
+
+    /* test 2 */
+    // char * temp = (char * ) 0x100000;
+    // ref = * temp;
+
+    /* test 3 */
     // char * temp = (char * ) 0x3FFFFF;
     // ref = * temp;
-    char * temp = (char * ) 0x3FF998;
-    ref = * temp;
-    return FAIL;
-}
 
-/* kernel_low_test()
- *
- * Checks if there is a page fault exception from memory after the kernel
- * Inputs: None
- * Outputs: Page fault/FAIL
- * Side effects: halts the OS and displays errors
- * Coverage: page fault exception
- */
-int kernel_low_test()
-{
-    TEST_HEADER;
-
-    char ref;
-
+    /* test 4 */
+    // char * temp = (char * ) 0x3FF998;
+    // ref = * temp;
+    
+    /* test 5 */
     // char * temp = (char * ) 0x800000;
     // ref = * temp;
 
+    /* test 6 */
     char * temp = (char * ) 0x800365;
     ref = * temp;
-    return FAIL;
-}
-/* video_mem_test()
- *
- * Checks if there is a page fault exception from memory outside of the video memory
- * Inputs: None
- * Outputs: Page fault/FAIL
- * Side effects: halts the OS and displays errors
- * Coverage: page fault exception
- */
-int video_mem_test()
-{
-    TEST_HEADER;
 
-    char ref;
-
-    char * temp = (char * ) 0x0B7ABC;
-    ref = * temp;
     return FAIL;
 }
 
@@ -258,9 +240,6 @@ int name_search_test(){
         return FAIL;
     }
     
-
-
-
 
     word = (uint8_t *)"FFFF";
     if (read_dentry_by_name(word, &entry) != -1){
@@ -519,8 +498,6 @@ int read_data_test_with_offset(){
 }
 
 
-
-
 int file_read_test(){
 
     uint32_t fileSize =  startINode[directoryStart[10].INodeNum].bLength ;
@@ -546,7 +523,7 @@ int rtc_test(){
 }
 
 
-/* RTC Test
+/* Terminal Read/Write Test
  *
  * Tests the terminal_read and terminal_write functions
  * Inputs: None
@@ -598,26 +575,22 @@ void launch_tests()
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
     // TEST_OUTPUT("null_test", null_test());
-    // TEST_OUTPUT("before_kernel_memory", kernel_high_test());
-    // TEST_OUTPUT("after_kernel_memory", kernel_low_test());
-    // TEST_OUTPUT("video memory test", video_mem_test());
+    // TEST_OUTPUT("out_of_bounds_test", out_of_bounds_test());
 
     /* CHECKPOINT 2 */
 
-    // TEST_OUTPUT("read by name test", name_search_test());
+    // TEST_OUTPUT("Read by name test", name_search_test());
     // TEST_OUTPUT("Long file test",long_text_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Directory", directory_read_test());
-    
     // TEST_OUTPUT("Read Data Test", read_data_test_no_offset());
     // TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
     // TEST_OUTPUT("File Read Test", file_read_test());
-    // TEST_OUTPUT("read by name test", name_search_test());
+    // TEST_OUTPUT("Read by name test", name_search_test());
     TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
     // TEST_OUTPUT("File Read Test", file_read_test());
-
     // TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
 }
 

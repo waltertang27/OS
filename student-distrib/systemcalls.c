@@ -12,6 +12,12 @@ int32_t halt(uint8_t status){
     itself is responsible for expanding the 8-bit argument from BL into the 32-bit return value to the parent program’s
     execute system call. Be careful not to return all 32 bits from EBX. This call should never return to the caller. */
 
+    /*
+        Restore parent data
+        Restore parent paging
+        Close any relevant FDs
+        Jump to execute return
+    */
 
     asm volatile (" 
         leave ;
@@ -121,13 +127,24 @@ int32_t execute (const uint8_t* command){
 
     /* Create PCB */
     pcb = get_pcb(id);
-    pcb.process_id = id;
+    pcb->process_id = id;
     curr_id = id;
     id++;
 
+    auto_open(STDIN);
+    auto_open(STDOUT);
+
+    // remaining six file descriptors available
+    for (i = FD_START_INDEX; i < FD_ARRAY_SIZE i++) {
+        // pcb->fd_array[i].jump_position = ???;     
+        // pcb->fd_array[i].file_position = ???;
+        pcb->fd_array[i].flags = FREE;
+        // pcb->fd_array[i].inode = ???;
+    }
+
     /* Prepare for Context Switch */
 
-    // what
+    // wtf is context switch
 
     /* Push IRET context to kernel stack */
     asm volatile ("
@@ -136,6 +153,17 @@ int32_t execute (const uint8_t* command){
     );
     return 172;  // value between 0 and 255
 }
+
+void auto_open(int stdfile){
+    pcb = get_pcb(curr_id);
+
+    // pcb->fd_array[stdfile].jump_position = ???;     
+    // pcb->fd_array[stdfile].file_position = ???;
+    pcb->fd_array[stdfile].flags = IN_USE;
+    // pcb->fd_array[stdfile].inode = ???;
+    return;
+}
+
 
 int32_t read (int32 t fd, void* buf, int32_t nbytes){
     // fail

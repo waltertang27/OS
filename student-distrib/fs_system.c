@@ -2,7 +2,7 @@
 
 file_descriptor_t temp_global_array[64];
 
-int32_t open(const uint8_t* filename, int fd){
+int32_t open_(const uint8_t* filename, int fd){
     temp_global_array[fd].file_position = 0;
     return fd;
 }
@@ -212,7 +212,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
 
     // read file
-    open((uint8_t*)&" ", fd);
+    open_((uint8_t*)&" ", fd);
     
     int32_t bytes = read_data(fd, temp_global_array[fd].file_position, buf, nbytes);
     if(bytes == -1)

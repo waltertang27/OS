@@ -344,7 +344,7 @@ int directory_read_test(){
 	int i; 
     dentry_t dir_name;
     //Start at file 0 
-    open((uint8_t *)" ", 2);
+    open_((uint8_t *)" ", 2);
 
 	for(i = 0; i < 17; i++){
 		directory_read(0, (dentry_t *)&dir_name, 54);
@@ -368,7 +368,6 @@ int directory_read_test(){
 int read_data_test_no_offset(){
     TEST_HEADER;
     dentry_t curr;
-    int i; 
     //Create a buffer of 300 bytes and set everything equal to 0 
     uint8_t DataBuf[300] ; 
     memset(DataBuf,0,300);
@@ -451,7 +450,6 @@ int read_data_test_no_offset(){
 int read_data_test_with_offset(){
     TEST_HEADER;
     dentry_t curr;
-    int i; 
     //Create a buffer of 300 bytes and set everything equal to 0 
     uint8_t DataBuf[300] ; 
     memset(DataBuf,0,300);

@@ -1,5 +1,5 @@
 //  to do in 6.3.1
-#include "syscall.h"
+#include "systemcalls.h"
 
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4
@@ -18,6 +18,7 @@ int32_t halt(uint8_t status){
         Close any relevant FDs
         Jump to execute return
     */
+    pcb_t * pcb;
 
     /* restore parent data */
 
@@ -28,12 +29,12 @@ int32_t halt(uint8_t status){
     /* everytime we change paging we need to flush TLB */
 
     // flush tlb here
-    asm volatile (" 
-        movl %cr3, %eax ;
-        movl %eax, %cr3 ;
-        ret
-    "
-    );
+    // asm volatile (" 
+    //     movl %cr3, %eax ;
+    //     movl %eax, %cr3 ;
+    //     ret
+    // "
+    // );
 
     
 
@@ -61,13 +62,13 @@ int32_t execute (const uint8_t* command){
     */
 
     /* parsing */
-    int command_size = strlen( (const uint8_t * ) command);
+    int command_size = strlen( (const int8_t * ) command);
     int i = 0;
     int spaces;
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
     uint8_t args[MAX_CMD_LINE_SIZE];
     uint8_t buf[BUF_SIZE];
-    uint8_t * memory;
+    // uint8_t * memory;
     // uint8_t * inode;
     dentry_t dentry;
     pcb_t * pcb;
@@ -118,7 +119,7 @@ int32_t execute (const uint8_t* command){
 
     if (read_dentry_by_name(cmd, &dentry)  == -1) { // no file
         return -1;
-    } else if (read_data(dentry.inode_num, 0, buf, BUF_SIZE) == -1){ // data reading failure
+    } else if (read_data(dentry.INodeNum, 0, buf, BUF_SIZE) == -1){ // data reading failure
         return -1;
     } else if (buf[0] != MAGIC_1){ // check for magic nums
         return -1;
@@ -135,7 +136,7 @@ int32_t execute (const uint8_t* command){
     // what
 
     /* Load file into memory */
-    read_data(dentry.inode_num, 0, memory, ???);
+    // read_data(dentry.INodeNum, 0, memory, ???);
 
     /* Create PCB */
     pcb = get_pcb(id);
@@ -147,7 +148,7 @@ int32_t execute (const uint8_t* command){
     auto_open(STDOUT);
 
     // remaining six file descriptors available
-    for (i = FD_START_INDEX; i < FD_ARRAY_SIZE i++) {
+    for (i = FD_START_INDEX; i < FD_ARRAY_SIZE; i++) {
         // pcb->fd_array[i].jump_position = ???;     
         // pcb->fd_array[i].file_position = ???;
         pcb->fd_array[i].flags = FREE;
@@ -159,14 +160,15 @@ int32_t execute (const uint8_t* command){
     // wtf is context switch
 
     /* Push IRET context to kernel stack */
-    asm volatile ("
-        iret ;
-    "
-    );
+    // asm volatile ("
+    //     iret ;
+    // "
+    // );
     return 172;  // value between 0 and 255
 }
 
 void auto_open(int stdfile){
+    pcb_t * pcb;
     pcb = get_pcb(curr_id);
 
     // pcb->fd_array[stdfile].jump_position = ???;     
@@ -177,12 +179,12 @@ void auto_open(int stdfile){
 }
 
 
-int32_t read (int32 t fd, void* buf, int32_t nbytes){
+int32_t read (int32_t fd, void* buf, int32_t nbytes){
     // fail
     return -1;
 }
 
-int32_t write (int32 t fd, const void* buf, int32_t nbytes){
+int32_t write (int32_t fd, const void* buf, int32_t nbytes){
     /*
         The write system call writes data to the terminal or to a device (RTC). In the case of the terminal, all data should
         be displayed to the screen immediately. In the case of the RTC, the system call should always accept only a 4-byte
@@ -201,6 +203,7 @@ int32_t open (const uint8_t* filename){
     RTC device, or regular file). If the named file does not exist or no descriptors are free, the call returns -1. */
 
     dentry_t dentry;
+    // int i;
     int error;
 
     // check if filename is valid
@@ -214,9 +217,9 @@ int32_t open (const uint8_t* filename){
         return -1;
     }
     
-    for(i = FD_START_INDEX; i < ???; i++) {
+    // for(i = FD_START_INDEX; i < ???; i++) {
 
-    }
+    // }
 
     
     

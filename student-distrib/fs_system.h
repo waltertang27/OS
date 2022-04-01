@@ -68,11 +68,21 @@ int32_t directory_close(void);
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length);
 
 // temporary open
-int32_t open(const uint8_t* filename, int fd);
+int32_t open_(const uint8_t* filename, int fd);
+
+// per-task data structures, to support tasks
+
+typedef struct fileop_jmp_table {
+    // not sure data type yet
+    int32_t open;
+    int32_t read;
+    int32_t write;
+    int32_t close;
+} fileop_jmp_table_t;
 
 typedef struct file_descriptor {
+    fileop_jmp_table_t jump_table;
     int32_t inode;
     int32_t file_position;
-    int32_t flags;
+    int32_t flags; // free or in use?
 } file_descriptor_t;
-

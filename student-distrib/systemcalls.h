@@ -17,21 +17,24 @@
 #define MAGIC_3 0x4c
 #define MAGIC_4 0x46
 
-#define EIGHTMB 4194304 * 2 // 8MB
-#define EIGHTKB 8192 // 8KB
-
 #define IN_USE 0
 #define FREE 1
 
 int32_t halt (uint8_t status); //3.1
 int32_t execute (const uint8_t* command); //3.1
+
+void auto_open(int stdfile);
+
 int32_t read (int32_t fd, void* buf, int32_t nbytes); //3.1
 int32_t write (int32_t fd, const void* buf, int32_t nbytes); //3.1
 int32_t open (const uint8_t* filename); //3.1
 int32_t close (int32_t fd); //3.1
 int32_t getargs (uint8_t* buf, int32_t nbytes);
-int32_t vidmap (uint8_t** screen start);
-int32_t set_handler (int32_t signum, void* handler address);
+int32_t vidmap (uint8_t** screen_start);
+int32_t set_handler (int32_t signum, void* handler_address);
 int32_t sigreturn (void);
+
+void auto_open(int stdfile);
+void auto_open(int stdfile);
 
 #endif

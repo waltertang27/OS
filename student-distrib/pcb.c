@@ -14,3 +14,4 @@ pcb_t * get_cur_pcb() {
 	uint32_t addr = EIGHTMB - EIGHTKB * (cur_id + 1);
 	return (pcb_t *) addr;
 }
+

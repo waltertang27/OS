@@ -19,11 +19,23 @@ int32_t halt(uint8_t status){
         Jump to execute return
     */
 
+    /* restore parent data */
+
+    pcb = get_pcb(curr_id);
+    curr_id = pcb->parent_id;
+
+    /* restore parent paging */
+    /* everytime we change paging we need to flush TLB */
+
+    // flush tlb here
     asm volatile (" 
-        leave ;
-        ret ;
+        movl %cr3, %eax ;
+        movl %eax, %cr3 ;
+        ret
     "
     );
+
+    
 
     // fail
     return -1;

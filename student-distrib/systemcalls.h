@@ -10,6 +10,8 @@
 #define STDOUT 1
 #define FD_START_INDEX 2 // file descriptor start index, not including stdin (0) or stdout (1).
 
+#define MAX_PROCCESES 2 // not sure
+
 #define MAGIC_1 0x7f
 #define MAGIC_2 0x45
 #define MAGIC_3 0x4c

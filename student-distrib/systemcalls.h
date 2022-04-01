@@ -5,6 +5,8 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "pcb.h"
+#include "terminal.h"
+#include "fs_system.h"
 
 #define STDIN 0
 #define STDOUT 1
@@ -19,6 +21,41 @@
 
 #define IN_USE 0
 #define FREE 1
+#define FD_ARRAY_SIZE 8
+#define EIGHTMB 8388608 // 8MB
+#define EIGHTKB 8192 // 8KB
+
+uint32_t cur_id = 0;
+
+// https://stackoverflow.com/questions/9932212/jump-table-examples-in-c
+typedef struct fileop_jmp_table
+{
+    // Pointers to open functions(need to be initialized)
+    int32_t (*open)(const uint8_t *filename);
+    int32_t (*read)(int32_t fd, void *buf, int32_t nbytes);
+    int32_t (*write)(int32_t fd, const void *buf, int32_t nbytes);
+    int32_t (*close)(int32_t fd);
+} fileop_jmp_table_t;
+
+
+typedef struct file_descriptor
+{
+    fileop_jmp_table_t *jump_table;
+    int32_t inode;
+    int32_t file_position;
+    int32_t flags; // free or in use?
+} file_descriptor_t;
+
+
+typedef struct pcb {
+    int32_t process_id;
+    int32_t parent_id;
+    file_descriptor_t fd_array[FD_ARRAY_SIZE];
+} pcb_t;
+
+
+pcb_t * get_pcb(int32_t id);
+pcb_t *get_cur_pbc();
 
 int32_t halt (uint8_t status); //3.1
 int32_t execute (const uint8_t* command); //3.1
@@ -29,12 +66,26 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes); //3.1
 int32_t write (int32_t fd, const void* buf, int32_t nbytes); //3.1
 int32_t open (const uint8_t* filename); //3.1
 int32_t close (int32_t fd); //3.1
+
+// If a file cant read, write, open, or close these their jump tables will be sent here 
+int32_t read_fail(int32_t fd, void *buf, int32_t nbytes) { return -1 ;}
+int32_t write_fail(int32_t fd, const void *buf, int32_t nbytes){return -1; }
+int32_t open_fail(const uint8_t *filename) {return -1;}
+int32_t close_fail(int32_t fd){ return -1; }
+
 int32_t getargs (uint8_t* buf, int32_t nbytes);
 int32_t vidmap (uint8_t** screen_start);
 int32_t set_handler (int32_t signum, void* handler_address);
 int32_t sigreturn (void);
 
+void fileop_init(); 
 void auto_open(int stdfile);
 void auto_open(int stdfile);
+
+//Corresponding open and close functions for each of the following file descriptors 
+fileop_jmp_table_t stdin_fileop;
+fileop_jmp_table_t stdout_fileop; 
+
+
 
 #endif

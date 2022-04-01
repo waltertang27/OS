@@ -91,6 +91,7 @@ int32_t execute (const uint8_t* command){
         i++;
     }
 
+
     /* args */
 
     // check logic
@@ -136,7 +137,7 @@ int32_t execute (const uint8_t* command){
     // what
 
     /* Load file into memory */
-    // read_data(dentry.INodeNum, 0, memory, ???);
+    //read_data(dentry.INodeNum, 0, memory, ???);
 
     /* Create PCB */
     pcb = get_pcb(id);
@@ -235,3 +236,32 @@ int32_t close (int32_t fd){
     // fail
     return -1;
 }
+
+
+void fileop_init(){
+    stdin_fileop.close = terminal_close; 
+    stdin_fileop.open = terminal_open; 
+    stdin_fileop.read = terminal_read; 
+    stdin_fileop.write = read_fail; 
+
+    stdout_fileop.close = terminal_close;
+    stdout_fileop.open = terminal_open; 
+    stdout_fileop.read = read_fail; 
+    stdout_fileop.write = terminal_write; 
+}
+
+
+
+
+// gets address to pcb corresponding to the id
+pcb_t * get_pcb(int32_t id){
+	uint32_t addr = EIGHTMB - EIGHTKB * (id + 1);
+	return (pcb_t * )addr;
+}
+
+// gets address to current pcb
+pcb_t * get_cur_pcb() {
+	uint32_t addr = EIGHTMB - EIGHTKB * (cur_id + 1);
+	return (pcb_t *) addr;
+}
+

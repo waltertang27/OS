@@ -113,9 +113,10 @@ int paging_test()
     TEST_HEADER;
 
     char ref;
+    char * temp;
 
      // start of the kernel
-    char * temp = (char * )KERNEL_ADDR;
+    temp = (char * )KERNEL_ADDR;
     ref = *  temp;
 
      // start of the video memory
@@ -123,11 +124,11 @@ int paging_test()
     ref = * temp;
 
     // middle of the kernel 
-    temp = (char * )0x6BF312;
+    temp = (char * ) 0x6BF312;
     ref = * temp;
 
     // end of the kernel 
-    temp = (char * )0x7FFFFF;
+    temp = (char * ) 0x7FFFFF;
     ref = * temp;
 
     return PASS;
@@ -146,10 +147,11 @@ int null_test()
     TEST_HEADER;
 
     char ref;
+    char * temp;
 
     // convert 0 to char pointer for NULL
 
-    char * temp = (char * ) 0x0;
+    temp = (char * ) 0x0;
     ref = * temp;
     return FAIL;
 }
@@ -167,31 +169,32 @@ int out_of_bounds_test()
     TEST_HEADER;
 
     char ref;
+    char * temp;
 
     /* ONE TEST AT A TIME */
 
     /* test 1 */
-    // char * temp = (char * ) 0x0B7ABC;
+    // temp = (char * ) 0x0B7ABC;
     // ref = * temp;
 
     /* test 2 */
-    // char * temp = (char * ) 0x100000;
+    // temp = (char * ) 0x100000;
     // ref = * temp;
 
     /* test 3 */
-    // char * temp = (char * ) 0x3FFFFF;
+    // temp = (char * ) 0x3FFFFF;
     // ref = * temp;
 
     /* test 4 */
-    // char * temp = (char * ) 0x3FF998;
+    // temp = (char * ) 0x3FF998;
     // ref = * temp;
     
     /* test 5 */
-    // char * temp = (char * ) 0x800000;
+    // temp = (char * ) 0x800000;
     // ref = * temp;
 
     /* test 6 */
-    char * temp = (char * ) 0x800365;
+    temp = (char * ) 0x800365;
     ref = * temp;
 
     return FAIL;

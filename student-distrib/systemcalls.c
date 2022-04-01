@@ -1,5 +1,5 @@
 //  to do in 6.3.1
-#include "syscall.h"
+#include "systemcalls.h"
 
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4

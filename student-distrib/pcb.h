@@ -1,3 +1,6 @@
+#include "lib.h"
+#include "types.h"
+
 #ifndef PCB_H
 #define PCB_H
 
@@ -33,3 +36,5 @@ pcb_t * get_pcb(int32_t id);
 pcb_t *get_cur_pbc();
 
 #endif
+
+

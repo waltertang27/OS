@@ -1,3 +1,6 @@
+#include "lib.h"
+#include "types.h"
+
 #ifndef PCB_H
 #define PCB_H
 

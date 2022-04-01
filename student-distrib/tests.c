@@ -197,16 +197,17 @@ int out_of_bounds_test()
     return FAIL;
 }
 
-/* RTC Test
+/* Checkpoint 2 tests */
+
+/* Name Search Test
  *
- * Asserts that the RTC handler is being called multiple times
+ * Tests that the read_dentry_by_name function works, checking
+ *      if the filename stored in the dentry is correct
  * Inputs: None
  * Outputs: PASS/FAIL
  * Side Effects: None
- * Coverage: RTC functions
+ * Coverage: read_dentry_by_name() in fs_system.c
  */
-/* Checkpoint 2 tests */
-
 int name_search_test(){
     TEST_HEADER;
     dentry_t entry; 
@@ -255,6 +256,15 @@ int name_search_test(){
     return PASS;
 }
 
+/* Index Search Test
+ *
+ * Tests that the read_dentry_by_index function works, checking
+ *      if the filename stored in the dentry is correct
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: read_dentry_by_index() in fs_system.c
+ */
 int idx_search_test(){
     TEST_HEADER;
     dentry_t entry, entry_2; 
@@ -293,6 +303,15 @@ int idx_search_test(){
     return PASS;
 }
 
+/* Long Text Test
+ *
+ * Tests that the read_dentry_by_name function works specifically
+ *      for files with long names
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: None
+ * Coverage: read_dentry_by_name() in fs_system.c
+ */
 int long_text_test(){
     TEST_HEADER;
 
@@ -309,6 +328,14 @@ int long_text_test(){
 
 }
 
+/* Directory Read Test
+ *
+ * Tests that the directory read function works
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: prints out the file name, type, and size for each file
+ * Coverage: directory_read() in fs_system.c
+ */
 int directory_read_test(){
     TEST_HEADER;
 	int i; 
@@ -316,7 +343,7 @@ int directory_read_test(){
     //Start at file 0 
     open((uint8_t *)" ", 2);
 
-	for(i = 0; i<17;i++){
+	for(i = 0; i < 17; i++){
 		directory_read(0, (dentry_t *)&dir_name, 54);
 		if(!strlen((int8_t *) dir_name.fileName))
 			return FAIL;
@@ -327,6 +354,14 @@ int directory_read_test(){
     return PASS; 
 }
 
+/* Read Data Test
+ *
+ * Tests that the read data function works for cases without offsets
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: prints out the passed tests
+ * Coverage: read_data() in fs_system.c
+ */
 int read_data_test_no_offset(){
     TEST_HEADER;
     dentry_t curr;
@@ -402,6 +437,14 @@ int read_data_test_no_offset(){
     return PASS;   
 }
 
+/* Read Data Test
+ *
+ * Tests that the read data function works for cases with offsets
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: prints out the passed tests
+ * Coverage: read_data() in fs_system.c
+ */
 int read_data_test_with_offset(){
     TEST_HEADER;
     dentry_t curr;
@@ -497,7 +540,14 @@ int read_data_test_with_offset(){
     return PASS;   
 }
 
-
+/* File Read Test
+ *
+ * Tests that the file read function works
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: prints out the file size
+ * Coverage: file_read() in fs_system.c
+ */
 int file_read_test(){
 
     uint32_t fileSize =  startINode[directoryStart[10].INodeNum].bLength ;

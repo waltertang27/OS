@@ -27,5 +27,6 @@ typedef struct pcb {
 
 
 pcb_t * get_pcb(int32_t id);
+pcb_t *get_cur_pbc();
 
 #endif

@@ -12,8 +12,6 @@
 #define STDOUT 1
 #define FD_START_INDEX 2 // file descriptor start index, not including stdin (0) or stdout (1).
 
-#define MAX_PROCCESES 2 // not sure
-
 #define MAGIC_1 0x7f
 #define MAGIC_2 0x45
 #define MAGIC_3 0x4c
@@ -22,10 +20,11 @@
 #define IN_USE 0
 #define FREE 1
 #define FD_ARRAY_SIZE 8
+#define PROCESS_ARRAY_SIZE 4
 #define EIGHTMB 8388608 // 8MB
 #define EIGHTKB 8192 // 8KB
 
-uint32_t cur_id = 0;
+uint32_t process_array[PROCESS_ARRAY_SIZE];
 
 // https://stackoverflow.com/questions/9932212/jump-table-examples-in-c
 typedef struct fileop_jmp_table

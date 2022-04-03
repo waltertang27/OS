@@ -1,5 +1,6 @@
 //  to do in 6.3.1
 #include "systemcalls.h"
+#include "paging.h"
 
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4
@@ -65,6 +66,7 @@ int32_t execute (const uint8_t* command){
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
     int spaces;
+    uint32_t addr;
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
     uint8_t args[MAX_CMD_LINE_SIZE];
     uint8_t buf[BUF_SIZE];
@@ -133,11 +135,24 @@ int32_t execute (const uint8_t* command){
     }
 
     /* Set up paging */
+    curr_id = FD_START_INDEX;
+    while (curr_id < PROCESS_ARRAY_SIZE){
+        if (process_array[curr_id] == 0){
+            process_array[curr_id] = 1;
+            break;
+        }
+        curr_id++;
+    }
+    // full array
+    if (curr_id >= PROCESS_ARRAY_SIZE){
+        return -1;
+    }
 
-    // what
+    addr = PAGE_SIZE * curr_id;
+    page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     /* Load file into memory */
-    //read_data(dentry.INodeNum, 0, memory, ???);
+    // read_data(dentry.INodeNum, 0, memory, ???);
 
     /* Create PCB */
     pcb = get_pcb(id);
@@ -261,7 +276,7 @@ pcb_t * get_pcb(int32_t id){
 
 // gets address to current pcb
 pcb_t * get_cur_pcb() {
-	uint32_t addr = EIGHTMB - EIGHTKB * (cur_id + 1);
+	uint32_t addr = EIGHTMB - EIGHTKB * (curr_id + 1);
 	return (pcb_t *) addr;
 }
 

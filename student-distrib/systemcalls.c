@@ -151,6 +151,8 @@ int32_t execute (const uint8_t* command){
     addr = PAGE_SIZE * curr_id;
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
+    // NEED TO FLUSH TLB HERE
+
     /* Load file into memory */
     // read_data(dentry.INodeNum, 0, memory, ???);
 

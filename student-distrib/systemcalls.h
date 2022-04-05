@@ -7,6 +7,7 @@
 #include "pcb.h"
 #include "terminal.h"
 #include "fs_system.h"
+#include "paging.h"
 
 #define STDIN 0
 #define STDOUT 1
@@ -23,6 +24,7 @@
 #define PROCESS_ARRAY_SIZE 4
 #define EIGHTMB 8388608 // 8MB
 #define EIGHTKB 8192 // 8KB
+#define PROCESS_ADDR 0x8048000
 
 uint32_t process_array[PROCESS_ARRAY_SIZE];
 

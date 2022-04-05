@@ -1,6 +1,6 @@
 //  to do in 6.3.1
 #include "systemcalls.h"
-#include "paging.h"
+
 
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4
@@ -65,13 +65,14 @@ int32_t execute (const uint8_t* command){
     /* parsing */
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
-    int spaces;
+    int spaces, error;
     uint32_t addr;
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
     uint8_t args[MAX_CMD_LINE_SIZE];
     uint8_t buf[BUF_SIZE];
     // uint8_t * memory;
     // uint8_t * inode;
+    inode_t * inode;
     dentry_t dentry;
     pcb_t * pcb;
 
@@ -154,7 +155,8 @@ int32_t execute (const uint8_t* command){
     // NEED TO FLUSH TLB HERE
 
     /* Load file into memory */
-    // read_data(dentry.INodeNum, 0, memory, ???);
+    inode = (inode_t * )(startINode + dentry.INodeNum);
+    error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);
 
     /* Create PCB */
     pcb = get_pcb(id);

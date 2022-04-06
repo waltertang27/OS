@@ -240,7 +240,7 @@ int32_t close (int32_t fd){
     if (pcb->fd_array[fd].flags == FREE) { // file not in use, invalid descriptor
         return -1;
         // if trying to close an unused file failed, return -1
-        if (pcb->fd_array[fd].jump_position.close(fd) != pcb->fd_array[fd].flags) 
+        if (pcb->fd_array[fd].close(fd) != pcb->fd_array[fd].flags) 
             return -1;
     }
     return 0;

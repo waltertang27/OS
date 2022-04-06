@@ -183,15 +183,19 @@ int32_t execute (const uint8_t* command){
 
     // =============================== Prepare for Context Switch ===============================
 
-    // wtf is context switch
+    // Set the registers that we want to pop to the correct values
 
     // =============================== Push IRET context to kernel stack  ===============================
     // asm volatile ("
-    //     iret ;
-    // "
-    // );
+    //     pushw %ds ;
+    //     pushl %esp ;
+    //     pushl EFLAG ;
+    //     pushl %es; 
+    //     pushl %eip ; 
+    //     iret 
+    // ");
 
-    
+
     return 172; // value between 0 and 255
 }
 

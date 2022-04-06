@@ -1,5 +1,7 @@
 #include "lib.h"
 #include "types.h"
+#include "systemcalls.h"
+
 
 #define MAX_FILE_NAME 32 
 #define RESERVED_DIRENTRY_SPACE 24
@@ -69,20 +71,3 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length
 
 // temporary open
 int32_t open_(const uint8_t* filename, int fd);
-
-// per-task data structures, to support tasks
-
-typedef struct fileop_jmp_table {
-    // not sure data type yet
-    int32_t open;
-    int32_t read;
-    int32_t write;
-    int32_t close;
-} fileop_jmp_table_t;
-
-typedef struct file_descriptor {
-    fileop_jmp_table_t jump_table;
-    int32_t inode;
-    int32_t file_position;
-    int32_t flags; // free or in use?
-} file_descriptor_t;

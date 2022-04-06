@@ -28,13 +28,13 @@ void paging_init()
 			page_directory[i].user_supervisor = 0;
 			page_directory[i].page_table_addr = KERNEL_ADDR / ALIGN_BYTES;
 		}
-		// else if (i == USER_INDEX)
-		// {
-		// 	// user memory
-		// 	page_directory[i].present = 1;
-		// 	page_directory[i].user_supervisor = 1;
-		// 	page_directory[i].page_table_addr = USER_V / ALIGN_BYTES;
-		// }
+		else if (i == USER_INDEX)
+		{
+			// user memory
+			page_directory[i].present = 1;
+			page_directory[i].user_supervisor = 1;
+			page_directory[i].page_table_addr = USER_V / ALIGN_BYTES;
+		}
 		else
 		{
 			// not setting up page_table_addr

@@ -1,6 +1,7 @@
 //  to do in 6.3.1
 #include "systemcalls.h"
 
+
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4
 
@@ -61,15 +62,17 @@ int32_t execute (const uint8_t* command){
         Push IRET context to kernel stack
     */
 
-    /* parsing */
+    // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
-    int spaces;
+    int spaces, error;
+    uint32_t addr;
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
     uint8_t args[MAX_CMD_LINE_SIZE];
     uint8_t buf[BUF_SIZE];
     // uint8_t * memory;
     // uint8_t * inode;
+    inode_t * inode;
     dentry_t dentry;
     pcb_t * pcb;
 
@@ -91,6 +94,7 @@ int32_t execute (const uint8_t* command){
         i++;
     }
 
+
     /* args */
 
     // check logic
@@ -111,7 +115,7 @@ int32_t execute (const uint8_t* command){
         }
     }
 
-    /* check for executable */
+    // =============================== check for executable ===============================
 
     /* about magic nums: The first 4 bytes of the file represent a “magic number” that identifies the file as an executable. 
         These bytes are, respectively, 0: 0x7f; 1: 0x45; 2: 0x4c; 3: 0x46. If the magic number is not present, the execute
@@ -131,51 +135,75 @@ int32_t execute (const uint8_t* command){
         return -1;
     }
 
-    /* Set up paging */
+    // ===============================     Set up paging     ===============================
+    curr_id = FD_START_INDEX;
+    while (curr_id < PROCESS_ARRAY_SIZE){
+        if (process_array[curr_id] == 0){
+            process_array[curr_id] = 1;
+            break;
+        }
+        curr_id++;
+    }
+    // full array
+    if (curr_id >= PROCESS_ARRAY_SIZE){
+        return -1;
+    }
 
-    // what
+    addr = PAGE_SIZE * curr_id;
+    page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
-    /* Load file into memory */
-    // read_data(dentry.INodeNum, 0, memory, ???);
+    // NEED TO FLUSH TLB HERE
 
-    /* Create PCB */
+    //===============================  Load file into memory ===============================
+    inode = (inode_t * )(startINode + dentry.INodeNum);
+    error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);
+
+    // ===============================      Create PCB       ===============================
     pcb = get_pcb(id);
     pcb->process_id = id;
     curr_id = id;
     id++;
 
-    auto_open(STDIN);
-    auto_open(STDOUT);
-
     // remaining six file descriptors available
-    for (i = FD_START_INDEX; i < FD_ARRAY_SIZE; i++) {
-        // pcb->fd_array[i].jump_position = ???;     
-        // pcb->fd_array[i].file_position = ???;
+    for (i = 0; i < FD_ARRAY_SIZE; i++)
+    {
+        pcb->fd_array[i].jump_table = &null_op;    
+        pcb->fd_array[i].file_position = 0; 
         pcb->fd_array[i].flags = FREE;
-        // pcb->fd_array[i].inode = ???;
+        pcb->fd_array[i].inode = 0; 
     }
 
-    /* Prepare for Context Switch */
+    pcb->fd_array[STDIN].flags = IN_USE;
+    pcb->fd_array[STDOUT].flags = IN_USE;
 
-    // wtf is context switch
+    pcb->fd_array[STDOUT].jump_table = &stdout_fileop;
+    pcb->fd_array[STDIN].jump_table = &stdin_fileop;
 
-    /* Push IRET context to kernel stack */
+    strncpy(&pcb->pcb_cmd, &cmd,32);
+
+    // =============================== Prepare for Context Switch ===============================
+
+    int8_t eip_value[3]; 
+    read_data(dentry.INodeNum,24,eip_value,3);
+
+    // Set stack pointer to the bottom of the 4 MB page
+    // Ds register set to USER_DS
+    // Apendix E stuff smtn related to tss
+    // Save old EBP and ESP
+
+    // =============================== Push IRET context to kernel stack  ===============================
+    // Set the registers that we want to pop to the correct values
     // asm volatile ("
-    //     iret ;
-    // "
-    // );
-    return 172;  // value between 0 and 255
-}
+    //     pushw %ds ;
+    //     pushl %esp ;
+    //     pushl EFLAG ;
+    //     pushl %es; 
+    //     pushl %eip ; 
+    //     iret 
+    // ");
 
-void auto_open(int stdfile){
-    pcb_t * pcb;
-    pcb = get_pcb(curr_id);
 
-    // pcb->fd_array[stdfile].jump_position = ???;     
-    // pcb->fd_array[stdfile].file_position = ???;
-    pcb->fd_array[stdfile].flags = IN_USE;
-    // pcb->fd_array[stdfile].inode = ???;
-    return;
+    return 172; // value between 0 and 255
 }
 
 
@@ -245,3 +273,37 @@ int32_t close (int32_t fd){
     }
     return 0;
 }
+
+
+void fileop_init(){
+    stdin_fileop.close = terminal_close; 
+    stdin_fileop.open = terminal_open; 
+    stdin_fileop.read = terminal_read; 
+    stdin_fileop.write = read_fail; 
+
+    stdout_fileop.close = terminal_close;
+    stdout_fileop.open = terminal_open; 
+    stdout_fileop.read = read_fail; 
+    stdout_fileop.write = terminal_write;
+
+    null_op.close = close_fail;
+    null_op.open = open_fail; 
+    null_op.read = read_fail; 
+    null_op.write = write_fail; 
+}
+
+
+
+
+// gets address to pcb corresponding to the id
+pcb_t * get_pcb(int32_t id){
+	uint32_t addr = EIGHTMB - EIGHTKB * (id + 1);
+	return (pcb_t * )addr;
+}
+
+// gets address to current pcb
+pcb_t * get_cur_pcb() {
+	uint32_t addr = EIGHTMB - EIGHTKB * (curr_id + 1);
+	return (pcb_t *) addr;
+}
+

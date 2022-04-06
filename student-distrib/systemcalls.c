@@ -164,38 +164,35 @@ int32_t execute (const uint8_t* command){
     curr_id = id;
     id++;
 
-    auto_open(STDIN);
-    auto_open(STDOUT);
+
 
     // remaining six file descriptors available
-    for (i = FD_START_INDEX; i < FD_ARRAY_SIZE; i++) {
-        // pcb->fd_array[i].jump_position = ???;     
-        // pcb->fd_array[i].file_position = ???;
+    for (i = 0; i < FD_ARRAY_SIZE; i++)
+    {
+        pcb->fd_array[i].jump_table = &null_op;    
+        pcb->fd_array[i].file_position = 0; 
         pcb->fd_array[i].flags = FREE;
-        // pcb->fd_array[i].inode = ???;
+        pcb->fd_array[i].inode = 0; 
     }
 
-    /* Prepare for Context Switch */
+    pcb->fd_array[STDIN].flags = IN_USE;
+    pcb->fd_array[STDOUT].flags = IN_USE;
 
-    // wtf is context switch
+    pcb->fd_array[STDOUT].jump_table = &stdout_fileop;
+    pcb->fd_array[STDIN].jump_table = &stdin_fileop;
 
-    /* Push IRET context to kernel stack */
-    // asm volatile ("
-    //     iret ;
-    // "
-    // );
-    return 172;  // value between 0 and 255
-}
+    strncpy(&pcb->pcb_cmd, &cmd,32); 
 
-void auto_open(int stdfile){
-    pcb_t * pcb;
-    pcb = get_pcb(curr_id);
+        /* Prepare for Context Switch */
 
-    // pcb->fd_array[stdfile].jump_position = ???;     
-    // pcb->fd_array[stdfile].file_position = ???;
-    pcb->fd_array[stdfile].flags = IN_USE;
-    // pcb->fd_array[stdfile].inode = ???;
-    return;
+        // wtf is context switch
+
+        /* Push IRET context to kernel stack */
+        // asm volatile ("
+        //     iret ;
+        // "
+        // );
+        return 172; // value between 0 and 255
 }
 
 
@@ -266,7 +263,12 @@ void fileop_init(){
     stdout_fileop.close = terminal_close;
     stdout_fileop.open = terminal_open; 
     stdout_fileop.read = read_fail; 
-    stdout_fileop.write = terminal_write; 
+    stdout_fileop.write = terminal_write;
+
+    null_op.close = close_fail;
+    null_op.open = open_fail; 
+    null_op.read = read_fail; 
+    null_op.write = write_fail; 
 }
 
 

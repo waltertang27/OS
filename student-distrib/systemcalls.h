@@ -52,6 +52,7 @@ typedef struct pcb {
     int32_t process_id;
     int32_t parent_id;
     file_descriptor_t fd_array[FD_ARRAY_SIZE];
+    int8_t pcb_cmd[32]; 
 } pcb_t;
 
 
@@ -86,7 +87,7 @@ void auto_open(int stdfile);
 //Corresponding open and close functions for each of the following file descriptors 
 fileop_jmp_table_t stdin_fileop;
 fileop_jmp_table_t stdout_fileop; 
-
+fileop_jmp_table_t null_op; 
 
 
 #endif

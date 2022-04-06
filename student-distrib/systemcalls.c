@@ -183,9 +183,16 @@ int32_t execute (const uint8_t* command){
 
     // =============================== Prepare for Context Switch ===============================
 
-    // Set the registers that we want to pop to the correct values
+    int8_t eip_value[3]; 
+    read_data(dentry.INodeNum,24,eip_value,3);
+
+    // Set stack pointer to the bottom of the 4 MB page
+    // Ds register set to USER_DS
+    // Apendix E stuff smtn related to tss
+    // Save old EBP and ESP
 
     // =============================== Push IRET context to kernel stack  ===============================
+    // Set the registers that we want to pop to the correct values
     // asm volatile ("
     //     pushw %ds ;
     //     pushl %esp ;

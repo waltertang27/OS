@@ -221,13 +221,13 @@ int32_t open (const uint8_t* filename){
     }
     
     if (dentry.fileType == 0) // rtc
-        pcb->fd_array[i].jump_position = &rtc_jmp;
+        pcb->fd_array[i].jump_position = ; // ??
     
     if (dentry.fileType == 1) // directory
-        pcb->fd_array[i].jump_position = &dir_jmp;
+        pcb->fd_array[i].jump_position = ; // ??
     
     if (dentry.fileType == 2) // file
-        pcb->fd_array[i].jump_position = &file_jmp;
+        pcb->fd_array[i].jump_position = ; // ??
 
     // fail
     return -1;

@@ -9,6 +9,7 @@
 #define STDIN 0
 #define STDOUT 1
 #define FD_START_INDEX 2 // file descriptor start index, not including stdin (0) or stdout (1).
+#define FD_END 7 // the last PCB block in the file array
 
 #define MAX_PROCCESES 2 // not sure
 

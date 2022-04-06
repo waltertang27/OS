@@ -201,37 +201,47 @@ int32_t open (const uint8_t* filename){
     /* The open system call provides access to the file system. The call should find the directory entry corresponding to the
     named file, allocate an unused file descriptor, and set up any data necessary to handle the given type of file (directory,
     RTC device, or regular file). If the named file does not exist or no descriptors are free, the call returns -1. */
-
+    pcb_t * pcb = get_cur_pcb();
+    int32_t i;
     dentry_t dentry;
-    // int i;
-    int error;
-
-    // check if filename is valid
     if (filename == NULL){
         return -1;
     }
-
+    int error;
     // read into dentry
     error = read_dentry_by_name(filename, &dentry);
-    if (error == -1){
+    if (error == -1)
         return -1;
+
+    for(i = FD_START_INDEX; i < FD_END; i++) {
+        if (pcb->fd_array[i].flags == FREE) {
+            pcb->fd_array[i].file_position = ; // file start position ??
+            pcb->fd_array[i].flags == IN_USE; // if it is not in use, turn it to in use
+        }
     }
     
-    // for(i = FD_START_INDEX; i < ???; i++) {
-
-    // }
-
+    if (dentry.fileType == 0) // rtc
+        pcb->fd_array[i].jump_position = &rtc_jmp;
     
+    if (dentry.fileType == 1) // directory
+        pcb->fd_array[i].jump_position = &dir_jmp;
     
+    if (dentry.fileType == 2) // file
+        pcb->fd_array[i].jump_position = &file_jmp;
+
     // fail
     return -1;
 }
 
 int32_t close (int32_t fd){
-    if (fd == STDIN || fd == STDOUT){
+    if (fd < FD_START_INDEX || fd > FD_END)
         return -1;
+    pcb_t * pcb = get_cur_pcb();
+    if (pcb->fd_array[fd].flags == FREE) { // file not in use, invalid descriptor
+        return -1;
+        // if trying to close an unused file failed, return -1
+        if (pcb->fd_array[fd].jump_position.close(fd) != pcb->fd_array[fd].flags) 
+            return -1;
     }
-
-    // fail
-    return -1;
+    return 0;
 }

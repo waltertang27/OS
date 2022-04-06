@@ -62,7 +62,7 @@ int32_t execute (const uint8_t* command){
         Push IRET context to kernel stack
     */
 
-    /* parsing */
+    // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
     int spaces, error;
@@ -115,7 +115,7 @@ int32_t execute (const uint8_t* command){
         }
     }
 
-    /* check for executable */
+    // =============================== check for executable ===============================
 
     /* about magic nums: The first 4 bytes of the file represent a “magic number” that identifies the file as an executable. 
         These bytes are, respectively, 0: 0x7f; 1: 0x45; 2: 0x4c; 3: 0x46. If the magic number is not present, the execute
@@ -135,7 +135,7 @@ int32_t execute (const uint8_t* command){
         return -1;
     }
 
-    /* Set up paging */
+    // ===============================     Set up paging     ===============================
     curr_id = FD_START_INDEX;
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] == 0){
@@ -154,17 +154,15 @@ int32_t execute (const uint8_t* command){
 
     // NEED TO FLUSH TLB HERE
 
-    /* Load file into memory */
+    //===============================  Load file into memory ===============================
     inode = (inode_t * )(startINode + dentry.INodeNum);
     error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);
 
-    /* Create PCB */
+    // ===============================      Create PCB       ===============================
     pcb = get_pcb(id);
     pcb->process_id = id;
     curr_id = id;
     id++;
-
-
 
     // remaining six file descriptors available
     for (i = 0; i < FD_ARRAY_SIZE; i++)
@@ -181,18 +179,20 @@ int32_t execute (const uint8_t* command){
     pcb->fd_array[STDOUT].jump_table = &stdout_fileop;
     pcb->fd_array[STDIN].jump_table = &stdin_fileop;
 
-    strncpy(&pcb->pcb_cmd, &cmd,32); 
+    strncpy(&pcb->pcb_cmd, &cmd,32);
 
-        /* Prepare for Context Switch */
+    // =============================== Prepare for Context Switch ===============================
 
-        // wtf is context switch
+    // wtf is context switch
 
-        /* Push IRET context to kernel stack */
-        // asm volatile ("
-        //     iret ;
-        // "
-        // );
-        return 172; // value between 0 and 255
+    // =============================== Push IRET context to kernel stack  ===============================
+    // asm volatile ("
+    //     iret ;
+    // "
+    // );
+
+    
+    return 172; // value between 0 and 255
 }
 
 

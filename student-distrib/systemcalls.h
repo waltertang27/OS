@@ -58,7 +58,7 @@ typedef struct pcb {
 
 
 pcb_t * get_pcb(int32_t id);
-pcb_t *get_cur_pbc();
+pcb_t *get_cur_pcb();
 
 int32_t halt (uint8_t status); //3.1
 int32_t execute (const uint8_t* command); //3.1

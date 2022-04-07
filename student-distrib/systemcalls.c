@@ -268,7 +268,7 @@ int32_t open (const uint8_t* filename){
     for(i = FD_START_INDEX; i < FD_END; i++) {
         if (pcb->fd_array[i].flags == FREE) {
             pcb->fd_array[i].file_position = 0; // file start position ??
-            pcb->fd_array[i].flags == IN_USE; // if it is not in use, turn it to in use
+            pcb->fd_array[i].flags = IN_USE; // if it is not in use, turn it to in use
             pcb->fd_array[i].inode = dentry.INodeNum;
             if (dentry.fileType == 0) { // rtc
                 pcb->fd_array[i].jump_table = &rtc_op; // ??
@@ -313,7 +313,7 @@ void fileop_init(){
     stdin_fileop.close = terminal_close; 
     stdin_fileop.open = terminal_open; 
     stdin_fileop.read = terminal_read; 
-    stdin_fileop.write = read_fail; 
+    stdin_fileop.write = write_fail; 
 
     stdout_fileop.close = terminal_close;
     stdout_fileop.open = terminal_open; 

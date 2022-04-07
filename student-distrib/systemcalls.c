@@ -247,15 +247,15 @@ int32_t open (const uint8_t* filename){
             pcb->fd_array[i].flags == IN_USE; // if it is not in use, turn it to in use
             pcb->fd_array[i].inode = dentry.INodeNum;
             if (dentry.fileType == 0) { // rtc
-                pcb->fd_array[i].jump_position = &rtc_op; // ??
+                pcb->fd_array[i].jump_table = &rtc_op; // ??
             }
     
-            if (dentry.fileType == 1) {// directory
-                pcb->fd_array[i].jump_position = &dir_op; // ??
+            else if (dentry.fileType == 1) {// directory
+                pcb->fd_array[i].jump_table = &dir_op; // ??
             }
         
-            if (dentry.fileType == 2) {// file
-                pcb->fd_array[i].jump_position = &file_op; // ??
+            else if (dentry.fileType == 2) {// file
+                pcb->fd_array[i].jump_table = &file_op; // ??
             }
             return i;
         }
@@ -274,10 +274,14 @@ int32_t close (int32_t fd){
     if (pcb->fd_array[fd].flags == FREE) { // file not in use, invalid descriptor
         return -1;
         // if trying to close an unused file failed, return -1
-        if (pcb->fd_array[fd].close(fd) != pcb->fd_array[fd].flags) 
-            return -1;
+        //if (pcb->fd_array[fd].close(fd) != pcb->fd_array[fd].flags) 
+        //    return -1;
     }
-    return 0;
+    pcb->fd_array[fd].inode = 0;
+    pcb->fd_array[fd].flags = FREE;
+    pcb->fd_array[fd].file_position = 0;
+
+    return pcb->fd_array[fd].jump_table->close(fd);
 }
 
 

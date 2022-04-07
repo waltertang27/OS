@@ -245,17 +245,23 @@ int32_t open (const uint8_t* filename){
         if (pcb->fd_array[i].flags == FREE) {
             pcb->fd_array[i].file_position = ; // file start position ??
             pcb->fd_array[i].flags == IN_USE; // if it is not in use, turn it to in use
+            pcb->fd_array[i].inode = dentry.INodeNum;
+            if (dentry.fileType == 0) { // rtc
+                pcb->fd_array[i].jump_position = &rtc_op; // ??
+            }
+    
+            if (dentry.fileType == 1) {// directory
+                pcb->fd_array[i].jump_position = &dir_op; // ??
+            }
+        
+            if (dentry.fileType == 2) {// file
+                pcb->fd_array[i].jump_position = &file_op; // ??
+            }
+            return i;
         }
     }
     
-    if (dentry.fileType == 0) // rtc
-        pcb->fd_array[i].jump_position = ; // ??
     
-    if (dentry.fileType == 1) // directory
-        pcb->fd_array[i].jump_position = ; // ??
-    
-    if (dentry.fileType == 2) // file
-        pcb->fd_array[i].jump_position = ; // ??
 
     // fail
     return -1;
@@ -290,6 +296,22 @@ void fileop_init(){
     null_op.open = open_fail; 
     null_op.read = read_fail; 
     null_op.write = write_fail; 
+
+    rtc_op.read = read_rtc;
+    rtc_op.close = close_rtc;
+    rtc_op.open = open_rtc;
+    rtc_op.write = write_rtc;
+
+    file_op.read = file_read;
+    file_op.close = file_close;
+    file_op.open = file_open;
+    file_op.write = file_write;
+
+    dir_op.read = directory_read;
+    dir_op.close = directory_close;
+    dir_op.open = directory_open;
+    dir_op.write = directory_write;
+
 }
 
 

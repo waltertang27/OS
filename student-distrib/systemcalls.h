@@ -8,6 +8,7 @@
 #include "terminal.h"
 #include "fs_system.h"
 #include "paging.h"
+#include "rtc.h"
 
 #define STDIN 0
 #define STDOUT 1
@@ -89,6 +90,9 @@ void auto_open(int stdfile);
 fileop_jmp_table_t stdin_fileop;
 fileop_jmp_table_t stdout_fileop; 
 fileop_jmp_table_t null_op; 
+fileop_jmp_table_t rtc_op; 
+fileop_jmp_table_t dir_op;
+fileop_jmp_table_t file_op;
 
 
 #endif

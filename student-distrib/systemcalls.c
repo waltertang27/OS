@@ -244,8 +244,17 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
         written, or -1 on failure.
 
     */ 
-    // fail
-    return -1;
+    if (fd < 0 || fd > FD_ARRAY_SIZE || buf == NULL || nbytes != 4)
+        return -1;
+    
+    pcb_t * pcb = get_cur_pcb();
+    if (pcb->fd_array[fd].flags == FREE){
+        return -1;
+    }
+
+    int32_t i = pcb->fd_array[fd].jump_table->write(fd, buf, nbytes);
+
+    return i;
 }
 
 int32_t open (const uint8_t* filename){

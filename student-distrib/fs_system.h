@@ -1,3 +1,6 @@
+#ifndef FS_SYSTEM_H
+#define FS_SYSTEM_H
+
 #include "lib.h"
 #include "types.h"
 #include "systemcalls.h"
@@ -71,3 +74,5 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length
 
 // temporary open
 int32_t open_(const uint8_t* filename, int fd);
+
+#endif

@@ -243,7 +243,7 @@ int32_t open (const uint8_t* filename){
 
     for(i = FD_START_INDEX; i < FD_END; i++) {
         if (pcb->fd_array[i].flags == FREE) {
-            pcb->fd_array[i].file_position = ; // file start position ??
+            pcb->fd_array[i].file_position = 0; // file start position ??
             pcb->fd_array[i].flags == IN_USE; // if it is not in use, turn it to in use
             pcb->fd_array[i].inode = dentry.INodeNum;
             if (dentry.fileType == 0) { // rtc

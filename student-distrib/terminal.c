@@ -35,8 +35,8 @@ int32_t terminal_close(int32_t fd) {
 /*
 DESCRIPTION: terminal_read for terminal driver; reads data from keyboard and stores into buffer
 INPUTS: int32_t fd - file descriptor for terminal_read
-        void *buf - reads data from a given file
-        int32_t nbytes - integer to maintain size of frequency (4 bytes)
+        void *buf - reads data into buffer
+        int32_t nbytes - number of bytes to read 
 OUTPUTS: none
 RETURN VALUE: number of bytes read
 SIDE EFFECTS: 
@@ -114,8 +114,8 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
 /*
 DESCRIPTION: terminal_write for terminal driver; writes the data from the terminal_buffer
 INPUTS: int32_t fd - file descriptor for terminal_write
-        const void *buf - writes data from a given file
-        int32_t nbytes - integer to maintain size of frequency (4 bytes)
+        const void *buf - buffer to hold data
+        int32_t nbytes - number of bytes to read
 OUTPUTS: none
 RETURN VALUE: number of bytes read
 SIDE EFFECTS: writes data to screen

@@ -4,7 +4,6 @@
 #include "types.h"
 #include "x86_desc.h"
 #include "lib.h"
-#include "pcb.h"
 #include "terminal.h"
 #include "fs_system.h"
 #include "paging.h"

@@ -206,10 +206,34 @@ int32_t execute (const uint8_t* command){
     return 172; // value between 0 and 255
 }
 
+/*
 
+
+
+/*
+DESCRIPTION: read system call; reads from keyboard, rtc, file, directory, etc.
+INPUTS: int32_t fd - file descriptor to read
+        void *buf - buffer to read data to
+        int32_t nbytes - number of bytes to read
+OUTPUTS: none
+RETURN VALUE: number of bytes read
+SIDE EFFECTS: 
+*/
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
     // fail
-    return -1;
+    //dentry_t dentry;
+    if (fd < FD_START_INDEX || fd > FD_END || nbytes < 0 || buf == NULL) {
+        return -1;
+    }
+    pcb_t * pcb = get_cur_pcb();
+    if(pcb->fd_array[fd].flags == FREE) {
+        return -1;
+    }
+    else {
+        int32_t val = pcb->fd_array[fd].jump_table->read(fd, buf, nbytes);
+        return val;
+    }
+    
 }
 
 int32_t write (int32_t fd, const void* buf, int32_t nbytes){

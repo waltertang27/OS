@@ -8,11 +8,16 @@
 int32_t id = 0;
 int32_t curr_id = 0;
 
+
 extern void flush_tlb(){
     asm volatile(" \
-        movl %cr3,%eax ; \
-        movl %eax,%cr3 ;\
+        movl %%cr3,%%eax ; \
+        movl %%eax,%%cr3 ;\
+        ret ;\
         "
+        :
+        :
+        : "eax"
         );
      }
 
@@ -35,37 +40,37 @@ int32_t halt(uint8_t status)
         Close any relevant FDs
         Jump to execute return
     */
-    pcb_t * pcb;
+    pcb_t * pcb, *parent, *grandparent;
 
-    /* restore parent data */
+    // =============================== Restore parent data   ===============================
 
-    pcb = get_pcb(curr_id);
-    //parent = get_pcb(pcb->parent_id);
+    pcb = get_cur_pcb();
+
+    if(pcb == 0){
+        //If in base shell we need to restore all the register stuff
+    }
+
     curr_id = pcb->parent_id;
+    parent = get_pcb(curr_id);
+    curr_id = parent->parent_id ;
+    grandparent = get_pcb(curr_id); 
 
 
-    /* restore parent paging */
+
+    // =============================== Restore parent paging data   ===============================
+
+
     /* everytime we change paging we need to flush TLB */
+    flush_tlb(); 
 
-    // flush tlb here
-    // asm volatile (" 
-    //     movl %cr3, %eax ;
-    //     movl %eax, %cr3 ;
-    //     ret
-    // "
-    // );
-
-    /* close any relevant FDs */
+    // =============================== Close any relevant FD's   ===============================
     int i;
     for(i = 0; i < FD_END; i++) {
         pcb->fd_array[i].flags = FREE;
     }
 
-    /* jump to execute return */
+    // =============================== jump to execute return   ===============================
     
-    
-
-    // fail
     return -1;
 }
 /*
@@ -227,7 +232,7 @@ int32_t execute (const uint8_t* command){
 
     // =============================== Prepare for Context Switch ===============================
 
-    uint8_t eip_value[3]; 
+    uint8_t eip_value[4]; 
     read_data(dentry.INodeNum, 24, eip_value, SIZE_OF_INT32);
 
     // Set stack pointer to the bottom of the 4 MB page
@@ -252,16 +257,21 @@ int32_t execute (const uint8_t* command){
 
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values
+    sti();
     asm volatile ("\
         pushw %%ds  ;\
-        pushl %%edx ;\
+        pushl %2 ;\
         pushfl      ;\
-        pushl %%ecx ;\
+        popl %%eax  ;\
+        orl 0x200, %%eax   ;\
         pushl %%eax ;\
+        pushl %1 ;\
+        pushl %0 ;\
         iret ;\
         "
-        :: "eax"(eip_usr), "ecx"(USER_CS), "edx"(esp_usr)
-        : "memory"
+        :
+        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
+        : "memory","eax", "cc"
     );
 
     

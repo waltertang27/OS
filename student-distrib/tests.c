@@ -251,9 +251,10 @@ int rtc_test(){
         int fd = open_rtc((uint8_t *)"rtc");
         int32_t list[5] = {2, 8, 32, 128, 512};
         for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
-            write_rtc((int32_t) fd, i + list, 4);    // the slowest to the fastest
-            for (freq = 0; freq < 10 ; freq++) {
-                read_rtc((int32_t) fd, i + list, 4);
+            write_rtc((int32_t) fd, &list[i], 4);    // the slowest to the fastest
+            //printf("%u\n", w);
+            for (freq = 0; freq < 20 ; freq++) {
+                read_rtc((int32_t) fd, &list[i], 4);
                 putc('1');
             }
             printf("\n");

@@ -85,9 +85,10 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
         return -1;
  	int32_t freq_int = *((int32_t *)buf);
     // check if the frequency is out of bounds and check if it is powers of two 
-    if (freq_int < MIN_FREQ || freq_int > MAX_FREQ || (freq_int & (freq_int - 1)) == 0) 
+    if (freq_int < MIN_FREQ || freq_int > MAX_FREQ || (freq_int & (freq_int - 1)) != 0) 
         return -1;
 
+    //printf("%u\n", freq_int);
     rtc_freq(freq_int); 
     return 0;
 }

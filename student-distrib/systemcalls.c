@@ -9,17 +9,7 @@ int32_t id = 0;
 int32_t curr_id = -1;
 
 
-extern void flush_tlb(){
-    asm volatile(" \
-        movl %%cr3,%%eax ; \
-        movl %%eax,%%cr3 ;\
-        ret ;\
-        "
-        :
-        :
-        : "eax"
-        );
-     }
+extern void flush_tlb(); 
 
 /*
 DESCRIPTION: terminates a process

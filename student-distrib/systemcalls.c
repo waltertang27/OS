@@ -8,6 +8,13 @@
 int32_t id = 0;
 int32_t curr_id = 0;
 
+/*
+DESCRIPTION: terminates a process
+INPUTS: uint8_t status - 
+OUTPUTS:
+RETURN VALUE: returns specified value to parent process
+SIDE EFFECTS: hands processor to new program until it terminates
+*/
 int32_t halt(uint8_t status){
     /* The halt system call terminates a process, returning the specified value to its parent process. The system call handler
     itself is responsible for expanding the 8-bit argument from BL into the 32-bit return value to the parent program’s
@@ -24,7 +31,9 @@ int32_t halt(uint8_t status){
     /* restore parent data */
 
     pcb = get_pcb(curr_id);
+    //parent = get_pcb(pcb->parent_id);
     curr_id = pcb->parent_id;
+
 
     /* restore parent paging */
     /* everytime we change paging we need to flush TLB */
@@ -37,12 +46,29 @@ int32_t halt(uint8_t status){
     // "
     // );
 
+    /* close any relevant FDs */
+    int i;
+    for(i = 0; i < FD_END; i++) {
+        pcb->fd_array[i] = FREE;
+    }
+
+    /* jump to execute return */
+    
     
 
     // fail
     return -1;
 }
-
+/*
+DESCRIPTION: loads and executes a new program, handing off processor to new program until it terminates
+INPUTS: const uint8_t *command - sequence of words consisting of commands
+                                - first word is file name to be exectued
+OUTPUTS:
+RETURN VALUE:  -1 if command cannot be executed
+               256 if program dies by execption
+               0 to 255 if program executes a halt system call 
+SIDE EFFECTS: hands processor to new program until it terminates
+*/
 int32_t execute (const uint8_t* command){
     /* The execute system call attempts to load and execute a new program, handing off the processor to the new program
         until it terminates. The command is a space-separated sequence of words. The first word is the file name of the
@@ -216,6 +242,7 @@ INPUTS: int32_t fd - file descriptor to read
         int32_t nbytes - number of bytes to read
 OUTPUTS: none
 RETURN VALUE: number of bytes read
+              -1 if fail
 SIDE EFFECTS: 
 */
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
@@ -234,7 +261,16 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
     }
     
 }
-
+/*
+DESCRIPTION: write system call; writes from keyboard, rtc, file, directory, etc.
+INPUTS: int32_t fd - file descriptor to write
+        void *buf - buffer to write data to
+        int32_t nbytes - number of bytes to write
+OUTPUTS: none
+RETURN VALUE: number of bytes written
+              -1 if fail
+SIDE EFFECTS: 
+*/
 int32_t write (int32_t fd, const void* buf, int32_t nbytes){
     /*
         The write system call writes data to the terminal or to a device (RTC). In the case of the terminal, all data should
@@ -256,7 +292,14 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
 
     return i;
 }
-
+/*
+DESCRIPTION: find directory entry corresponding to file and set up data to handle the file
+INPUTS: const uint8_t *filename - pointer to filename of file
+OUTPUTS: none
+RETURN VALUE: position found
+                -1 if fail
+SIDE EFFECTS: 
+*/
 int32_t open (const uint8_t* filename){
     /* The open system call provides access to the file system. The call should find the directory entry corresponding to the
     named file, allocate an unused file descriptor, and set up any data necessary to handle the given type of file (directory,
@@ -298,7 +341,14 @@ int32_t open (const uint8_t* filename){
     // fail
     return -1;
 }
-
+/*
+DESCRIPTION: closes specified file descriptor
+INPUTS: int32_t fd - file descriptor to close
+OUTPUTS: none
+RETURN VALUE: 0 if successful
+              -1 if closing invalid descriptor
+SIDE EFFECTS: 
+*/
 int32_t close (int32_t fd){
     if (fd < FD_START_INDEX || fd > FD_END)
         return -1;
@@ -316,7 +366,13 @@ int32_t close (int32_t fd){
     return pcb->fd_array[fd].jump_table->close(fd);
 }
 
-
+/*
+DESCRIPTION: inits the file_op tables
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: sets the corresponding open/close/read/write functions
+*/
 void fileop_init(){
     stdin_fileop.close = terminal_close; 
     stdin_fileop.open = terminal_open; 
@@ -353,13 +409,26 @@ void fileop_init(){
 
 
 
-// gets address to pcb corresponding to the id
+/*
+DESCRIPTION: gets address of pcb corresponding to id
+INPUTS: int32_t id - ID of pcb we want to find
+ 
+OUTPUTS: none
+RETURN VALUE: pointer to pcb corresponding to id
+SIDE EFFECTS: 
+*/
 pcb_t * get_pcb(int32_t id){
 	uint32_t addr = EIGHTMB - EIGHTKB * (id + 1);
 	return (pcb_t * )addr;
 }
 
-// gets address to current pcb
+/*
+DESCRIPTION: gets the address to the current pcb
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: pointer to current pcb
+SIDE EFFECTS: 
+*/
 pcb_t * get_cur_pcb() {
 	uint32_t addr = EIGHTMB - EIGHTKB * (curr_id + 1);
 	return (pcb_t *) addr;

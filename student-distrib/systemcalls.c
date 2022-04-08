@@ -219,12 +219,15 @@ int32_t execute (const uint8_t* command){
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values
     asm volatile ("\
-        pushw %%ds ;\
-        pushl %%esp ;\
-        pushl %%es ;\
+        pushw %%ds  ;\
+        pushl %%edx ;\
+        pushfl      ;\
+        pushl %%ecx ;\
+        pushl %%eax ;\
         iret ;\
         "
-        ::: "memory"
+        :: "eax"(eip_usr), "ecx"(USER_CS), "edx"(esp_usr)
+        : "memory"
     );
     return 172; // value between 0 and 255
 }

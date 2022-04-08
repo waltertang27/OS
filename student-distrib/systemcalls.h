@@ -8,7 +8,6 @@
 #include "fs_system.h"
 #include "paging.h"
 #include "rtc.h"
-#include "flush_tlb.S"
 
 #define STDIN 0
 #define STDOUT 1

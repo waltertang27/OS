@@ -40,37 +40,37 @@ int32_t halt(uint8_t status)
         Close any relevant FDs
         Jump to execute return
     */
-    pcb_t * pcb;
+    pcb_t * pcb, *parent, *grandparent;
 
-    /* restore parent data */
+    // =============================== Restore parent data   ===============================
 
-    pcb = get_pcb(curr_id);
-    //parent = get_pcb(pcb->parent_id);
+    pcb = get_cur_pcb();
+
+    if(pcb == 0){
+        //If in base shell we need to restore all the register stuff
+    }
+
     curr_id = pcb->parent_id;
+    parent = get_pcb(curr_id);
+    curr_id = parent->parent_id ;
+    grandparent = get_pcb(curr_id); 
 
 
-    /* restore parent paging */
+
+    // =============================== Restore parent paging data   ===============================
+
+
     /* everytime we change paging we need to flush TLB */
+    flush_tlb(); 
 
-    // flush tlb here
-    // asm volatile (" 
-    //     movl %cr3, %eax ;
-    //     movl %eax, %cr3 ;
-    //     ret
-    // "
-    // );
-
-    /* close any relevant FDs */
+    // =============================== Close any relevant FD's   ===============================
     int i;
     for(i = 0; i < FD_END; i++) {
         pcb->fd_array[i].flags = FREE;
     }
 
-    /* jump to execute return */
+    // =============================== jump to execute return   ===============================
     
-    
-
-    // fail
     return -1;
 }
 /*
@@ -256,6 +256,7 @@ int32_t execute (const uint8_t* command){
 
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values
+    sti();
     asm volatile ("\
         pushw %%ds  ;\
         pushl %2 ;\

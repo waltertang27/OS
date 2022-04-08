@@ -703,13 +703,13 @@ int terminal_rw_test(){
 
 /* Test suite entry point */
 void launch_tests() {
-    TEST_OUTPUT("idt_test", idt_test());
+    clear(); 
 
-    // TEST_OUTPUT("idt_test", idt_test());
+    //TEST_OUTPUT("idt_test", idt_test());
     // TEST_OUTPUT("Paging test",paging_test());
 
     // launch your tests here
-	TEST_OUTPUT("RTC test", rtc_test());
+	 // TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());

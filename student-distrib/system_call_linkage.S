@@ -14,23 +14,30 @@ system_call_linkage:
        pushl %ebp                ;\
        pushl %esi                ;\
        pushl %edi                ;\
+       pushfl                   ;\
 
        pushl %ebx               ;\
        pushl %ecx               ;\
        pushl %edx               ;\
 
-       movl 4(%esp), %eax
-       cmpl $1, %eax
-       jl invalid_cmd
-       cmpl $10, %eax
-       jg invalid_cmd
+       movl 4(%esp), %eax     ;\
+       cmpl $1, %eax        ;\
+       jl invalid_cmd       ;\
+       cmpl $10, %eax       ;\
+       jg invalid_cmd       ;\
 
-       jmp *system_call_jmp_table(, %eax, 4)
+       jmp *system_call_jmp_table(, %eax, 4)  ;\
 
+       jmp finish     ;\
+        
 
-        popl %edx   ;\
-        popl %ecx   ;\
-        popl %ebx   ;\
+invalid_cmd:
+        movl $-1, %eax  ;\
+
+finish:
+        addl $12, %esp  ;\
+
+        popfl         ;\
 
         popl %edi   ;\
         popl %esi   ;\
@@ -40,21 +47,7 @@ system_call_linkage:
         popl %edx   ;\
         popl %ecx   ;\
         iret        ;\
-
-invalid_cmd:
-    movl $-1, %eax
-    popl %edx   ;\
-    popl %ecx   ;\
-    popl %ebx   ;\
-
-    popl %edi   ;\
-    popl %esi   ;\
-    popl %ebp   ;\
-    popl %esp   ;\
-    popl %ebx   ;\
-    popl %edx   ;\
-    popl %ecx   ;\
-    ret
+    
 
 
 

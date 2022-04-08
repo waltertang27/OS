@@ -262,6 +262,8 @@ int32_t execute (const uint8_t* command){
         :: "eax"(eip_usr), "ecx"(USER_CS), "edx"(esp_usr)
         : "memory"
     );
+
+    
     return 172; // value between 0 and 255
 }
 

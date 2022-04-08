@@ -12,7 +12,7 @@ extern void flush_tlb();
 
 /*
 DESCRIPTION: terminates a process
-INPUTS: uint8_t status - 
+INPUTS: uint8_t status - current program status
 OUTPUTS:
 RETURN VALUE: returns specified value to parent process
 SIDE EFFECTS: hands processor to new program until it terminates

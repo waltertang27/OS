@@ -294,6 +294,7 @@ int32_t execute (const uint8_t* command){
         : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
         : "memory","eax", "cc"
     );
+    printf("Finished execute \n");
     return 172; // value between 0 and 255
 }
 

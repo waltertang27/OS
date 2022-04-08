@@ -8,6 +8,9 @@
 #include "fs_system.h"
 #include "paging.h"
 #include "rtc.h"
+// #include "system_call_linkage.h"
+
+
 
 #define STDIN 0
 #define STDOUT 1
@@ -91,6 +94,11 @@ int32_t sigreturn (void);
 void fileop_init(); 
 void auto_open(int stdfile);
 void auto_open(int stdfile);
+
+int32_t getargs (uint8_t* buf, int32_t nbytes);
+int32_t vidmap (uint8_t** screen_start);
+int32_t set_handler (int32_t signum, void* handler_address);
+int32_t sigreturn (void);
 
 //Corresponding open and close functions for each of the following file descriptors 
 fileop_jmp_table_t stdin_fileop;

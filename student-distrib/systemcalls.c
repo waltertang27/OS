@@ -47,13 +47,31 @@ int32_t halt(uint8_t status)
     pcb = get_cur_pcb();
 
     if(pcb == 0){
-        //If in base shell we need to restore all the register stuff
+        asm volatile ("\
+        pushw %%ds  ;\
+        pushl %2 ;\
+        pushfl      ;\
+        popl %%eax  ;\
+        orl 0x200, %%eax   ;\
+        pushl %%eax ;\
+        pushl %1 ;\
+        pushl %0 ;\
+        iret ;\
+        "
+        :
+        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
+        : "memory","eax", "cc"
+    );
+
     }
 
+    // New pcb is currents parent
     curr_id = pcb->parent_id;
-    parent = get_pcb(curr_id);
-    curr_id = parent->parent_id ;
-    grandparent = get_pcb(curr_id); 
+    
+    //Get the parent
+    // parent = get_pcb(curr_id);
+    // curr_id = parent->parent_id ;
+    // grandparent = get_pcb(curr_id); 
 
 
 
@@ -61,6 +79,9 @@ int32_t halt(uint8_t status)
 
 
     /* everytime we change paging we need to flush TLB */
+
+    //Get physical memory
+    //Change Page table 
     flush_tlb(); 
 
     // =============================== Close any relevant FD's   ===============================
@@ -70,6 +91,9 @@ int32_t halt(uint8_t status)
     }
 
     // =============================== jump to execute return   ===============================
+    
+    // Call assembly program to jump back to execute 
+
     
     return -1;
 }

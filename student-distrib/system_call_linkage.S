@@ -5,24 +5,7 @@
 .globl system_call_linkage
 .align 4
 
-system_call_jmp_table:
-    .long halt
-    .long execute
-    .long read
-    .long write
-    .long open
-    .long close
-    .long getargs
-    .long vidmap
-    .long set_handler
-    .long sigreturn
-
-
-
-
 #linkage for system calls
-  #  .globl name                ;\
-  #  name:                       ;\
 system_call_linkage:
        pushl %ecx                ;\
        pushl %edx                ;\
@@ -75,5 +58,15 @@ invalid_cmd:
 
 
 
-
+system_call_jmp_table:
+    .long halt
+    .long execute
+    .long read
+    .long write
+    .long open
+    .long close
+    .long getargs
+    .long vidmap
+    .long set_handler
+    .long sigreturn
 

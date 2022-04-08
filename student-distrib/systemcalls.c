@@ -41,10 +41,15 @@ int32_t halt(uint8_t status)
         Jump to execute return
     */
     pcb_t * pcb, *parent, *grandparent;
+    uint32_t eip_usr, esp_usr;
+
 
     // =============================== Restore parent data   ===============================
 
     pcb = get_cur_pcb();
+    eip_usr = pcb->usr_eip;
+    esp_usr = pcb->save_esp ;
+
 
     if(pcb == 0){
         asm volatile ("\
@@ -298,7 +303,7 @@ int32_t execute (const uint8_t* command){
         : "memory","eax", "cc"
     );
 
-    
+    system_call_linkage(); 
     return 172; // value between 0 and 255
 }
 

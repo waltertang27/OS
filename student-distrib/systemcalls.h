@@ -7,10 +7,12 @@
 #include "terminal.h"
 #include "fs_system.h"
 #include "paging.h"
+#include "rtc.h"
 
 #define STDIN 0
 #define STDOUT 1
 #define FD_START_INDEX 2 // file descriptor start index, not including stdin (0) or stdout (1).
+#define FD_END 7 // the last PCB block in the file array
 
 #define MAGIC_1 0x7f
 #define MAGIC_2 0x45
@@ -63,7 +65,7 @@ typedef struct pcb {
 
 
 pcb_t * get_pcb(int32_t id);
-pcb_t *get_cur_pbc();
+pcb_t *get_cur_pcb();
 
 int32_t halt (uint8_t status); //3.1
 int32_t execute (const uint8_t* command); //3.1
@@ -94,6 +96,9 @@ void auto_open(int stdfile);
 fileop_jmp_table_t stdin_fileop;
 fileop_jmp_table_t stdout_fileop; 
 fileop_jmp_table_t null_op; 
+fileop_jmp_table_t rtc_op; 
+fileop_jmp_table_t dir_op;
+fileop_jmp_table_t file_op;
 
 
 #endif

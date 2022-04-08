@@ -209,7 +209,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
 
 // read file and fill buffer 
-int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
+int32_t file_read(int32_t fd, void *buf, int32_t nbytes){
 
     // read file
     open_((uint8_t*)&" ", fd);
@@ -226,7 +226,7 @@ int32_t file_read(uint32_t fd, void *buf, int32_t nbytes){
 
 
 // Read a directory entry and fill the buffer with the corresponding value
-int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
+int32_t directory_read(int32_t fd, void *buf, int32_t nbytes)
 {
   //  if(fd == NULL || buf == NULL || nbytes < 0 || nbytes == NULL)
      //   return -1; 
@@ -257,28 +257,28 @@ int32_t directory_read(uint32_t fd, void *buf, int32_t nbytes)
 // Apparently since its a read only file system these dont matter and should all return 0 
 
 // I think this is -1, lab slides say so
-int32_t file_write(){
+int32_t file_write(int32_t fd, const void *buf, int32_t nbytes){
     return -1; 
 }
 
-int32_t directory_write()
+int32_t directory_write(int32_t fd, const void *buf, int32_t nbytes)
 {
     return -1;
 }
 
-int32_t file_open(){
+int32_t file_open(const uint8_t *filename){
     return 0; 
 }
 
-int32_t directory_open(){
+int32_t directory_open(const uint8_t *filename){
     return 0; 
 }
 
-int32_t file_close(){
+int32_t file_close(int32_t fd){
     return 0; 
 }
 
-int32_t directory_close()
+int32_t directory_close(int32_t fd)
 {
     return 0;
 }

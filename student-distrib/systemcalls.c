@@ -40,7 +40,7 @@ int32_t halt(uint8_t status)
         Close any relevant FDs
         Jump to execute return
     */
-    pcb_t * pcb, *parent, *grandparent;
+    pcb_t * pcb, *parent ;
     uint32_t eip_usr, esp_usr;
 
 
@@ -82,18 +82,19 @@ int32_t halt(uint8_t status)
     // =============================== jump to execute return   ===============================
     
     // Call assembly program to jump back to execute 
-    asm volatile( " \
-        movl %0, %%esp ;\
-        movl %1, %%ebp ;\
-        jmp leaveExec  ;\
-        
-        
+    int32_t ebpSave = parent ->save_ebp; 
+    int32_t espSave = parent->save_esp;
+     asm volatile(" \
+        movl %0,%%ebp ; \
+        movl %1,%%esp ;\
+        jmp leaveExec ;\
         "
         :
-        : "r"()
-        :
-    )
+        : "r"(ebpSave), "r"(espSave)
+        : "memory"
+        );
     
+
     return -1;
 }
 /*
@@ -291,8 +292,9 @@ int32_t execute (const uint8_t* command){
         pushl %1 ;\
         pushl %0 ;\
         iret ;\
-        leaveExec: leave
-        ret
+        leaveExec: ;\
+        leave ;\
+        ret ;\
         "
         :
         : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)

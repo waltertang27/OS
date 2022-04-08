@@ -51,7 +51,7 @@ int32_t halt(uint8_t status){
     /* close any relevant FDs */
     int i;
     for(i = 0; i < FD_END; i++) {
-        pcb->fd_array[i] = FREE;
+        pcb->fd_array[i].flags = FREE;
     }
 
     /* jump to execute return */

@@ -6,7 +6,7 @@
 #define BUF_SIZE 4
 
 int32_t id = 0;
-int32_t curr_id = 0;
+int32_t curr_id = -1;
 
 
 extern void flush_tlb(){
@@ -47,46 +47,29 @@ int32_t halt(uint8_t status)
     // =============================== Restore parent data   ===============================
 
     pcb = get_cur_pcb();
+
     eip_usr = pcb->usr_eip;
-    esp_usr = pcb->save_esp ;
+    esp_usr = pcb->usr_esp ;
 
-
-    if(pcb == 0){
-        asm volatile ("\
-        pushw %%ds  ;\
-        pushl %2 ;\
-        pushfl      ;\
-        popl %%eax  ;\
-        orl 0x200, %%eax   ;\
-        pushl %%eax ;\
-        pushl %1 ;\
-        pushl %0 ;\
-        iret ;\
-        "
-        :
-        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
-        : "memory","eax", "cc"
-    );
-
+    if(pcb->process_id == 0){
+    execute("shell");
     }
 
-    // New pcb is currents parent
     curr_id = pcb->parent_id;
-    
-    //Get the parent
-    // parent = get_pcb(curr_id);
-    // curr_id = parent->parent_id ;
-    // grandparent = get_pcb(curr_id); 
+    parent = get_pcb(curr_id); 
 
 
 
     // =============================== Restore parent paging data   ===============================
 
-
-    /* everytime we change paging we need to flush TLB */
-
     //Get physical memory
+
     //Change Page table 
+    int32_t addr = PAGE_SIZE * curr_id;
+    page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
+
+
+     /* everytime we change paging we need to flush TLB */
     flush_tlb(); 
 
     // =============================== Close any relevant FD's   ===============================
@@ -95,10 +78,21 @@ int32_t halt(uint8_t status)
         pcb->fd_array[i].flags = FREE;
     }
 
+    
     // =============================== jump to execute return   ===============================
     
     // Call assembly program to jump back to execute 
-
+    asm volatile( " \
+        movl %0, %%esp ;\
+        movl %1, %%ebp ;\
+        jmp leaveExec  ;\
+        
+        
+        "
+        :
+        : "r"()
+        :
+    )
     
     return -1;
 }
@@ -297,13 +291,13 @@ int32_t execute (const uint8_t* command){
         pushl %1 ;\
         pushl %0 ;\
         iret ;\
+        leaveExec: leave
+        ret
         "
         :
         : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
         : "memory","eax", "cc"
     );
-
-    system_call_linkage(); 
     return 172; // value between 0 and 255
 }
 

@@ -219,11 +219,10 @@ int32_t execute (const uint8_t* command){
         return -1;
     }
 
-    /* I didnt change it, I think its correct. curr_id * page size should be the physical address,
-        (we already have added 2 to curr_id in line 209)
-        and physical address divided by ALIGN_BYTES is essentially physical address right shifted by 12 
+    /* physical address divided by ALIGN_BYTES is essentially physical address right shifted by 12 
         which is what we should be putting in page directory entry */
-    page_directory[USER_INDEX].page_table_addr = PAGE_SIZE * curr_id / ALIGN_BYTES;
+    addr = EIGHTMB + ((curr_id - FD_START_INDEX) * PAGE_SIZE) // not sure if we need to minus 2 or not
+    page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     // NEED TO FLUSH TLB HERE
     flush_tlb();

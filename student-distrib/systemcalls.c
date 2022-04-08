@@ -8,7 +8,13 @@
 int32_t id = 0;
 int32_t curr_id = 0;
 
-extern void flush_tlb();
+extern void flush_tlb(){
+    asm volatile(" \
+        movl %cr3,%eax ; \
+        movl %eax,%cr3 ;\
+        "
+        );
+     }
 
 /*
 DESCRIPTION: terminates a process
@@ -17,7 +23,8 @@ OUTPUTS:
 RETURN VALUE: returns specified value to parent process
 SIDE EFFECTS: hands processor to new program until it terminates
 */
-int32_t halt(uint8_t status){
+int32_t halt(uint8_t status)
+{
     /* The halt system call terminates a process, returning the specified value to its parent process. The system call handler
     itself is responsible for expanding the 8-bit argument from BL into the 32-bit return value to the parent program’s
     execute system call. Be careful not to return all 32 bits from EBX. This call should never return to the caller. */

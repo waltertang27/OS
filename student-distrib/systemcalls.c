@@ -208,7 +208,7 @@ int32_t execute (const uint8_t* command){
     // ===============================     Set up paging     ===============================
     curr_id = FD_START_INDEX;
     while (curr_id < PROCESS_ARRAY_SIZE){
-        if (process_array[curr_id] == 0){
+        if (process_array[curr_id] != 1){
             process_array[curr_id] = 1;
             break;
         }

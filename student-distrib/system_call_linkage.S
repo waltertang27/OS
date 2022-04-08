@@ -14,6 +14,7 @@ system_call_linkage:
        pushl %ebp                ;\
        pushl %esi                ;\
        pushl %edi                ;\
+       pushfl                   ;\
 
        pushl %ebx               ;\
        pushl %ecx               ;\
@@ -35,6 +36,8 @@ invalid_cmd:
 
 finish:
         addl $12, %esp  ;\
+
+        popfl         ;\
 
         popl %edi   ;\
         popl %esi   ;\

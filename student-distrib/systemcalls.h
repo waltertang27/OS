@@ -4,7 +4,6 @@
 #include "types.h"
 #include "x86_desc.h"
 #include "lib.h"
-#include "pcb.h"
 #include "terminal.h"
 #include "fs_system.h"
 #include "paging.h"
@@ -17,6 +16,8 @@
 #define MAGIC_2 0x45
 #define MAGIC_3 0x4c
 #define MAGIC_4 0x46
+
+#define SIZE_OF_INT32 4
 
 #define IN_USE 0
 #define FREE 1
@@ -70,10 +71,10 @@ int32_t open (const uint8_t* filename); //3.1
 int32_t close (int32_t fd); //3.1
 
 // If a file cant read, write, open, or close these their jump tables will be sent here 
-int32_t read_fail(int32_t fd, void *buf, int32_t nbytes) { return -1 ;}
-int32_t write_fail(int32_t fd, const void *buf, int32_t nbytes){return -1; }
-int32_t open_fail(const uint8_t *filename) {return -1;}
-int32_t close_fail(int32_t fd){ return -1; }
+int32_t read_fail(int32_t fd, void *buf, int32_t nbytes);
+int32_t write_fail(int32_t fd, const void *buf, int32_t nbytes);
+int32_t open_fail(const uint8_t *filename);
+int32_t close_fail(int32_t fd);
 
 int32_t getargs (uint8_t* buf, int32_t nbytes);
 int32_t vidmap (uint8_t** screen_start);
@@ -91,3 +92,4 @@ fileop_jmp_table_t null_op;
 
 
 #endif
+

@@ -8,6 +8,8 @@
 int32_t id = 0;
 int32_t curr_id = 0;
 
+extern void flush_tlb();
+
 int32_t halt(uint8_t status){
     /* The halt system call terminates a process, returning the specified value to its parent process. The system call handler
     itself is responsible for expanding the 8-bit argument from BL into the 32-bit return value to the parent program’s
@@ -72,9 +74,11 @@ int32_t execute (const uint8_t* command){
     uint8_t buf[BUF_SIZE];
     // uint8_t * memory;
     // uint8_t * inode;
-    inode_t * inode;
+    INode_t * inode;
     dentry_t dentry;
     pcb_t * pcb;
+
+    uint32_t eip_arg, esp_arg;
 
     /* 
         Part 1: Parsing command and args.
@@ -153,9 +157,10 @@ int32_t execute (const uint8_t* command){
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     // NEED TO FLUSH TLB HERE
+    flush_tlb();
 
     //===============================  Load file into memory ===============================
-    inode = (inode_t * )(startINode + dentry.INodeNum);
+    inode = (INode_t * )(startINode + dentry.INodeNum);
     error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);
 
     // ===============================      Create PCB       ===============================
@@ -179,28 +184,37 @@ int32_t execute (const uint8_t* command){
     pcb->fd_array[STDOUT].jump_table = &stdout_fileop;
     pcb->fd_array[STDIN].jump_table = &stdin_fileop;
 
-    strncpy(&pcb->pcb_cmd, &cmd,32);
+    strncpy((int8_t * ) pcb->pcb_cmd, (int8_t * ) cmd, MAX_FILE_NAME);
 
     // =============================== Prepare for Context Switch ===============================
 
-    int8_t eip_value[3]; 
-    read_data(dentry.INodeNum,24,eip_value,3);
+    uint8_t eip_value[3]; 
+    read_data(dentry.INodeNum, 24, eip_value, SIZE_OF_INT32);
 
     // Set stack pointer to the bottom of the 4 MB page
+    esp_arg = PAGE_SIZE - SIZE_OF_INT32 + USER_V;
+
+    
     // Ds register set to USER_DS
     // Apendix E stuff smtn related to tss
     // Save old EBP and ESP
 
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values
-    // asm volatile ("
-    //     pushw %ds ;
-    //     pushl %esp ;
-    //     pushl EFLAG ;
-    //     pushl %es; 
-    //     pushl %eip ; 
-    //     iret 
-    // ");
+    asm volatile ("\
+        pushw %%ds ;\
+        pushl %%esp ;\
+        pushl %%es ;\
+        iret ;\
+        "
+        :
+        : 
+        : "memory"
+    );
+
+
+
+
 
 
     return 172; // value between 0 and 255
@@ -297,3 +311,7 @@ pcb_t * get_cur_pcb() {
 	return (pcb_t *) addr;
 }
 
+int32_t read_fail(int32_t fd, void *buf, int32_t nbytes) { return -1 ;}
+int32_t write_fail(int32_t fd, const void *buf, int32_t nbytes){return -1; }
+int32_t open_fail(const uint8_t *filename) {return -1;}
+int32_t close_fail(int32_t fd){ return -1; }

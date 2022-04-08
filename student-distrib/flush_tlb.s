@@ -1,3 +1,5 @@
+#define ASM 1
+
 .globl flush_tlb
 
 .align 4

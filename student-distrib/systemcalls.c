@@ -51,8 +51,11 @@ int32_t halt(uint8_t status)
     eip_usr = pcb->usr_eip;
     esp_usr = pcb->usr_esp ;
 
+
+
+    //If you are the last one execute a new shell 
     if(pcb->process_id == 0){
-    execute("shell");
+        execute("shell");
     }
 
     curr_id = pcb->parent_id;
@@ -63,13 +66,12 @@ int32_t halt(uint8_t status)
     // =============================== Restore parent paging data   ===============================
 
     //Get physical memory
-
     //Change Page table 
+    // KEVIN FIX THIS
+
     int32_t addr = PAGE_SIZE * curr_id;
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
-
-     /* everytime we change paging we need to flush TLB */
     flush_tlb(); 
 
     // =============================== Close any relevant FD's   ===============================

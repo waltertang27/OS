@@ -8,10 +8,8 @@
 int32_t id = 0;
 int32_t curr_id = 0;
 
-<<<<<<< HEAD
 extern void flush_tlb();
 
-=======
 /*
 DESCRIPTION: terminates a process
 INPUTS: uint8_t status - 
@@ -19,7 +17,6 @@ OUTPUTS:
 RETURN VALUE: returns specified value to parent process
 SIDE EFFECTS: hands processor to new program until it terminates
 */
->>>>>>> syscalloc
 int32_t halt(uint8_t status){
     /* The halt system call terminates a process, returning the specified value to its parent process. The system call handler
     itself is responsible for expanding the 8-bit argument from BL into the 32-bit return value to the parent program’s

@@ -76,7 +76,4 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length
 int32_t open_(const uint8_t* filename, int fd);
 
 #endif
-<<<<<<< HEAD
 
-=======
->>>>>>> syscalloc

@@ -8,11 +8,16 @@
 int32_t id = 0;
 int32_t curr_id = 0;
 
+
 extern void flush_tlb(){
     asm volatile(" \
-        movl %cr3,%eax ; \
-        movl %eax,%cr3 ;\
+        movl %%cr3,%%eax ; \
+        movl %%eax,%%cr3 ;\
+        ret ;\
         "
+        :
+        :
+        : "eax"
         );
      }
 
@@ -226,7 +231,7 @@ int32_t execute (const uint8_t* command){
 
     // =============================== Prepare for Context Switch ===============================
 
-    uint8_t eip_value[3]; 
+    uint8_t eip_value[4]; 
     read_data(dentry.INodeNum, 24, eip_value, SIZE_OF_INT32);
 
     // Set stack pointer to the bottom of the 4 MB page
@@ -253,14 +258,18 @@ int32_t execute (const uint8_t* command){
     // Set the registers that we want to pop to the correct values
     asm volatile ("\
         pushw %%ds  ;\
-        pushl %%edx ;\
+        pushl %2 ;\
         pushfl      ;\
-        pushl %%ecx ;\
+        popl %%eax  ;\
+        orl 0x200, %%eax   ;\
         pushl %%eax ;\
+        pushl %1 ;\
+        pushl %0 ;\
         iret ;\
         "
-        :: "eax"(eip_usr), "ecx"(USER_CS), "edx"(esp_usr)
-        : "memory"
+        :
+        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
+        : "memory","eax", "cc"
     );
 
     

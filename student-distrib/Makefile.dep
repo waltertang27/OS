@@ -1,14 +1,9 @@
 boot.o: boot.S multiboot.h x86_desc.h types.h
-flush_tlb.o: flush_tlb.S
 intr_link.o: intr_link.S
 x86_desc.o: x86_desc.S x86_desc.h types.h
 fs_system.o: fs_system.c fs_system.h lib.h types.h keyboard.h multiboot.h \
-<<<<<<< HEAD
-  x86_desc.h i8259.h debug.h tests.h systemcalls.h terminal.h paging.h
-=======
   x86_desc.h i8259.h debug.h tests.h systemcalls.h terminal.h paging.h \
   rtc.h
->>>>>>> syscalloc
 i8259.o: i8259.c i8259.h types.h lib.h keyboard.h multiboot.h x86_desc.h \
   debug.h tests.h
 idt.o: idt.c idt.h multiboot.h types.h x86_desc.h lib.h keyboard.h \
@@ -26,16 +21,9 @@ rtc.o: rtc.c rtc.h multiboot.h types.h x86_desc.h lib.h keyboard.h \
   i8259.h debug.h tests.h
 systemcalls.o: systemcalls.c systemcalls.h types.h x86_desc.h lib.h \
   keyboard.h multiboot.h i8259.h debug.h tests.h terminal.h fs_system.h \
-<<<<<<< HEAD
-  paging.h
-=======
   paging.h rtc.h
->>>>>>> syscalloc
 terminal.o: terminal.c terminal.h keyboard.h multiboot.h types.h \
   x86_desc.h lib.h i8259.h debug.h tests.h
 tests.o: tests.c tests.h x86_desc.h types.h lib.h keyboard.h multiboot.h \
-<<<<<<< HEAD
-  i8259.h debug.h paging.h rtc.h fs_system.h systemcalls.h terminal.h
-=======
-  i8259.h debug.h paging.h idt.h intr_link.h rtc.h
->>>>>>> origin/rtc
+  i8259.h debug.h paging.h idt.h intr_link.h rtc.h fs_system.h \
+  systemcalls.h terminal.h

@@ -122,7 +122,7 @@ int paging_test()
     TEST_HEADER;
 
     char ref;
-    char * temp;
+    //char * temp;
 
     char *pointer = (char *)0x400000; // kernel
     ref = *pointer;
@@ -149,7 +149,7 @@ int null_test()
 {
     TEST_HEADER;
     char ref;
-    char * temp;
+    //char * temp;
 
     // convert 0 to char pointer for NULL
 

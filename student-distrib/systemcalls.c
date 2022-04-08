@@ -274,6 +274,7 @@ SIDE EFFECTS:
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
     // fail
     //dentry_t dentry;
+    cli();
     if (fd < FD_START_INDEX || fd > FD_END || nbytes < 0 || buf == NULL) {
         return -1;
     }

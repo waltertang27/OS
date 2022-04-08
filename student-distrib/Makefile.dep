@@ -34,4 +34,8 @@ systemcalls.o: systemcalls.c systemcalls.h types.h x86_desc.h lib.h \
 terminal.o: terminal.c terminal.h keyboard.h multiboot.h types.h \
   x86_desc.h lib.h i8259.h debug.h tests.h
 tests.o: tests.c tests.h x86_desc.h types.h lib.h keyboard.h multiboot.h \
+<<<<<<< HEAD
   i8259.h debug.h paging.h rtc.h fs_system.h systemcalls.h terminal.h
+=======
+  i8259.h debug.h paging.h idt.h intr_link.h rtc.h
+>>>>>>> origin/rtc

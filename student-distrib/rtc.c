@@ -1,6 +1,6 @@
 #include "rtc.h" 
 
-uint32_t rtc_rate;
+// uint32_t rtc_rate;
 volatile uint32_t rtc_int;
 
 /*
@@ -24,9 +24,9 @@ extern void rtc_init(void){
     outb(prev & (TOP_FOUR_BITMASK | LOWER_FOUR_BITMASK) ,RTC_PORT_2); //0F allows to mask for top 4 bits
     testing_RTC = 0; 
     
-    rtc_rate = MIN_FREQ; // the initial frequency is set to 2 interrupts/second;
+    // the initial frequency is set to 2 interrupts/second;
     rtc_freq(MAX_FREQ);
-    
+    rtc_int = 0;
     enable_irq(RTC_IRQ_NUM);
 }
 
@@ -40,24 +40,7 @@ SIDE EFFECTS: RTC continiously fires
 extern void rtc_handler(void){
     cli();
     rtc_int = 1; // interrupts occur and not handled yet
-    if(testing_RTC) {
-        printf("Called handler \n");
-        int i, j, freq;
-        int fd = open_rtc((uint8_t *)"rtc");
-        int32_t list[5] = {2, 8, 32, 128, 512};
-        for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
-            j = (int32_t)i + (int32_t)list;
-            write_rtc((int32_t) fd, (const void *)j, (int32_t)4);                   // the slowest to the fastest
-            printf("Freqency: %d Hz \n", list[i]);
-            for (freq = 0; freq < list[i] ; freq++) {
-                read_rtc((int32_t) fd, (void*)freq,(int32_t) 4);
-                putc('1');
-            }
-            printf("\n");
-        }
-        close_rtc(fd);
-    }
-    //test_interrupts();
+    // test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C
     inb(RTC_PORT_2);		        // just throw away contents
     send_eoi(RTC_IRQ_NUM);
@@ -72,7 +55,7 @@ extern void rtc_handler(void){
 int32_t open_rtc (const uint8_t* filename) {
     if (filename == NULL)
         return -1;                  // if the filename does not exist, return -1
-    rtc_rate = MIN_FREQ;
+    rtc_freq(2);
     return 0;
 }
 
@@ -84,9 +67,7 @@ int32_t open_rtc (const uint8_t* filename) {
  * Function: Sleep until receiving an interrupt and read the interrupt rate  
  */
 int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
-    sti();
-    while (rtc_int != 1); // set a flag until the interrupt is handled (rtc_int = 0)
-    cli();
+    while (!rtc_int); // set a flag until the interrupt is handled (rtc_int = 0)
     rtc_int = 0;
     return 0;
 }
@@ -104,10 +85,11 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
         return -1;
  	int32_t freq_int = *((int32_t *)buf);
     // check if the frequency is out of bounds and check if it is powers of two 
-    if (freq_int < MIN_FREQ || freq_int > MAX_FREQ || (freq_int & (freq_int - 1)) == 0) 
+    if (freq_int < MIN_FREQ || freq_int > MAX_FREQ || (freq_int & (freq_int - 1)) != 0) 
         return -1;
 
-    rtc_rate = freq_int; 
+    //printf("%u\n", freq_int);
+    rtc_freq(freq_int); 
     return 0;
 }
 
@@ -150,15 +132,18 @@ extern void rtc_freq (int32_t freq) {
     if (freq == 2) 
     	rate = 0x0F;		//1111
     cli();
-    outb(RTC_PORT_1, RTC_REG_A);                    // set index to register A
-    unsigned char prev = inb(RTC_PORT_2);           // get initial value of register A
+    outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
+    char prev = inb(RTC_PORT_2);                    // get initial value of register A
 /*
     if (rate >= MIN_RATE || rate <= MAX_RATE)       // rate will only be in the range from 3-15
         range = 1;
         return;
 */
-    outb(RTC_PORT_1, RTC_REG_A);                           // reset index to A
-    outb(RTC_PORT_2, (prev & TOP_FOUR_BITMASK) | rate);    // write rate (the bottom 4 bits that represent the 
+    outb(RTC_REG_A, RTC_PORT_1);                           // reset index to A
+    outb((prev & TOP_FOUR_BITMASK) | rate, RTC_PORT_2);    // write rate (the bottom 4 bits that represent the 
                                                            // periodic interrupt rate) to A.
     sti();
 }
+
+
+

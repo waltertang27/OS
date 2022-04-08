@@ -28,3 +28,5 @@ int32_t close_rtc (int32_t fd);
 extern void rtc_freq (int32_t freq);
 
 int testing_RTC; 
+
+int testing_RTC; 

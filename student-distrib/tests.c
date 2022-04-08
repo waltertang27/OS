@@ -2,9 +2,8 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "paging.h"
+#include "idt.h"
 #include "rtc.h"
-#include "fs_system.h"
-#include "terminal.h"
 #define PASS 1
 #define FAIL 0
 
@@ -65,15 +64,27 @@ int idt_test()
 int division_by_zero_test()
 {
     TEST_HEADER;
-    int num1, num2;
-
-
-    num1 = 0;
-    num2 = 1 / num1;
-    num2 = num2 + 1; // avoid warning
+    int a = 0;
+    int b = 1 / a;
+    b = b + 1; // avoid warning
     return FAIL;
 }
 
+/* syscall_test()
+ *
+ * Cause blue screen
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: Exception handling
+ * Files: idt.c
+ */
+int syscall_test()
+{
+    TEST_HEADER;
+    __asm__("int    $0x80");
+    return FAIL;
+}
 
 /* paging_init_test()
  *
@@ -88,11 +99,7 @@ int paging_init_test()
 {
     TEST_HEADER;
 
-    if (page_directory[0].present != 1){
-        return FAIL;
-    }
-
-    if (page_directory[1].present != 1){
+    if (page_directory[0].present != 1 || page_directory[KERNEL_INDEX].present != 1){
         return FAIL;
     }
 
@@ -115,90 +122,110 @@ int paging_test()
     char ref;
     char * temp;
 
-     // start of the kernel
-    temp = (char * )KERNEL_ADDR;
-    ref = *  temp;
+    char *pointer = (char *)0x400000; // kernel
+    ref = *pointer;
 
-     // start of the video memory
-    temp = (char *  )VID_ADDR;
-    ref = * temp;
+    pointer = (char *)0x0B8000; // video memory
+    ref = *pointer;
 
-    // middle of the kernel 
-    temp = (char * ) 0x6BF312;
-    ref = * temp;
-
-    // end of the kernel 
-    temp = (char * ) 0x7FFFFF;
-    ref = * temp;
+    pointer = (char *)0x7FFFFF;
+    ref = *pointer;
 
     return PASS;
 }
 
 /* null_test()
 *
-* Checks if deferencing NULL gives page fault exception
+* Cause blue screen if dereferencing 0 causes a page fault
 * Inputs: None
 * Outputs: Page fault/FAIL
-* Side effects: Halts the OS and displays errors
-* Coverage: page fault exception
+* Side Effects: Halts the OS and displays errors
+* Coverage: page fault handling of location 0.
+* Files: paging.c
  */
 int null_test()
 {
     TEST_HEADER;
-
     char ref;
     char * temp;
 
     // convert 0 to char pointer for NULL
 
-    temp = (char * ) 0x0;
-    ref = * temp;
+    char *pointer = (char *)0;
+    ref = *pointer;
     return FAIL;
 }
 
-/* out_of_bounds_test()
+/* kernel_up_bound_test()
  *
- * Checks if there is a page fault exception from memory out of bounds
+ * Checks if there is a page fault from memory before the kernel
  * Inputs: None
  * Outputs: Page fault/FAIL
- * Side effects: halts the OS and displays errors
- * Coverage: page fault exception
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: page fault handling from memory before the kernel
+ * Files: paging.c
  */
-int out_of_bounds_test()
+int kernel_up_bound_test()
 {
     TEST_HEADER;
-
     char ref;
-    char * temp;
-
-    /* ONE TEST AT A TIME */
-
-    /* test 1 */
-    // temp = (char * ) 0x0B7ABC;
-    // ref = * temp;
-
-    /* test 2 */
-    // temp = (char * ) 0x100000;
-    // ref = * temp;
-
-    /* test 3 */
-    // temp = (char * ) 0x3FFFFF;
-    // ref = * temp;
-
-    /* test 4 */
-    // temp = (char * ) 0x3FF998;
-    // ref = * temp;
-    
-    /* test 5 */
-    // temp = (char * ) 0x800000;
-    // ref = * temp;
-
-    /* test 6 */
-    temp = (char * ) 0x800365;
-    ref = * temp;
-
+    char *pointer = (char *)0x3FFFFF;
+    ref = *pointer;
     return FAIL;
 }
+
+/* kernel_low_bound_test()
+ *
+ * Checks if there is a page fault from memory after the kernel
+ * Inputs: None
+ * Outputs: Page fault/FAIL
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: page fault handling from memory after the kernel
+ * Files: paging.c
+ */
+int kernel_low_bound_test()
+{
+    TEST_HEADER;
+    char ref;
+    char *pointer = (char *)0x800000;
+    ref = *pointer;
+    return FAIL;
+}
+/* vidmem_up_bound_test()
+ *
+ * Checks if there is a page fault from memory before the video memory
+ * Inputs: None
+ * Outputs: Page fault/FAIL
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: page fault handling from memory before the video memory
+ * Files: paging.c
+ */
+int vidmem_up_bound_test()
+{
+    TEST_HEADER;
+    char ref;
+    char *pointer = (char *)0x0B7FFF;
+    ref = *pointer;
+    return FAIL;
+}
+/* vidmem_low_bound_test()
+ *
+ * Checks if there is a page fault from memory after the video memory
+ * Inputs: None
+ * Outputs: Page fault/FAIL
+ * Side Effects: Halts the OS and displays errors
+ * Coverage: page fault handling from memory after the video memory
+ * Files: paging.c
+ */
+int vidmem_low_bound_test()
+{
+    TEST_HEADER;
+    char ref;
+    char *pointer = (char *)0x0B9000;
+    ref = *pointer;
+    return FAIL;
+}
+
 
 /* Checkpoint 2 tests */
 
@@ -570,6 +597,64 @@ int file_read_test(){
 int rtc_test(){
 	TEST_HEADER;
 	testing_RTC = 1; 
+    if(testing_RTC) {
+        clear();
+        printf("Called handler \n");
+        int32_t i, freq;
+        int fd = open_rtc((uint8_t *)"rtc");
+        int32_t list[5] = {2, 8, 32, 128, 512};
+        for (i = 0; i < 5; i++) {                  // set a level of 5 different frequencies from
+            write_rtc((int32_t) fd, &list[i], 4);    // the slowest to the fastest
+            //printf("%u\n", w);
+            for (freq = 0; freq < 20 ; freq++) {
+                read_rtc((int32_t) fd, &list[i], 4);
+                putc('1');
+            }
+            printf("\n");
+        }
+        // if (i = 0) {
+        //     write_rtc((int32_t)fd, list, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+
+        // if (i = 1) {
+        //     write_rtc((int32_t)fd, list + 1, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list + 1, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+
+        // if (i = 2) {
+        //     write_rtc((int32_t)fd, list + 2, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list + 2, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+        // if (i = 3) {
+        //     write_rtc((int32_t)fd, list + 3, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list + 3, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+        // if (i = 4) {
+        //     write_rtc((int32_t)fd, list + 4, 4);
+        //     for (freq = 0; freq < 10 ; freq++) {
+        //         read_rtc((int32_t) fd, list + 4, 4);
+        //         putc('1');
+        //     }
+        // printf("\n");
+        // }
+    }
 	return PASS; 
 }
 
@@ -615,16 +700,22 @@ int terminal_rw_test(){
 /* Checkpoint 5 tests */
 
 /* Test suite entry point */
-void launch_tests()
-{
-    clear();
-    /* CHECKPOINT 1 */
+void launch_tests() {
+    TEST_OUTPUT("idt_test", idt_test());
 
     // TEST_OUTPUT("idt_test", idt_test());
-    // TEST_OUTPUT("RTC test", rtc_test());
+    // TEST_OUTPUT("Paging test",paging_test());
+
+    // launch your tests here
+	TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
+    // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
     // TEST_OUTPUT("paging_test", paging_test());
+    // TEST_OUTPUT("kernel_up_bound_test", kernel_up_bound_test());
+    // TEST_OUTPUT("kernel_low_bound_test", kernel_low_bound_test());
+    // TEST_OUTPUT("vidmem_up_bound_test", vidmem_up_bound_test());
+    // TEST_OUTPUT("vidmem_low_bound_test", vidmem_low_bound_test());
     // TEST_OUTPUT("null_test", null_test());
     // TEST_OUTPUT("out_of_bounds_test", out_of_bounds_test());
 
@@ -638,10 +729,11 @@ void launch_tests()
     // TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
     // TEST_OUTPUT("File Read Test", file_read_test());
     // TEST_OUTPUT("Read by name test", name_search_test());
-    TEST_OUTPUT("Read Directory", directory_read_test());
+    //TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
     // TEST_OUTPUT("File Read Test", file_read_test());
     // TEST_OUTPUT("Terminal Read/Write Test", terminal_rw_test());
 }
+
 

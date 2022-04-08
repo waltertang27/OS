@@ -72,13 +72,14 @@ int32_t execute (const uint8_t* command){
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
     uint8_t args[MAX_CMD_LINE_SIZE];
     uint8_t buf[BUF_SIZE];
+
     // uint8_t * memory;
     // uint8_t * inode;
     INode_t * inode;
     dentry_t dentry;
     pcb_t * pcb;
 
-    uint32_t eip_arg, esp_arg;
+    uint32_t eip_usr, esp_usr;
 
     /* 
         Part 1: Parsing command and args.
@@ -163,6 +164,10 @@ int32_t execute (const uint8_t* command){
     inode = (INode_t * )(startINode + dentry.INodeNum);
     error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);
 
+    if (error == -1){
+        return -1;
+    }
+
     // ===============================      Create PCB       ===============================
     pcb = get_pcb(id);
     pcb->process_id = id;
@@ -192,12 +197,24 @@ int32_t execute (const uint8_t* command){
     read_data(dentry.INodeNum, 24, eip_value, SIZE_OF_INT32);
 
     // Set stack pointer to the bottom of the 4 MB page
-    esp_arg = PAGE_SIZE - SIZE_OF_INT32 + USER_V;
+    esp_usr = PAGE_SIZE - SIZE_OF_INT32 + USER_V;
+    eip_usr = * ((int * )eip_value);
 
-    
     // Ds register set to USER_DS
+
     // Apendix E stuff smtn related to tss
+    pcb->active = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
+    tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
+
+    tss.ss0 = KERNEL_DS;
+    
     // Save old EBP and ESP
+    register uint32_t saved_ebp asm("ebp");
+    register uint32_t saved_esp asm("esp");
+    pcb->save_ebp = saved_ebp;
+    pcb->save_esp = saved_esp;
+    pcb->usr_eip = eip_usr;
+    pcb->usr_esp = esp_usr;
 
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values
@@ -207,16 +224,8 @@ int32_t execute (const uint8_t* command){
         pushl %%es ;\
         iret ;\
         "
-        :
-        : 
-        : "memory"
+        ::: "memory"
     );
-
-
-
-
-
-
     return 172; // value between 0 and 255
 }
 

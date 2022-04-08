@@ -1,4 +1,5 @@
 boot.o: boot.S multiboot.h x86_desc.h types.h
+flush_tlb.o: flush_tlb.S
 intr_link.o: intr_link.S
 system_call_linkage.o: system_call_linkage.S x86_desc.h types.h
 x86_desc.o: x86_desc.S x86_desc.h types.h

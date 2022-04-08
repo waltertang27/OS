@@ -218,6 +218,7 @@ int32_t execute (const uint8_t* command){
     // NEED TO FLUSH TLB HERE
     flush_tlb();
 
+
     //===============================  Load file into memory ===============================
     inode = (INode_t * )(startINode + dentry.INodeNum);
     error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);

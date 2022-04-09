@@ -117,6 +117,7 @@ int32_t execute (const uint8_t* command){
         Push IRET context to kernel stack
     */
     printf("Entered execute \n");
+    fileop_init();
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
@@ -372,7 +373,7 @@ int32_t write (int32_t fd, const void* buf, int32_t nbytes){
         written, or -1 on failure.
 
     */ 
-    if (fd < FD_START_INDEX || fd > FD_END || buf == NULL || nbytes != 4)
+    if (fd < 0 || fd > FD_END || buf == NULL || nbytes < 0)
         return -1;
     
     pcb_t * pcb = get_cur_pcb();

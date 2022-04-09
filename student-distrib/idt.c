@@ -54,7 +54,7 @@ extern void IDT_init(void){
     SET_IDT_ENTRY(idt[17],machine_check_excep);
     SET_IDT_ENTRY(idt[18],simd_excep);
 
-    // SET_IDT_ENTRY(idt[0x80],system_call_linkage); 
+    
     
     idt[KEYBOARD_IDT].present = 1;
     idt[KEYBOARD_IDT].reserved3 = 1;
@@ -63,6 +63,12 @@ extern void IDT_init(void){
 
     idt[RTC_INTERRUPT].present = 1;                            
     SET_IDT_ENTRY(idt[RTC_INTERRUPT], rtc_handler_linkage);
+
+    SET_IDT_ENTRY(idt[SYS_IDT], )
+
+    idt[SYS_IDT].present = 1;
+    SET_IDT_ENTRY(idt[SYS_IDT], system_call_linkage);
+    idt[SYS_IDT].dpl = 0x3;         //set dpl level to level 3 forr correct privilege
 
     lidt(idt_desc_ptr);
 }

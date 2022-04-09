@@ -284,6 +284,8 @@ int32_t execute (const uint8_t* command){
     // Possible reasons it doesnt work: segment registers need to be set
     sti();
     asm volatile ("\
+        movw %3,%%ax ;\
+        movw %%ax,%%ds ;\
         pushl %3  ;\
         pushl %2 ;\
         pushfl      ;\
@@ -299,7 +301,7 @@ int32_t execute (const uint8_t* command){
         "
         :
         : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr), "i"(USER_DS)
-        : "memory","eax", "cc"
+        : "memory","eax"
     );
     printf("Finished execute \n");
     return 172; // value between 0 and 255

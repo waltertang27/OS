@@ -305,7 +305,7 @@ int32_t execute (const uint8_t* command){
     // my approach, use a, b, c, d 
     //     movw %3,%%ax ;\ is so weird to me, i dont think that is correct
     asm volatile ("\
-        movw %3,%%ax ;\
+        
         andl $0x00FF, %%edx ;\
         movw %%dx,%%ds ;\
         pushl %%edx ;\

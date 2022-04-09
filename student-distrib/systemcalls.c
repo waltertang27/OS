@@ -81,13 +81,17 @@ int32_t halt(uint8_t status)
     int32_t ebpSave = parent ->save_ebp; 
     int32_t espSave = parent->save_esp;
      asm volatile(" \
-        movl %0,%%ebp ; \
-        movl %1,%%esp ;\
-        jmp leaveExec ;\
+        pushl %ebp ;\
+        movl %esp, %ebp ;\
+        movl %edx, %esp ;\
+        movl %ecx, %ebp ;\
+        leave ;\
+        ret ;\
         
         "
         :
-        : "r"(ebpSave), "r"(espSave)
+        // : "r"(ebpSave), "r"(espSave)
+        : "a"(status), "d"(espSave), "c"(ebpSave)
         : "memory"
         );
     

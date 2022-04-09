@@ -66,11 +66,6 @@ extern void IDT_init(void){
     idt[RTC_INTERRUPT].present = 1;                            
     SET_IDT_ENTRY(idt[RTC_INTERRUPT], rtc_handler_linkage);
 
-    SET_IDT_ENTRY(idt[SYS_IDT], )
-
-    idt[SYS_IDT].present = 1;
-    SET_IDT_ENTRY(idt[SYS_IDT], system_call_linkage);
-    idt[SYS_IDT].dpl = 0x3;         //set dpl level to level 3 forr correct privilege
 
     lidt(idt_desc_ptr);
 }

@@ -49,7 +49,8 @@ int32_t halt(uint8_t status)
     }
 
     curr_id = pcb->parent_id;
-    parent = get_pcb(curr_id); 
+    parent = get_pcb(curr_id);
+    process_array[pcb->id] = 0; 
 
 
 
@@ -58,7 +59,7 @@ int32_t halt(uint8_t status)
     //Get physical memory
     //Change Page table 
     
-    int addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
+    uint32_t addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     flush_tlb(); 
@@ -68,6 +69,10 @@ int32_t halt(uint8_t status)
     for(i = 0; i < FD_END; i++) {
         pcb->fd_array[i].flags = FREE;
     }
+
+    tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
+
+    tss.ss0 = KERNEL_DS;
 
     
     // =============================== jump to execute return   ===============================
@@ -79,6 +84,7 @@ int32_t halt(uint8_t status)
         movl %0,%%ebp ; \
         movl %1,%%esp ;\
         jmp leaveExec ;\
+        
         "
         :
         : "r"(ebpSave), "r"(espSave)

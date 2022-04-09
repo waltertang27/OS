@@ -30,61 +30,61 @@ int32_t halt(uint8_t status)
         Close any relevant FDs
         Jump to execute return
     */
-    pcb_t * pcb, *parent ;
-    uint32_t eip_usr, esp_usr;
+    // pcb_t * pcb, *parent ;
+    // uint32_t eip_usr, esp_usr;
 
 
-    // =============================== Restore parent data   ===============================
+    // // =============================== Restore parent data   ===============================
 
-    pcb = get_cur_pcb();
+    // pcb = get_cur_pcb();
 
-    eip_usr = pcb->usr_eip;
-    esp_usr = pcb->usr_esp ;
-
-
-
-    //If you are the last one execute a new shell 
-    if(pcb->process_id == 0){
-        execute("shell");
-    }
-
-    curr_id = pcb->parent_id;
-    parent = get_pcb(curr_id); 
+    // eip_usr = pcb->usr_eip;
+    // esp_usr = pcb->usr_esp ;
 
 
 
-    // =============================== Restore parent paging data   ===============================
+    // //If you are the last one execute a new shell 
+    // if(pcb->process_id == 0){
+    //     execute("shell");
+    // }
 
-    //Get physical memory
-    //Change Page table 
-    // KEVIN FIX THIS
+    // curr_id = pcb->parent_id;
+    // parent = get_pcb(curr_id); 
 
-    int32_t addr = PAGE_SIZE * curr_id;
-    page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
-    flush_tlb(); 
 
-    // =============================== Close any relevant FD's   ===============================
-    int i;
-    for(i = 0; i < FD_END; i++) {
-        pcb->fd_array[i].flags = FREE;
-    }
+    // // =============================== Restore parent paging data   ===============================
+
+    // //Get physical memory
+    // //Change Page table 
+    // // KEVIN FIX THIS
+
+    // int32_t addr = PAGE_SIZE * curr_id;
+    // page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
+
+    // flush_tlb(); 
+
+    // // =============================== Close any relevant FD's   ===============================
+    // int i;
+    // for(i = 0; i < FD_END; i++) {
+    //     pcb->fd_array[i].flags = FREE;
+    // }
 
     
-    // =============================== jump to execute return   ===============================
+    // // =============================== jump to execute return   ===============================
     
-    // Call assembly program to jump back to execute 
-    int32_t ebpSave = parent ->save_ebp; 
-    int32_t espSave = parent->save_esp;
-     asm volatile(" \
-        movl %0,%%ebp ; \
-        movl %1,%%esp ;\
-        jmp leaveExec ;\
-        "
-        :
-        : "r"(ebpSave), "r"(espSave)
-        : "memory"
-        );
+    // // Call assembly program to jump back to execute 
+    // int32_t ebpSave = parent ->save_ebp; 
+    // int32_t espSave = parent->save_esp;
+    //  asm volatile(" \
+    //     movl %0,%%ebp ; \
+    //     movl %1,%%esp ;\
+    //     jmp leaveExec ;\
+    //     "
+    //     :
+    //     : "r"(ebpSave), "r"(espSave)
+    //     : "memory"
+    //     );
     
 
     return -1;
@@ -218,7 +218,7 @@ int32_t execute (const uint8_t* command){
     addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
-    uint32_t * hi = (int32_t* )addr ; 
+    // uint32_t * hi = (int32_t* )addr ; 
 
     // NEED TO FLUSH TLB HERE
     flush_tlb();
@@ -284,11 +284,11 @@ int32_t execute (const uint8_t* command){
     // Set the registers that we want to pop to the correct values
     sti();
     asm volatile ("\
-        pushw %3  ;\
+        pushl %3  ;\
         pushl %2 ;\
         pushfl      ;\
         popl %%eax  ;\
-        orl 0x200, %%eax   ;\
+        orl $0x0200, %%eax   ;\
         pushl %%eax ;\
         pushl %1 ;\
         pushl %0 ;\
@@ -298,7 +298,7 @@ int32_t execute (const uint8_t* command){
         ret ;\
         "
         :
-        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr), "r"(USER_DS)
+        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr), "i"(USER_DS)
         : "memory","eax", "cc"
     );
     printf("Finished execute \n");

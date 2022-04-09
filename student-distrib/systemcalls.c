@@ -328,8 +328,6 @@ int32_t execute (const uint8_t* command){
 }
 
 
-
-
 /*
 DESCRIPTION: read system call; reads from keyboard, rtc, file, directory, etc.
 INPUTS: int32_t fd - file descriptor to read

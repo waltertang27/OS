@@ -42,18 +42,6 @@ RETURN VALUE: number of bytes read
 SIDE EFFECTS: 
 */
 int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
-    // while(1) {
-    //     if(enter_detected == 1) {
-    //         puts(buffer);
-    //         memcpy(terminal_buffer, enter_buffer, strlen(enter_buffer) + 1);
-    //         terminal_index = enter_index;
-    //         break;
-    //     }
-    // }
-    // enter_detected = 0;
-    // //puts(buffer);
-    // //printf("%u\n", terminal_index);
-    // return terminal_index;
 
     if (buf == NULL){
         return -1;
@@ -104,10 +92,10 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
             // return terminal_index;
             break;
         }
+        
     }
-    // printf("size: %d", bytes_read);
-    return bytes_read;
 
+    return bytes_read;
 }
 
 /*

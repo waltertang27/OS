@@ -25,7 +25,7 @@ extern void IDT_init(void){
         idt[i].reserved0 = 0;
         idt[i].reserved1 = 1;
         idt[i].reserved2 = 1;
-        idt[i].reserved3 = 1;
+        idt[i].reserved3 = 0;
         idt[i].reserved4 = 0;
 
         // DPL is 0 to prevent user level programs from acessing interrupts 
@@ -55,19 +55,22 @@ extern void IDT_init(void){
     SET_IDT_ENTRY(idt[17],machine_check_excep);
     SET_IDT_ENTRY(idt[18],simd_excep);
 
-    SET_IDT_ENTRY(idt[0x80],system_call_linkage); 
+  
     idt[0x80].dpl = 3; 
     idt[0x80].present = 1; 
-    idt[0x80].reserved3 = 0;
+    idt[KEYBOARD_IDT].reserved3 = 1;
+    SET_IDT_ENTRY(idt[0x80],system_call_linkage); 
+
 
     idt[KEYBOARD_IDT].present = 1;
-    idt[KEYBOARD_IDT].reserved3 = 0;
+    idt[KEYBOARD_IDT].reserved3 = 1;
+    idt[KEYBOARD_IDT].dpl = 0; 
     SET_IDT_ENTRY(idt[KEYBOARD_IDT],keyboard_handler_linkage);
     
 
     idt[RTC_INTERRUPT].present = 1;                            
+    idt[RTC_INTERRUPT].reserved3 = 1;
     SET_IDT_ENTRY(idt[RTC_INTERRUPT], rtc_handler_linkage);
-     idt[RTC_INTERRUPT].reserved3 = 0;
 
     lidt(idt_desc_ptr);
 }

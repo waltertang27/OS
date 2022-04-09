@@ -81,7 +81,7 @@ int32_t open (const uint8_t* filename); //3.1
 int32_t close (int32_t fd); //3.1
 
 // If a file cant read, write, open, or close these their jump tables will be sent here 
-int32_t read_fail(int32_t fd, void *buf, int32_t nbytes);
+int32_t read_fail(int32_t fd, void *buf, int32_t nbytes) ;
 int32_t write_fail(int32_t fd, const void *buf, int32_t nbytes);
 int32_t open_fail(const uint8_t *filename);
 int32_t close_fail(int32_t fd);

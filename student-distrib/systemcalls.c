@@ -304,23 +304,21 @@ int32_t execute (const uint8_t* command){
 
     // my approach, use a, b, c, d 
     //     movw %3,%%ax ;\ is so weird to me, i dont think that is correct
-    asm volatile ("\
-        
-        andl $0x00FF, %%edx ;\
-        movw %%dx,%%ds ;\
-        pushl %%edx ;\
-        pushl %%ecx ;\
-        pushfl      ;\
-        popl %%ecx  ;\
-        orl $0x0200, %%ecx   ;\
-        pushl %%ecx ;\
-        pushl %%ebx ;\
-        pushl %%eax ;\
-        iret ;\
-        leaveExec: ;\
-        leave ;\
-        ret ;\
-        "
+    asm volatile (
+        "andl $0x00FF, %%edx \n "
+        "movw %%dx,%%ds \n "
+        "pushl %%edx \n"
+        "pushl %%ecx \n" 
+        "pushfl      \n"
+        "popl %%ecx  \n"
+        "orl $0x0200, %%ecx   \n"
+        "pushl %%ecx \n"
+        "pushl %%ebx \n"
+        "pushl %%eax \n"
+        "iret \n"
+        "leaveExec: \n" 
+        "leave \n"
+        "ret \n"
         :
         : "a"(eip_usr), "b"(USER_CS), "c"(esp_usr), "d"(USER_DS)
         : "memory"

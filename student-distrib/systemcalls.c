@@ -5,8 +5,8 @@
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4
 
-int32_t id = 0;
-int32_t curr_id = -1;
+int32_t parent_id = 0; 
+int32_t curr_id = 0;
 
 
 extern void flush_tlb(); 
@@ -196,7 +196,7 @@ int32_t execute (const uint8_t* command){
     }
 
     // ===============================     Set up paging     ===============================
-    curr_id = FD_START_INDEX;
+
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] != 1){
             process_array[curr_id] = 1;
@@ -214,6 +214,7 @@ int32_t execute (const uint8_t* command){
         and physical address divided by ALIGN_BYTES is essentially physical address right shifted by 12 
         which is what we should be putting in page directory entry */
     page_directory[USER_INDEX].page_table_addr = PAGE_SIZE * curr_id / ALIGN_BYTES;
+    
 
     // NEED TO FLUSH TLB HERE
     flush_tlb();
@@ -278,7 +279,7 @@ int32_t execute (const uint8_t* command){
     // Set the registers that we want to pop to the correct values
     sti();
     asm volatile ("\
-        pushw %%ds  ;\
+        pushw %3  ;\
         pushl %2 ;\
         pushfl      ;\
         popl %%eax  ;\
@@ -292,7 +293,7 @@ int32_t execute (const uint8_t* command){
         ret ;\
         "
         :
-        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
+        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr), "r"(USER_DS)
         : "memory","eax", "cc"
     );
     printf("Finished execute \n");

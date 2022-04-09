@@ -54,8 +54,10 @@ extern void IDT_init(void){
     SET_IDT_ENTRY(idt[17],machine_check_excep);
     SET_IDT_ENTRY(idt[18],simd_excep);
 
-    // SET_IDT_ENTRY(idt[0x80],system_call_linkage); 
-    
+    SET_IDT_ENTRY(idt[0x80],system_call_linkage); 
+    idt[0x80].dpl = 3; 
+    idt[0x80].present = 1; 
+
     idt[KEYBOARD_IDT].present = 1;
     idt[KEYBOARD_IDT].reserved3 = 1;
     SET_IDT_ENTRY(idt[KEYBOARD_IDT],keyboard_handler_linkage);
@@ -166,3 +168,6 @@ extern void simd_excep(){
     blue_screen(exception);
 }
 
+extern void test_system(){
+    printf("hi \n");
+}

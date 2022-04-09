@@ -9,17 +9,7 @@ int32_t id = 0;
 int32_t curr_id = -1;
 
 
-extern void flush_tlb(){
-    asm volatile(" \
-        movl %%cr3,%%eax ; \
-        movl %%eax,%%cr3 ;\
-        ret ;\
-        "
-        :
-        :
-        : "eax"
-        );
-     }
+extern void flush_tlb(); 
 
 /*
 DESCRIPTION: terminates a process
@@ -227,6 +217,7 @@ int32_t execute (const uint8_t* command){
     // NEED TO FLUSH TLB HERE
     flush_tlb();
 
+
     //===============================  Load file into memory ===============================
     inode = (INode_t * )(startINode + dentry.INodeNum);
     error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);
@@ -302,6 +293,7 @@ int32_t execute (const uint8_t* command){
         : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
         : "memory","eax", "cc"
     );
+    printf("Finished execute \n");
     return 172; // value between 0 and 255
 }
 

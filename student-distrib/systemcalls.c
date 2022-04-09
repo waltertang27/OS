@@ -50,7 +50,7 @@ int32_t halt(uint8_t status)
 
     curr_id = pcb->parent_id;
     parent = get_pcb(curr_id);
-    process_array[pcb->id] = 0; 
+    process_array[pcb->process_id] = 0; 
 
 
 
@@ -80,15 +80,13 @@ int32_t halt(uint8_t status)
     // Call assembly program to jump back to execute 
     int32_t ebpSave = parent ->save_ebp; 
     int32_t espSave = parent->save_esp;
-     asm volatile(" \
-        pushl %ebp ;\
-        movl %esp, %ebp ;\
-        movl %edx, %esp ;\
-        movl %ecx, %ebp ;\
-        leave ;\
-        ret ;\
-        
-        "
+     asm volatile(
+         " pushl %%ebp \n "
+        "movl %%esp, %%ebp \n "
+        "movl %%edx, %%esp \n "
+        "movl %%ecx, %%ebp \n "
+        "leave \n "
+        "ret \n "
         :
         // : "r"(ebpSave), "r"(espSave)
         : "a"(status), "d"(espSave), "c"(ebpSave)

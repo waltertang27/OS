@@ -39,7 +39,6 @@ SIDE EFFECTS: RTC continiously fires
 */
 extern void rtc_handler(void){
     cli();
-   // printf("hi \n");
     rtc_int = 1; // interrupts occur and not handled yet
     // test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C

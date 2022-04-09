@@ -213,8 +213,12 @@ int32_t execute (const uint8_t* command){
         (we already have added 2 to curr_id in line 209)
         and physical address divided by ALIGN_BYTES is essentially physical address right shifted by 12 
         which is what we should be putting in page directory entry */
-    page_directory[USER_INDEX].page_table_addr = PAGE_SIZE * curr_id / ALIGN_BYTES;
-    
+    //page_directory[USER_INDEX].page_table_addr = PAGE_SIZE * curr_id / ALIGN_BYTES;
+
+    addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
+    page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
+
+    uint32_t * hi = (int32_t* )addr ; 
 
     // NEED TO FLUSH TLB HERE
     flush_tlb();
@@ -223,7 +227,8 @@ int32_t execute (const uint8_t* command){
     printf("Flushed once \n");
     //===============================  Load file into memory ===============================
     inode = (INode_t * )(startINode + dentry.INodeNum);
-    error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);
+    uint8_t * top_img = (uint8_t * )PROCESS_ADDR ; 
+    error = read_data(dentry.INodeNum, 0, top_img , inode->bLength);
 
     if (error == -1){
         return -1;

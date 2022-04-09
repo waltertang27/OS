@@ -16,17 +16,16 @@ system_call_linkage:
        pushl %edi                ;\
        pushfl                   ;\
 
-       pushl %ebx               ;\
-       pushl %ecx               ;\
        pushl %edx               ;\
+       pushl %ecx               ;\
+       pushl %ebx               ;\
 
-       movl 4(%esp), %eax     ;\
-       cmpl $1, %eax        ;\
+       cmpl $0, %eax        ;\
        jl invalid_cmd       ;\
        cmpl $10, %eax       ;\
        jg invalid_cmd       ;\
 
-       jmp *system_call_jmp_table(, %eax, 4)  ;\
+       call *system_call_jmp_table(, %eax, 4)  ;\
 
        jmp finish     ;\
         
@@ -52,6 +51,7 @@ finish:
 
 
 system_call_jmp_table:
+    .long 0x00000000
     .long halt
     .long execute
     .long read

@@ -171,4 +171,7 @@ extern void simd_excep(){
 
 extern void test_system(){
     printf("hi \n");
+    printf("Second Line \n");
 }
+
+

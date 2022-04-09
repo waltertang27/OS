@@ -220,8 +220,6 @@ int32_t execute (const uint8_t* command){
     // NEED TO FLUSH TLB HERE
     flush_tlb();
 
-
-    printf("Flushed once \n");
     //===============================  Load file into memory ===============================
     inode = (INode_t * )(startINode + dentry.INodeNum);
     uint8_t * top_img = (uint8_t * )PROCESS_ADDR ; 

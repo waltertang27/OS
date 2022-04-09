@@ -5,8 +5,8 @@
 #define MAX_CMD_LINE_SIZE 32 // not sure
 #define BUF_SIZE 4
 
-int32_t id = 0;
-int32_t curr_id = -1;
+int32_t parent_id = 0; 
+int32_t curr_id = 0;
 
 
 extern void flush_tlb(); 
@@ -57,9 +57,8 @@ int32_t halt(uint8_t status)
 
     //Get physical memory
     //Change Page table 
-    // KEVIN FIX THIS
-
-    int32_t addr = PAGE_SIZE * curr_id;
+    
+    int addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     flush_tlb(); 
@@ -117,7 +116,7 @@ int32_t execute (const uint8_t* command){
         Prepare for Context Switch
         Push IRET context to kernel stack
     */
-
+    printf("Entered execute \n");
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
@@ -196,7 +195,7 @@ int32_t execute (const uint8_t* command){
     }
 
     // ===============================     Set up paging     ===============================
-    curr_id = FD_START_INDEX;
+
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] != 1){
             process_array[curr_id] = 1;
@@ -211,16 +210,22 @@ int32_t execute (const uint8_t* command){
 
     /* physical address divided by ALIGN_BYTES is essentially physical address right shifted by 12 
         which is what we should be putting in page directory entry */
-    addr = EIGHTMB + ((curr_id - FD_START_INDEX) * PAGE_SIZE) // not sure if we need to minus 2 or not
+    //page_directory[USER_INDEX].page_table_addr = PAGE_SIZE * curr_id / ALIGN_BYTES;
+
+    addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
+
+    // uint32_t * hi = (int32_t* )addr ; 
 
     // NEED TO FLUSH TLB HERE
     flush_tlb();
 
 
+    printf("Flushed once \n");
     //===============================  Load file into memory ===============================
     inode = (INode_t * )(startINode + dentry.INodeNum);
-    error = read_data(dentry.INodeNum, 0, (uint8_t * )PROCESS_ADDR, inode->bLength);
+    uint8_t * top_img = (uint8_t * )PROCESS_ADDR ; 
+    error = read_data(dentry.INodeNum, 0, top_img , inode->bLength);
 
     if (error == -1){
         return -1;
@@ -274,13 +279,16 @@ int32_t execute (const uint8_t* command){
 
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values
+    // Possible reasons it doesnt work: segment registers need to be set
     sti();
     asm volatile ("\
-        pushw %%ds  ;\
+        movw %3,%%ax ;\
+        movw %%ax,%%ds ;\
+        pushl %3  ;\
         pushl %2 ;\
         pushfl      ;\
         popl %%eax  ;\
-        orl 0x200, %%eax   ;\
+        orl $0x0200, %%eax   ;\
         pushl %%eax ;\
         pushl %1 ;\
         pushl %0 ;\
@@ -290,8 +298,8 @@ int32_t execute (const uint8_t* command){
         ret ;\
         "
         :
-        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr)
-        : "memory","eax", "cc"
+        : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr), "i"(USER_DS)
+        : "memory","eax"
     );
     printf("Finished execute \n");
     return 172; // value between 0 and 255

@@ -54,7 +54,7 @@ extern void IDT_init(void){
     SET_IDT_ENTRY(idt[17],machine_check_excep);
     SET_IDT_ENTRY(idt[18],simd_excep);
 
-    // SET_IDT_ENTRY(idt[0x80],)
+    // SET_IDT_ENTRY(idt[0x80],system_call_linkage); 
     
     idt[KEYBOARD_IDT].present = 1;
     idt[KEYBOARD_IDT].reserved3 = 1;

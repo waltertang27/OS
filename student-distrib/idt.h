@@ -34,3 +34,4 @@ extern void fpu_excep();
 extern void allignment_excep();
 extern void machine_check_excep();
 extern void simd_excep();
+extern void system_call_linkage(); 

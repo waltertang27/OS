@@ -280,26 +280,6 @@ int32_t execute (const uint8_t* command){
     // Set the registers that we want to pop to the correct values
     // Possible reasons it doesnt work: segment registers need to be set
     sti();
-    // asm volatile ("\
-    //     movw %3,%%ax ;\
-    //     movw %%ax,%%ds ;\
-    //     pushl %3  ;\
-    //     pushl %2 ;\
-    //     pushfl      ;\
-    //     popl %%eax  ;\
-    //     orl $0x0200, %%eax   ;\
-    //     pushl %%eax ;\
-    //     pushl %1 ;\
-    //     pushl %0 ;\
-    //     iret ;\
-    //     leaveExec: ;\
-    //     leave ;\
-    //     ret ;\
-    //     "
-    //     :
-    //     : "r"(eip_usr), "i"(USER_CS), "r"(esp_usr), "i"(USER_DS)
-    //     : "memory","eax"
-    // );
 
     // my approach, use a, b, c, d 
     //     movw %3,%%ax ;\ is so weird to me, i dont think that is correct
@@ -320,7 +300,7 @@ int32_t execute (const uint8_t* command){
         "ret \n"
         :
         : "a"(eip_usr), "b"(USER_CS), "c"(esp_usr), "d"(USER_DS)
-        : "memory"
+        : "memory" 
     );
     printf("Finished execute \n");
     return 172; // value between 0 and 255

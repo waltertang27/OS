@@ -63,8 +63,8 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
     int bytes_read = 0;
 
     while (1) {
+        
         if (enter_detected == 1) {
-            cli();
 
             if (nbytes > BUFFER_SIZE){
                 nbytes = BUFFER_SIZE;
@@ -102,7 +102,6 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
             // puts(buffer);
             // printf("%u\n", terminal_index);
             // return terminal_index;
-            sti();
             break;
         }
     }

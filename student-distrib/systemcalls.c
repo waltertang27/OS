@@ -20,7 +20,7 @@ SIDE EFFECTS: hands processor to new program until it terminates
 */
 int32_t halt(uint8_t status)
 {
-    /* The halt system call terminates a process, returning the specified value to its parent process. The system call handler
+/* The halt system call terminates a process, returning the specified value to its parent process. The system call handler
     itself is responsible for expanding the 8-bit argument from BL into the 32-bit return value to the parent program’s
     execute system call. Be careful not to return all 32 bits from EBX. This call should never return to the caller. */
 
@@ -49,7 +49,8 @@ int32_t halt(uint8_t status)
     }
 
     curr_id = pcb->parent_id;
-    parent = get_pcb(curr_id); 
+    parent = get_pcb(curr_id);
+    process_array[pcb->process_id] = 0; 
 
 
 
@@ -58,7 +59,7 @@ int32_t halt(uint8_t status)
     //Get physical memory
     //Change Page table 
     
-    int addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
+    uint32_t addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     flush_tlb(); 
@@ -69,24 +70,32 @@ int32_t halt(uint8_t status)
         pcb->fd_array[i].flags = FREE;
     }
 
+    tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
+
+    tss.ss0 = KERNEL_DS;
+
     
     // =============================== jump to execute return   ===============================
     
     // Call assembly program to jump back to execute 
     int32_t ebpSave = parent ->save_ebp; 
     int32_t espSave = parent->save_esp;
-     asm volatile(" \
-        movl %0,%%ebp ; \
-        movl %1,%%esp ;\
-        jmp leaveExec ;\
-        "
+     asm volatile(
+         " pushl %%ebp \n "
+        "movl %%esp, %%ebp \n "
+        "movl %%edx, %%esp \n "
+        "movl %%ecx, %%ebp \n "
+        "leave \n "
+        "ret \n "
         :
-        : "r"(ebpSave), "r"(espSave)
+        // : "r"(ebpSave), "r"(espSave)
+        : "a"(status), "d"(espSave), "c"(ebpSave)
         : "memory"
         );
     
 
     return -1;
+
 }
 /*
 DESCRIPTION: loads and executes a new program, handing off processor to new program until it terminates

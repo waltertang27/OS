@@ -89,7 +89,7 @@ int32_t halt(uint8_t status)
         "ret \n "
         :
         // : "r"(ebpSave), "r"(espSave)
-        : "a"(status), "d"(espSave), "c"(ebpSave)
+        : "a"(status), "c"(ebpSave), "d"(espSave)
         : "memory"
         );
     

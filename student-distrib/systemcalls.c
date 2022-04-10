@@ -125,7 +125,7 @@ int32_t execute (const uint8_t* command){
         Push IRET context to kernel stack
     */
    // printf("Entered execute \n");
-    fileop_init();
+
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;

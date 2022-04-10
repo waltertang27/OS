@@ -99,12 +99,11 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 */
 int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 {
-    if (index > (NUM_DIR_ENTRIES - 1))
+    if (index > NUM_DIR_ENTRIES -1)
         return -1;
 
     if(dentry == NULL)
         return -1; 
-
 
     int8_t *currWord = (int8_t *)  directoryStart[index].fileName;
     strcpy((int8_t *) dentry->fileName, currWord);
@@ -232,20 +231,27 @@ int32_t directory_read(int32_t fd, void *buf, int32_t nbytes)
     dentry_t currDir; 
     int32_t error;
 
+    pcb_t * curr = get_cur_pcb();
 
     // read into dentry
-    error = read_dentry_by_index(temp_global_array[fd].file_position, &currDir);
-    
+    // printf("%d \n ",curr->fd_array[fd].file_position);
+    error = read_dentry_by_index(curr->fd_array[fd].file_position, &currDir);
+
     if (error == -1){
-        return 0;
+        return -1;
     }
 
+    curr->fd_array[fd].file_position++;
 
-    temp_global_array[fd].file_position++;
+
 
     // void * can be anything
     // strncpy: Copies the first num characters of source to destination.
     memcpy((int8_t * )buf, (int8_t * )&(currDir), nbytes);
+
+    if(curr->fd_array[fd].file_position == 18)
+        return 0; 
+
     return nbytes;
 }
 

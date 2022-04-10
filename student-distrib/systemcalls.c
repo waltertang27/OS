@@ -38,8 +38,7 @@ int32_t halt(uint8_t status)
 
     pcb = get_cur_pcb();
 
-    eip_usr = pcb->usr_eip;
-    esp_usr = pcb->usr_esp ;
+
 
 
 
@@ -52,6 +51,9 @@ int32_t halt(uint8_t status)
     parent = get_pcb(curr_id);
     process_array[pcb->process_id] = 0; 
 
+
+    eip_usr = parent->usr_eip;
+    esp_usr = parent->usr_esp ;
 
 
     // =============================== Restore parent paging data   ===============================
@@ -82,15 +84,12 @@ int32_t halt(uint8_t status)
     int32_t ebpSave = parent ->save_ebp; 
     int32_t espSave = parent->save_esp;
      asm volatile(
-         " pushl %%ebp \n "
-        "movl %%esp, %%ebp \n "
         "movl %%edx, %%esp \n "
         "movl %%ecx, %%ebp \n "
         "jmp leaveExec \n "
         :
-        // : "r"(ebpSave), "r"(espSave)
         : "a"(status), "d"(espSave), "c"(ebpSave)
-        : "memory"
+        : "memory", "ebx"
         );
 
     return -1;
@@ -106,7 +105,6 @@ RETURN VALUE:  -1 if command cannot be executed
                0 to 255 if program executes a halt system call 
 SIDE EFFECTS: hands processor to new program until it terminates
 */
-
 int32_t execute (const uint8_t* command){
     /* The execute system call attempts to load and execute a new program, handing off the processor to the new program
         until it terminates. The command is a space-separated sequence of words. The first word is the file name of the
@@ -307,13 +305,11 @@ int32_t execute (const uint8_t* command){
         "pushl %%ebx \n"
         "pushl %%eax \n"
         "iret \n"
-        "leaveExec: \n" 
-        "leave \n"
-        "ret \n"
         :
         : "a"(eip_usr), "b"(USER_CS), "c"(esp_usr), "d"(USER_DS)
         : "memory" 
     );
+    asm volatile("leaveExec: \n");
     printf("Finished execute \n");
     return 172; // value between 0 and 255
 }

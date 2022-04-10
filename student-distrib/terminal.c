@@ -128,7 +128,7 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
             putc(byte); // print
         }
     }
-    printf("\n");
+    printf("%c",((char * ) buf)[nbytes -1]);
     sti();
     return nbytes;
 }

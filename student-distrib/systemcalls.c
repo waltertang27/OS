@@ -125,7 +125,7 @@ int32_t execute (const uint8_t* command){
         Prepare for Context Switch
         Push IRET context to kernel stack
     */
-    printf("Entered execute \n");
+   // printf("Entered execute \n");
     fileop_init();
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
@@ -294,7 +294,7 @@ int32_t execute (const uint8_t* command){
 
     // my approach, use a, b, c, d 
     //     movw %3,%%ax ;\ is so weird to me, i dont think that is correct
-    printf("About to context switch\n");
+   // printf("About to context switch\n");
     asm volatile (
         "andl $0x00FF, %%edx \n "
         "movw %%dx,%%ds \n "

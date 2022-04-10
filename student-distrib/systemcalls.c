@@ -31,7 +31,7 @@ int32_t halt(uint8_t status)
         Jump to execute return
     */
     pcb_t * pcb, *parent ;
-    uint32_t eip_usr, esp_usr, parentPid;
+    uint32_t  parentPid;
 
 
     // =============================== Restore parent data   ===============================
@@ -52,8 +52,6 @@ int32_t halt(uint8_t status)
     process_array[pcb->process_id] = 0; 
 
 
-    eip_usr = parent->usr_eip;
-    esp_usr = parent->usr_esp ;
 
 
     // =============================== Restore parent paging data   ===============================
@@ -76,13 +74,14 @@ int32_t halt(uint8_t status)
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
 
     tss.ss0 = KERNEL_DS;
-
     
     // =============================== jump to execute return   ===============================
     
     // Call assembly program to jump back to execute 
-    int32_t ebpSave = parent ->save_ebp; 
-    int32_t espSave = parent->save_esp;
+    int32_t ebpSave = pcb ->save_ebp; 
+    int32_t espSave = pcb->save_esp;
+
+
      asm volatile(
         "movl %%edx, %%esp \n "
         "movl %%ecx, %%ebp \n "
@@ -310,7 +309,6 @@ int32_t execute (const uint8_t* command){
         : "memory" 
     );
     asm volatile("leaveExec: \n");
-    printf("Finished execute \n");
     return 172; // value between 0 and 255
 }
 

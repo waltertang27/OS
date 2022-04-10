@@ -313,11 +313,11 @@ extern void keyboard_handler(void) {
         }
         if(index == 1) {
             //buffer[0] = '\b';
-            buffer[0] = '\b';
-            buffer[1] = '\0';
+            buffer[1] = '\b';
+            buffer[2] = '\0';
             index--;
-            putc(buffer[0]);
-            buffer[0] = '\0';
+            putc(buffer[1]);
+            buffer[1] = '\0';
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
@@ -363,11 +363,11 @@ extern void keyboard_handler(void) {
                 second_line_buffer[index - 80 + 1 + 1] = '\0';
                 // puts(second_line_buffer);
                 putc(second_line_buffer[index - 80 + 1]);
-                second_line_buffer[index - 80 + 1] = '\0';
+                //second_line_buffer[index - 80 + 1] = '\0';
             } else {
                 //puts(buffer);
                 putc(buffer[index]);
-                buffer[index] = '\0';
+                //buffer[index] = '\0';
             }
 
             index = index - 1;

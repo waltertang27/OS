@@ -31,7 +31,6 @@ int32_t halt(uint8_t status)
         Jump to execute return
     */
     pcb_t * pcb, *parent ;
-    uint32_t  parentPid;
 
 
     // =============================== Restore parent data   ===============================
@@ -309,7 +308,7 @@ int32_t execute (const uint8_t* command){
         : "memory" 
     );
     asm volatile("leaveExec: \n");
-    return 172; // value between 0 and 255
+    return 0; // value between 0 and 255
 }
 
 

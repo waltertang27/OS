@@ -228,8 +228,6 @@ int32_t file_read(int32_t fd, void *buf, int32_t nbytes){
 // Read a directory entry and fill the buffer with the corresponding value
 int32_t directory_read(int32_t fd, void *buf, int32_t nbytes)
 {
-  //  if(fd == NULL || buf == NULL || nbytes < 0 || nbytes == NULL)
-     //   return -1; 
 
     dentry_t currDir; 
     int32_t error;

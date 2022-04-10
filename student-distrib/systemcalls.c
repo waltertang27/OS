@@ -45,7 +45,7 @@ int32_t halt(uint8_t status)
 
     //If you are the last one execute a new shell 
     if(pcb->process_id == 0){
-        execute("shell");
+        execute((const uint8_t * )"shell");
     }
 
     curr_id = pcb->parent_id;
@@ -136,6 +136,8 @@ int32_t execute (const uint8_t* command){
     uint8_t args[MAX_CMD_LINE_SIZE];
     uint8_t buf[BUF_SIZE];
 
+    memset((void *)cmd,0,MAX_CMD_LINE_SIZE );
+    memset((void *)args,0,MAX_CMD_LINE_SIZE );
 
     // uint8_t * memory;
     // uint8_t * inode;
@@ -151,7 +153,7 @@ int32_t execute (const uint8_t* command){
         characters to cmd until we read a space character.
         If all spaces, return fail.
     */
-    while (command[i] == ' '){
+    while (command[i] == ' ' ){
         if (i == command_size - 1){
             return -1;
         }
@@ -159,30 +161,30 @@ int32_t execute (const uint8_t* command){
     }
     spaces = i;
     while (command[i] != ' '){
-        cmd[i - spaces] = command[i];
+        cmd[i - spaces] = command[i]; 
         i++;
     }
 
 
     /* args */
 
-    // check logic
-    while (i < command_size){
-        while (command[i] == ' '){
-            if (i == command_size - 1){
-                break;
-            }
-            i++;
-            spaces++;
-        }
-        while (command[i] != ' '){
-            args[i - spaces] = command[i];
-            i++;
-        }
-        if (i != command_size - 1){
-            args[i - spaces] = ' ';
-        }
-    }
+    // // check logic
+    // while (i < command_size){
+    //     while (command[i] == ' '){
+    //         if (i == command_size - 1){
+    //             break;
+    //         }
+    //         i++;
+    //         spaces++;
+    //     }
+    //     while (command[i] != ' '){
+    //         args[i - spaces] = command[i];
+    //         i++;
+    //     }
+    //     if (i != command_size - 1){
+    //         args[i - spaces] = ' ';
+    //     }
+    // }
 
     // =============================== check for executable ===============================
 
@@ -292,6 +294,7 @@ int32_t execute (const uint8_t* command){
 
     // my approach, use a, b, c, d 
     //     movw %3,%%ax ;\ is so weird to me, i dont think that is correct
+    printf("About to context switch\n");
     asm volatile (
         "andl $0x00FF, %%edx \n "
         "movw %%dx,%%ds \n "

@@ -61,3 +61,6 @@ Issue: The keyboard handler is printing the entire buffer on the new line, even 
 	buffer.
 Solution: By using a second buffer to store the extra characters, we can print out only the second line's content while also saving the first line's content.
 
+Bug: Ls displays the 33 value of very long file
+
+bug: backspace stopped working after execute 

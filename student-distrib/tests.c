@@ -726,7 +726,7 @@ void launch_tests() {
     // TEST_OUTPUT("Paging test",paging_test());
 
     // launch your tests here
-	 // TEST_OUTPUT("RTC test", rtc_test());
+	//TEST_OUTPUT("RTC test", rtc_test());
     // TEST_OUTPUT("division_by_zero_test", division_by_zero_test());
     // TEST_OUTPUT("syscall_test", syscall_test());
     // TEST_OUTPUT("paging_init_test", paging_init_test());
@@ -748,7 +748,6 @@ void launch_tests() {
     // TEST_OUTPUT("Read Data Test", read_data_test_with_offset());
     // TEST_OUTPUT("File Read Test", file_read_test());
     // TEST_OUTPUT("Read by name test", name_search_test());
-    //TEST_OUTPUT("Read Directory", directory_read_test());
     // TEST_OUTPUT("Read by IDX Test", idx_search_test());
     // TEST_OUTPUT("Read Data Test", read_data_test());
     // TEST_OUTPUT("File Read Test", file_read_test());

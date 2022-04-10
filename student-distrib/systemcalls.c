@@ -107,6 +107,7 @@ RETURN VALUE:  -1 if command cannot be executed
                0 to 255 if program executes a halt system call 
 SIDE EFFECTS: hands processor to new program until it terminates
 */
+
 int32_t execute (const uint8_t* command){
     /* The execute system call attempts to load and execute a new program, handing off the processor to the new program
         until it terminates. The command is a space-separated sequence of words. The first word is the file name of the

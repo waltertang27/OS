@@ -221,9 +221,6 @@ void update_cursor(void) {
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
 
-    
-
-
     if(c == '\b') {
 
         if (screen_x == 0 && next_line == 1){
@@ -278,6 +275,7 @@ void putc(uint8_t c) {
             screen_y++;
             screen_x = 0;
         }
+        next_line = 0;
     }
     else if(c == '\t') {
         if(screen_x <= NUM_COLS - 1) {
@@ -312,7 +310,7 @@ void putc(uint8_t c) {
         screen_y = screen_y + 1;
         screen_x = 0;
 
-        next_line = 1;
+        //next_line = 1;
 
         // printf("%u\n", screen_x);
         // if(screen_y == (NUM_ROWS - 1)) {

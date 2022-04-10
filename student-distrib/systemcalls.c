@@ -31,7 +31,7 @@ int32_t halt(uint8_t status)
         Jump to execute return
     */
     pcb_t * pcb, *parent ;
-    uint32_t eip_usr, esp_usr;
+    uint32_t eip_usr, esp_usr, parentPid;
 
 
     // =============================== Restore parent data   ===============================
@@ -70,6 +70,7 @@ int32_t halt(uint8_t status)
         pcb->fd_array[i].flags = FREE;
     }
 
+
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
 
     tss.ss0 = KERNEL_DS;
@@ -85,14 +86,12 @@ int32_t halt(uint8_t status)
         "movl %%esp, %%ebp \n "
         "movl %%edx, %%esp \n "
         "movl %%ecx, %%ebp \n "
-        "leave \n "
-        "ret \n "
+        "jmp leaveExec \n "
         :
         // : "r"(ebpSave), "r"(espSave)
         : "a"(status), "d"(espSave), "c"(ebpSave)
         : "memory"
         );
-    
 
     return -1;
 
@@ -126,7 +125,7 @@ int32_t execute (const uint8_t* command){
         Prepare for Context Switch
         Push IRET context to kernel stack
     */
-    printf("Entered execute \n");
+   // printf("Entered execute \n");
     fileop_init();
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
@@ -295,7 +294,7 @@ int32_t execute (const uint8_t* command){
 
     // my approach, use a, b, c, d 
     //     movw %3,%%ax ;\ is so weird to me, i dont think that is correct
-    printf("About to context switch\n");
+   // printf("About to context switch\n");
     asm volatile (
         "andl $0x00FF, %%edx \n "
         "movw %%dx,%%ds \n "

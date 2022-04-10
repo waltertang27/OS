@@ -106,7 +106,7 @@ int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
         return -1; 
 
     int8_t *currWord = (int8_t *)  directoryStart[index].fileName;
-    strcpy((int8_t *) dentry->fileName, currWord);
+    strncpy((int8_t *) dentry->fileName, currWord,32);
 
     dentry->fileType = directoryStart[index].fileType;
     dentry->INodeNum = directoryStart[index].INodeNum;

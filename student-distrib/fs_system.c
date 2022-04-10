@@ -232,16 +232,18 @@ int32_t directory_read(int32_t fd, void *buf, int32_t nbytes)
     dentry_t currDir; 
     int32_t error;
 
+    pcb_t * curr = get_cur_pcb(); 
+  
 
     // read into dentry
-    error = read_dentry_by_index(temp_global_array[fd].file_position, &currDir);
-    
-    if (error == -1){
+    error = read_dentry_by_index(curr->fd_array[fd].file_position, &currDir);
+
+    curr->fd_array[fd].file_position++; 
+
+    if (error == -1)
+    {
         return 0;
     }
-
-
-    temp_global_array[fd].file_position++;
 
     // void * can be anything
     // strncpy: Copies the first num characters of source to destination.

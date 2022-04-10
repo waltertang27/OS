@@ -160,7 +160,7 @@ int32_t execute (const uint8_t* command){
         i++;
     }
     spaces = i;
-    while (command[i] != ' '){
+    while (command[i] != ' ' && command[i] != '\0'){
         cmd[i - spaces] = command[i]; 
         i++;
     }

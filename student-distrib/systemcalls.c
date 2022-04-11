@@ -37,10 +37,6 @@ int32_t halt(uint8_t status)
 
     pcb = get_cur_pcb();
 
-
-
-
-
     //If you are the last one execute a new shell 
     if(pcb->process_id == 0){
         execute((const uint8_t * )"shell");
@@ -49,8 +45,6 @@ int32_t halt(uint8_t status)
     curr_id = pcb->parent_id;
     parent = get_pcb(curr_id);
     process_array[pcb->process_id] = 0; 
-
-
 
 
     // =============================== Restore parent paging data   ===============================
@@ -413,9 +407,6 @@ int32_t open (const uint8_t* filename){
             return i;
         }
     }
-    
-    
-
     // fail
     return -1;
 }

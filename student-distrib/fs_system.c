@@ -99,19 +99,23 @@ SIDE EFFECTS: dentry will be filled with the correct information if the file exi
 */
 int32_t read_dentry_by_index(const uint8_t index, dentry_t *dentry)
 {
+    uint8_t concat[32]; 
+    memset((void*)concat,0,32); 
+
     if (index > NUM_DIR_ENTRIES -1)
         return -1;
 
     if(dentry == NULL)
         return -1; 
 
-    int8_t *currWord = (int8_t *)  directoryStart[index].fileName;
-    strncpy((int8_t *) dentry->fileName, currWord,32);
+    strncpy((int8_t *)concat,(const int8_t*)directoryStart[index].fileName,32);
+
+    strncpy((int8_t *) dentry->fileName, (int8_t *)concat,32);
 
     dentry->fileType = directoryStart[index].fileType;
     dentry->INodeNum = directoryStart[index].INodeNum;
 
-    // printf("FileName: %s, InodeNum: %u Bytes in each Inode %u \n",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
+  //  printf("   FileName: %s, InodeNum: %u Bytes in each Inode %u    ",dentry->fileName,dentry->INodeNum,startINode[dentry->INodeNum].bLength);
 
     return 0; 
 }
@@ -247,8 +251,9 @@ int32_t directory_read(int32_t fd, void *buf, int32_t nbytes)
 
     // void * can be anything
     // strncpy: Copies the first num characters of source to destination.
-    memcpy((int8_t * )buf, (int8_t * )&(currDir), nbytes);
+    
 
+    memcpy((void * )buf, (const void * )((&currDir)), nbytes);
     if(curr->fd_array[fd].file_position == 18)
         return 0; 
 

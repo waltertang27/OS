@@ -306,6 +306,7 @@ extern void keyboard_handler(void) {
     }
     //checks for backspace
     if(keycode == BACKSPACE) {
+
         if(index == 0) {
             send_eoi(KEYBOARD_IRQ);
             sti();
@@ -349,11 +350,11 @@ extern void keyboard_handler(void) {
                 return;
             }
             */
-           // if(index == 0) {
-           //     buffer[index] = '\0'
-           // }
-            terminal_buffer[index] = '\b';
-            terminal_buffer[index + 1] = '\0';
+           
+            //terminal_buffer[index] = '\b';
+            //terminal_buffer[index + 1] = '\0';
+            terminal_buffer[index - 1] = '\0';
+
             buffer[index] = '\b';
             buffer[index + 1] = '\0';
             backspace_detected = 1;
@@ -363,11 +364,11 @@ extern void keyboard_handler(void) {
                 second_line_buffer[index - 80 + 1 + 1] = '\0';
                 // puts(second_line_buffer);
                 putc(second_line_buffer[index - 80 + 1]);
-                //second_line_buffer[index - 80 + 1] = '\0';
+                second_line_buffer[index - 80 + 1] = '\0';
             } else {
                 //puts(buffer);
                 putc(buffer[index]);
-                //buffer[index] = '\0';
+                buffer[index] = '\0';
             }
 
             index = index - 1;

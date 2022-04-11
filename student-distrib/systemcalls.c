@@ -26,6 +26,7 @@ int32_t halt(uint8_t status)
 
     //If you are the last PID execute a new shell 
     if(pcb->process_id == 0){
+        process_array[pcb->process_id] = 0; 
         execute((const uint8_t * )"shell");
     }
 

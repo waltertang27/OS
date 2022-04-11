@@ -125,7 +125,7 @@ int32_t execute (const uint8_t* command){
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
     uint8_t args[MAX_CMD_LINE_SIZE];
     uint8_t buf[BUF_SIZE];
-
+    uint32_t returnVal; 
     memset((void *)cmd,0,MAX_CMD_LINE_SIZE );
     memset((void *)args,0,MAX_CMD_LINE_SIZE );
 
@@ -302,7 +302,13 @@ int32_t execute (const uint8_t* command){
         : "memory" 
     );
     asm volatile("leaveExec: \n");
-    return 0; // value between 0 and 255
+    asm volatile("movl %%eax, %%ebx \n"
+    :   "=b"(returnVal)
+    : 
+    : "memory"
+    );
+
+    return returnVal; // value between 0 and 255
 }
 
 

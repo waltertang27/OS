@@ -27,7 +27,7 @@
 #define IN_USE 0
 #define FREE 1
 #define FD_ARRAY_SIZE 8
-#define PROCESS_ARRAY_SIZE 4
+#define PROCESS_ARRAY_SIZE 6
 #define EIGHTMB 8388608 // 8MB
 #define EIGHTKB 8192 // 8KB
 #define PROCESS_ADDR 0x8048000

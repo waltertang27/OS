@@ -319,18 +319,19 @@ INPUTS: int32_t fd - file descriptor to read
         int32_t nbytes - number of bytes to read
 OUTPUTS: none
 RETURN VALUE: number of bytes read
-              -1 if fail
 SIDE EFFECTS: 
 */
 int32_t read (int32_t fd, void* buf, int32_t nbytes){
     // fail
     //dentry_t dentry;
     //cli();
-    if (fd < 0 || fd > FD_END || nbytes < 0 || buf == NULL) {
+    if (fd < 0 || fd > FD_END || nbytes < 0 || buf == NULL) { // check 1. if the file descriptor is in scope
+                                                              //       2. if the buffer exists
+                                                              //       3. if the bytes to read exist
         return -1;
     }
-    pcb_t * pcb = get_cur_pcb();
-    if(pcb->fd_array[fd].flags == FREE) {
+    pcb_t * pcb = get_cur_pcb(); // get the current pcb block
+    if(pcb->fd_array[fd].flags == FREE) { // if it is not in use, then return invalid
         return -1;
     }
     else {
@@ -346,23 +347,16 @@ INPUTS: int32_t fd - file descriptor to write
         int32_t nbytes - number of bytes to write
 OUTPUTS: none
 RETURN VALUE: number of bytes written
-              -1 if fail
 SIDE EFFECTS: 
 */
 int32_t write (int32_t fd, const void* buf, int32_t nbytes){
-    /*
-        The write system call writes data to the terminal or to a device (RTC). In the case of the terminal, all data should
-        be displayed to the screen immediately. In the case of the RTC, the system call should always accept only a 4-byte
-        integer specifying the interrupt rate in Hz, and should set the rate of periodic interrupts accordingly. Writes to regular
-        files should always return -1 to indicate failure since the file system is read-only. The call returns the number of bytes
-        written, or -1 on failure.
-
-    */ 
-    if (fd < 0 || fd > FD_END || buf == NULL || nbytes < 0)
+    if (fd < 0 || fd > FD_END || buf == NULL || nbytes < 0)  // check 1. if the file descriptor is in scope
+                                                             //       2. if the buffer exists
+                                                             //       3. if the bytes to write exist
         return -1;
     
-    pcb_t * pcb = get_cur_pcb();
-    if (pcb->fd_array[fd].flags == FREE){
+    pcb_t * pcb = get_cur_pcb();  // get the current pcb block
+    if (pcb->fd_array[fd].flags == FREE){  // if it is not in use, then return invalid
         return -1;
     }
 
@@ -379,13 +373,11 @@ RETURN VALUE: position found
 SIDE EFFECTS: 
 */
 int32_t open (const uint8_t* filename){
-    /* The open system call provides access to the file system. The call should find the directory entry corresponding to the
-    named file, allocate an unused file descriptor, and set up any data necessary to handle the given type of file (directory,
-    RTC device, or regular file). If the named file does not exist or no descriptors are free, the call returns -1. */
-    pcb_t * pcb = get_cur_pcb();
+    // get the current pcb block 
+    pcb_t * pcb = get_cur_pcb(); 
     int32_t i;
     dentry_t dentry;
-    if (filename == NULL){
+    if (filename == NULL){ // if the file does not exist, return -1
         return -1;
     }
     int error;
@@ -396,26 +388,23 @@ int32_t open (const uint8_t* filename){
 
     for(i = FD_START_INDEX; i < FD_END; i++) {
         if (pcb->fd_array[i].flags == FREE) {
-            pcb->fd_array[i].file_position = 0; // file start position ??
+            pcb->fd_array[i].file_position = 0; 
             pcb->fd_array[i].flags = IN_USE; // if it is not in use, turn it to in use
             pcb->fd_array[i].inode = dentry.INodeNum;
             if (dentry.fileType == 0) { // rtc
-                pcb->fd_array[i].jump_table = &rtc_op; // ??
+                pcb->fd_array[i].jump_table = &rtc_op; // rtc operation table
             }
     
             else if (dentry.fileType == 1) {// directory
-                pcb->fd_array[i].jump_table = &dir_op; // ??
+                pcb->fd_array[i].jump_table = &dir_op; // directory operation table
             }
         
             else if (dentry.fileType == 2) {// file
-                pcb->fd_array[i].jump_table = &file_op; // ??
+                pcb->fd_array[i].jump_table = &file_op; // file operation table
             }
             return i;
         }
     }
-    
-    
-
     // fail
     return -1;
 }
@@ -437,6 +426,7 @@ int32_t close (int32_t fd){
         //if (pcb->fd_array[fd].close(fd) != pcb->fd_array[fd].flags) 
         //    return -1;
     }
+    // closing the file
     pcb->fd_array[fd].inode = 0;
     pcb->fd_array[fd].flags = FREE;
     pcb->fd_array[fd].file_position = 0;

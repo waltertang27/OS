@@ -12,36 +12,25 @@ int32_t curr_id = 0;
 extern void flush_tlb(); 
 
 /*
-DESCRIPTION: terminates a process
+DESCRIPTION: The halt system call terminates a process, returning the specified value to its parent process.
 INPUTS: uint8_t status - current program status
 OUTPUTS:
-RETURN VALUE: returns specified value to parent process
-SIDE EFFECTS: hands processor to new program until it terminates
+RETURN VALUE: returns -1 if halt fails or status if it does not 
+SIDE EFFECTS: Terminate the current program and return to the previous program
 */
 int32_t halt(uint8_t status)
 {
-/* The halt system call terminates a process, returning the specified value to its parent process. The system call handler
-    itself is responsible for expanding the 8-bit argument from BL into the 32-bit return value to the parent program’s
-    execute system call. Be careful not to return all 32 bits from EBX. This call should never return to the caller. */
-
-    /*
-        Restore parent data
-        Restore parent paging
-        Close any relevant FDs
-        Jump to execute return
-    */
     pcb_t * pcb, *parent ;
-
-
     // =============================== Restore parent data   ===============================
 
     pcb = get_cur_pcb();
 
-    //If you are the last one execute a new shell 
+    //If you are the last PID execute a new shell 
     if(pcb->process_id == 0){
         execute((const uint8_t * )"shell");
     }
 
+    // New PID is now the parent since you are halting the current process 
     curr_id = pcb->parent_id;
     parent = get_pcb(curr_id);
     process_array[pcb->process_id] = 0; 
@@ -49,12 +38,11 @@ int32_t halt(uint8_t status)
 
     // =============================== Restore parent paging data   ===============================
 
-    //Get physical memory
-    //Change Page table 
-    
+    //Get physical memory and then Change Page table 
     uint32_t addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
+    //Always flush the tlb before returning to a new program 
     flush_tlb(); 
 
     // =============================== Close any relevant FD's   ===============================
@@ -70,11 +58,11 @@ int32_t halt(uint8_t status)
     
     // =============================== jump to execute return   ===============================
     
-    // Call assembly program to jump back to execute 
-    int32_t ebpSave = pcb ->save_ebp; 
+    // Call assembly program to jump back to execute for the original PCB
+    int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
 
-
+    //Push paramaters and jump to execute 
      asm volatile(
         "movl %%edx, %%esp \n "
         "movl %%ecx, %%ebp \n "
@@ -84,6 +72,7 @@ int32_t halt(uint8_t status)
         : "memory", "ebx"
         );
 
+    //If code gets here something went horribly wrong 
     return -1;
 
 }
@@ -91,32 +80,13 @@ int32_t halt(uint8_t status)
 DESCRIPTION: loads and executes a new program, handing off processor to new program until it terminates
 INPUTS: const uint8_t *command - sequence of words consisting of commands
                                 - first word is file name to be exectued
-OUTPUTS:
+OUTPUTS: The current program will be executed in the terminal
 RETURN VALUE:  -1 if command cannot be executed
                256 if program dies by execption
                0 to 255 if program executes a halt system call 
 SIDE EFFECTS: hands processor to new program until it terminates
 */
 int32_t execute (const uint8_t* command){
-    /* The execute system call attempts to load and execute a new program, handing off the processor to the new program
-        until it terminates. The command is a space-separated sequence of words. The first word is the file name of the
-        program to be executed, and the rest of the command—stripped of leading spaces—should be provided to the new
-        program on request via the getargs system call. The execute call returns -1 if the command cannot be executed,
-        for example, if the program does not exist or the filename specified is not an executable, 256 if the program dies by an
-        exception, or a value in the range 0 to 255 if the program executes a halt system call, in which case the value returned
-        is that given by the program’s call to halt. -- appendix B */
-
-    /*
-        Parse args
-        Check for executable
-        Set up paging
-        Load file into memory
-        Create PCB
-        Prepare for Context Switch
-        Push IRET context to kernel stack
-    */
-   // printf("Entered execute \n");
-
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
@@ -129,8 +99,6 @@ int32_t execute (const uint8_t* command){
     memset((void *)cmd,0,MAX_CMD_LINE_SIZE );
     memset((void *)args,0,MAX_CMD_LINE_SIZE );
 
-    // uint8_t * memory;
-    // uint8_t * inode;
     INode_t * inode;
     dentry_t dentry;
     pcb_t * pcb;
@@ -178,9 +146,10 @@ int32_t execute (const uint8_t* command){
 
     // =============================== check for executable ===============================
 
-    /* about magic nums: The first 4 bytes of the file represent a “magic number” that identifies the file as an executable. 
-        These bytes are, respectively, 0: 0x7f; 1: 0x45; 2: 0x4c; 3: 0x46. If the magic number is not present, the execute
-        system call should fail. -- appendix C*/
+    /* 
+    The first 4 bytes of the file represent a “magic number” that identifies the file as an executable. 
+    We are checking to make sure these things we are executing are "executables"  
+    */
 
     if (read_dentry_by_name(cmd, &dentry)  == -1) { // no file
         return -1;
@@ -210,16 +179,11 @@ int32_t execute (const uint8_t* command){
         return -1;
     }
 
-    /* physical address divided by ALIGN_BYTES is essentially physical address right shifted by 12 
-        which is what we should be putting in page directory entry */
-    //page_directory[USER_INDEX].page_table_addr = PAGE_SIZE * curr_id / ALIGN_BYTES;
-
-    addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
+    //Get the physical adress and set up paging acording to it 
+    addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); 
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
-    // uint32_t * hi = (int32_t* )addr ; 
-
-    // NEED TO FLUSH TLB HERE
+    // We are about to execute a new program with its own VRAM so tlb needs to be flushed again
     flush_tlb();
 
     //===============================  Load file into memory ===============================
@@ -235,7 +199,7 @@ int32_t execute (const uint8_t* command){
     pcb = get_pcb(curr_id);
     pcb->process_id = curr_id;
 
-    // remaining six file descriptors available
+    // Fill all 8 FD's with values
     for (i = 0; i < FD_ARRAY_SIZE; i++)
     {
         pcb->fd_array[i].jump_table = &null_op;    
@@ -244,6 +208,7 @@ int32_t execute (const uint8_t* command){
         pcb->fd_array[i].inode = 0; 
     }
 
+    //SDIN and flags need to be switched to in use and we need to assign their jump tables for open and close 
     pcb->fd_array[STDIN].flags = IN_USE;
     pcb->fd_array[STDOUT].flags = IN_USE;
 
@@ -254,21 +219,20 @@ int32_t execute (const uint8_t* command){
 
     // =============================== Prepare for Context Switch ===============================
 
-    uint8_t eip_value[4]; 
-    read_data(dentry.INodeNum, 24, eip_value, SIZE_OF_INT32);
+    uint8_t eip_value[SIZE_OF_INT32]; 
+    read_data(dentry.INodeNum, STARTEXEC, eip_value, SIZE_OF_INT32);
 
     // Set stack pointer to the bottom of the 4 MB page
     esp_usr = PAGE_SIZE - SIZE_OF_INT32 + USER_V;
     eip_usr = * ((int * )eip_value);
 
-    // Ds register set to USER_DS
-
-    // Apendix E stuff smtn related to tss
+    // TSS initalization
     pcb->active = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
-
     tss.ss0 = KERNEL_DS;
     
+
+
     // Save old EBP and ESP
     register uint32_t saved_ebp asm("ebp");
     register uint32_t saved_esp asm("esp");
@@ -282,9 +246,9 @@ int32_t execute (const uint8_t* command){
     // Possible reasons it doesnt work: segment registers need to be set
     sti();
 
-    // my approach, use a, b, c, d 
-    //     movw %3,%%ax ;\ is so weird to me, i dont think that is correct
-   // printf("About to context switch\n");
+    // Push an iret stack to switch to our user program in the following order
+    // USER_DS, ESP_USR, EFLAGS, USER_CS, EIP
+    //Also set the value of DS(Might happen when iret is called but we did it to be safe )
     asm volatile (
         "andl $0x00FF, %%edx \n "
         "movw %%dx,%%ds \n "
@@ -301,7 +265,10 @@ int32_t execute (const uint8_t* command){
         : "a"(eip_usr), "b"(USER_CS), "c"(esp_usr), "d"(USER_DS)
         : "memory" 
     );
+    //Label for halt to jump to after 
     asm volatile("leaveExec: \n");
+
+    // Move the return value from halt(status) into a value we can return in C
     asm volatile("movl %%eax, %%ebx \n"
     :   "=b"(returnVal)
     : 

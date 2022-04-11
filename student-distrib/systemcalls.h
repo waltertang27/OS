@@ -31,6 +31,8 @@
 #define EIGHTMB 8388608 // 8MB
 #define EIGHTKB 8192 // 8KB
 #define PROCESS_ADDR 0x8048000
+#define STARTEXEC 24
+
 
 uint32_t process_array[PROCESS_ARRAY_SIZE];
 

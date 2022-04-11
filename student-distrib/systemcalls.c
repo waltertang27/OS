@@ -2,8 +2,7 @@
 #include "systemcalls.h"
 
 
-#define MAX_CMD_LINE_SIZE 32 // not sure
-#define BUF_SIZE 4
+
 
 int32_t parent_id = 0; 
 int32_t curr_id = 0;
@@ -402,7 +401,7 @@ int32_t close (int32_t fd){
 }
 
 /*
-DESCRIPTION: inits the file_op tables
+DESCRIPTION: inits the file_op tables for FD's that we will be using
 INPUTS: none
 OUTPUTS: none
 RETURN VALUE: none
@@ -469,12 +468,14 @@ pcb_t * get_cur_pcb() {
 	return (pcb_t *) addr;
 }
 
+
+//In the case where an FD cannot read,write,open, or close we need to put something into the jump table so that is what these functins aim to do
 int32_t read_fail(int32_t fd, void *buf, int32_t nbytes) { return -1 ;}
 int32_t write_fail(int32_t fd, const void *buf, int32_t nbytes){return -1; }
 int32_t open_fail(const uint8_t *filename) {return -1;}
 int32_t close_fail(int32_t fd){ return -1; }
 
-
+//FUnctions we will be writing in the future
 int32_t getargs (uint8_t* buf, int32_t nbytes) {return -1;}
 int32_t vidmap (uint8_t** screen_start) {return -1;}
 int32_t set_handler (int32_t signum, void* handler_address) {return -1;}

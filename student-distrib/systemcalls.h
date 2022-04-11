@@ -32,7 +32,8 @@
 #define EIGHTKB 8192 // 8KB
 #define PROCESS_ADDR 0x8048000
 #define STARTEXEC 24
-
+#define MAX_CMD_LINE_SIZE 32 
+#define BUF_SIZE 4
 
 uint32_t process_array[PROCESS_ARRAY_SIZE];
 
@@ -65,7 +66,7 @@ typedef struct pcb {
     int32_t usr_esp;
     int32_t active;
     file_descriptor_t fd_array[FD_ARRAY_SIZE];
-    int8_t pcb_cmd[32]; 
+    int8_t pcb_cmd[MAX_CMD_LINE_SIZE]; 
 } pcb_t;
 
 

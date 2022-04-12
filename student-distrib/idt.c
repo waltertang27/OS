@@ -83,8 +83,9 @@ RETURN VALUE: none
 SIDE EFFECTS:Kernel loops forever 
 */
 void blue_screen(char * exp_name){
+    int_flag = 1; 
+    halt(255); 
     printf("Exception: %s \n",exp_name);
-    while (1){}   ; 
 }
 
 
@@ -154,17 +155,8 @@ extern void gen_protec_excep(){
     blue_screen(exception);
 }
 extern void page_fault_excep(){
-    int32_t cr2_value; 
     char exception[] = "page fault" ; 
 
-    asm volatile (
-        "movl %%cr2, %%ebx \n"
-    : "=b"(cr2_value)
-    :
-    : "memory"
-      );
-    
-    printf("CR2: 0x%x \n",cr2_value); 
     blue_screen(exception);
 }
 extern void fpu_excep(){
@@ -193,3 +185,4 @@ extern void inter_handler(uint32_t id){
     printf("Interrupt Number: %d \n",id);
     halt(173); 
 }
+

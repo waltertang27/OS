@@ -10,7 +10,10 @@
 #define EXCEP_NUM 19
 #define RTC_INTERRUPT 40 
 #define KEYBOARD_IDT    33
-#define SYS_IDT 0x80 
+#define SYS_IDT 0x80
+
+int32_t int_flag = 0;
+
 
 extern void IDT_init(void);
 void blue_screen(char * exception);
@@ -36,4 +39,3 @@ extern void machine_check_excep();
 extern void simd_excep();
 extern void system_call_linkage(); 
 extern void test_system(); 
-extern void inter_handler(uint32_t intr); 

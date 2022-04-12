@@ -8,6 +8,8 @@
 #include "fs_system.h"
 #include "paging.h"
 #include "rtc.h"
+#include "idt.h"
+
 // #include "system_call_linkage.h"
 
 

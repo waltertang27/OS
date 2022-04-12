@@ -56,12 +56,18 @@ int32_t halt(uint8_t status)
 
     tss.ss0 = KERNEL_DS;
     
+
     // =============================== jump to execute return   ===============================
     
     // Call assembly program to jump back to execute for the original PCB
     int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
 
+    if(int_flag){
+        status = 256; 
+        int_flag = 0; 
+    }
+    
     //Push paramaters and jump to execute 
      asm volatile(
         "movl %%edx, %%esp \n "

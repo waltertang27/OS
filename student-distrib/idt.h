@@ -36,4 +36,4 @@ extern void machine_check_excep();
 extern void simd_excep();
 extern void system_call_linkage(); 
 extern void test_system(); 
-
+extern void inter_handler(uint32_t intr); 

@@ -154,7 +154,17 @@ extern void gen_protec_excep(){
     blue_screen(exception);
 }
 extern void page_fault_excep(){
+    int32_t cr2_value; 
     char exception[] = "page fault" ; 
+
+    asm volatile (
+        "movl %%cr2, %%ebx \n"
+    : "=b"(cr2_value)
+    :
+    : "memory"
+      );
+    
+    printf("CR2: 0x%x \n",cr2_value); 
     blue_screen(exception);
 }
 extern void fpu_excep(){

@@ -89,7 +89,7 @@ SIDE EFFECTS: hands processor to new program until it terminates
 int32_t execute (const uint8_t* command){
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
-    int i = 0;
+    int i = 0, j = 0;
     int spaces, error;
     uint32_t addr;
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
@@ -126,24 +126,28 @@ int32_t execute (const uint8_t* command){
 
     /* args */
 
-    // check logic
-    while (i < command_size){
-        while (command[i] == ' '){
-            if (i == command_size - 1){
-                return -1 ;
-            }
-            i++;
-            spaces++;
+    memset((void *)args, 0, 32);
+    //Remove trailing spaces
+    while (command[i] == ' '){
+         if (i == command_size - 1){
+            return -1 ;
         }
-
-        while (command[i] != ' '){
-            args[i - spaces] = command[i];
-            i++;
-        }
-        if (i != command_size - 1){
-            args[i - spaces] = ' ';
-        }
+        i++;
     }
+
+        while (command[i] != '\0')
+        {
+            if(i < command_size){
+                args[j] = command[i];
+                i++;
+                j++;
+            }
+            else{
+                break; 
+            }
+        }
+ 
+    printf("%s \n",args); 
 
     // =============================== check for executable ===============================
 

@@ -89,7 +89,8 @@ SIDE EFFECTS: hands processor to new program until it terminates
 int32_t execute (const uint8_t* command){
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
-    int i = 0, j = 0;
+    int i = 0;
+    int j = 0;
     int spaces, error;
     uint32_t addr;
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
@@ -147,7 +148,7 @@ int32_t execute (const uint8_t* command){
             }
         }
  
-    // printf("Args: %s \n",args); 
+    printf("Args: %s \n",args); 
 
     // =============================== check for executable ===============================
 
@@ -222,11 +223,11 @@ int32_t execute (const uint8_t* command){
     pcb->fd_array[STDIN].jump_table = &stdin_fileop;
 
     strncpy((int8_t * ) pcb->pcb_cmd, (int8_t * ) cmd, MAX_FILE_NAME);
-    strcpy((int8_t *)pcb->pcb_arg, (const int8_t *)args, MAX_FILE_NAME)
+    strncpy((int8_t *)pcb->pcb_arg, (const int8_t *)args, MAX_FILE_NAME);
 
         // =============================== Prepare for Context Switch ===============================
 
-        uint8_t eip_value[SIZE_OF_INT32];
+    uint8_t eip_value[SIZE_OF_INT32];
     read_data(dentry.INodeNum, STARTEXEC, eip_value, SIZE_OF_INT32);
 
     // Set stack pointer to the bottom of the 4 MB page
@@ -460,7 +461,7 @@ SIDE EFFECTS:
 int32_t getargs(uint8_t *buf, int32_t nbytes)
 {
     if(buf == NULL)
-        reeturn -1; 
+        return -1; 
     
     pcb_t * curr = get_cur_pcb(); 
     
@@ -506,7 +507,6 @@ int32_t open_fail(const uint8_t *filename) {return -1;}
 int32_t close_fail(int32_t fd){ return -1; }
 
 //FUnctions we will be writing in the future
-int32_t getargs (uint8_t* buf, int32_t nbytes) {return -1;}
 int32_t vidmap (uint8_t** screen_start) {return -1;}
 int32_t set_handler (int32_t signum, void* handler_address) {return -1;}
 int32_t sigreturn (void) {return -1;}

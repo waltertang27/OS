@@ -147,7 +147,7 @@ int32_t execute (const uint8_t* command){
             }
         }
  
-    printf("%s \n",args); 
+    // printf("Args: %s \n",args); 
 
     // =============================== check for executable ===============================
 

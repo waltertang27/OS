@@ -469,8 +469,6 @@ int32_t getargs(uint8_t *buf, int32_t nbytes)
 
     strncpy((void *)buf,(const void *)curr->pcb_arg,nbytes); 
     
-
-
     return 0; 
 }
 

@@ -67,6 +67,7 @@ typedef struct pcb {
     int32_t active;
     file_descriptor_t fd_array[FD_ARRAY_SIZE];
     int8_t pcb_cmd[MAX_CMD_LINE_SIZE]; 
+    int8_t pcb_arg[MAX_CMD_LINE_SIZE];
 } pcb_t;
 
 

@@ -222,10 +222,11 @@ int32_t execute (const uint8_t* command){
     pcb->fd_array[STDIN].jump_table = &stdin_fileop;
 
     strncpy((int8_t * ) pcb->pcb_cmd, (int8_t * ) cmd, MAX_FILE_NAME);
+    strcpy((int8_t *)pcb->pcb_arg, (const int8_t *)args, MAX_FILE_NAME)
 
-    // =============================== Prepare for Context Switch ===============================
+        // =============================== Prepare for Context Switch ===============================
 
-    uint8_t eip_value[SIZE_OF_INT32]; 
+        uint8_t eip_value[SIZE_OF_INT32];
     read_data(dentry.INodeNum, STARTEXEC, eip_value, SIZE_OF_INT32);
 
     // Set stack pointer to the bottom of the 4 MB page
@@ -447,7 +448,31 @@ void fileop_init(){
 
 }
 
+/*
+DESCRIPTION: Fills a buffer with the arguments for teh current pcb
+INPUTS: buf - buffer to copy into
+        nbytes: number of bytes to copy from arg
 
+OUTPUTS: none
+RETURN VALUE: 0 if it worked -1 if it didnt 
+SIDE EFFECTS:
+*/
+int32_t getargs(uint8_t *buf, int32_t nbytes)
+{
+    if(buf == NULL)
+        reeturn -1; 
+    
+    pcb_t * curr = get_cur_pcb(); 
+    
+    if(*(curr->pcb_arg) == NULL)
+        return -1; 
+
+    strncpy((void *)buf,(const void *)curr->pcb_arg,nbytes); 
+    
+
+
+    return 0; 
+}
 
 
 /*

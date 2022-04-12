@@ -126,23 +126,24 @@ int32_t execute (const uint8_t* command){
 
     /* args */
 
-    // // check logic
-    // while (i < command_size){
-    //     while (command[i] == ' '){
-    //         if (i == command_size - 1){
-    //             break;
-    //         }
-    //         i++;
-    //         spaces++;
-    //     }
-    //     while (command[i] != ' '){
-    //         args[i - spaces] = command[i];
-    //         i++;
-    //     }
-    //     if (i != command_size - 1){
-    //         args[i - spaces] = ' ';
-    //     }
-    // }
+    // check logic
+    while (i < command_size){
+        while (command[i] == ' '){
+            if (i == command_size - 1){
+                return -1 ;
+            }
+            i++;
+            spaces++;
+        }
+
+        while (command[i] != ' '){
+            args[i - spaces] = command[i];
+            i++;
+        }
+        if (i != command_size - 1){
+            args[i - spaces] = ' ';
+        }
+    }
 
     // =============================== check for executable ===============================
 

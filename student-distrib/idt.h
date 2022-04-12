@@ -1,3 +1,7 @@
+#ifndef IDT_H_
+#define IDT_H_
+
+
 #include "multiboot.h"
 #include "x86_desc.h"
 #include "lib.h"
@@ -39,3 +43,7 @@ extern void machine_check_excep();
 extern void simd_excep();
 extern void system_call_linkage(); 
 extern void test_system(); 
+
+
+#endif
+

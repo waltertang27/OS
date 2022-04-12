@@ -1,3 +1,4 @@
+
 #include "idt.h"
 #include "intr_link.h"
 
@@ -185,4 +186,3 @@ extern void inter_handler(uint32_t id){
     printf("Interrupt Number: %d \n",id);
     halt(173); 
 }
-

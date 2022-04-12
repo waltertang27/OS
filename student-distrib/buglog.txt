@@ -62,6 +62,23 @@ Issue: The keyboard handler is printing the entire buffer on the new line, even 
 	buffer.
 Solution: By using a second buffer to store the extra characters, we can print out only the second line's content while also saving the first line's content.
 
-Bug: Ls displays the 33 value of very long file
+Description: After calling shell we were not able to backspace and get a proper input. For example if you types ls, deleted the s ad then typed it again it wouldnt execute 
+Where: terminal.c 
+Issue buffer was getting filled with a /b
+Solution: Make the buffer only have typed characters
 
-bug: backspace stopped working after execute 
+Description: After halting it would go to execute but page fault 
+Where: systemcalls.c 
+Issue: I was calling a leave and ret after my label in execute which was doing assembly instructions it shouldnt have 
+Solution: Remove leave and ret after the label 
+
+
+Description: Interrupts were off after shell were called 
+Where: systemcalls.c 
+Issue: We needed to re eable interrupts after our linkage or else keyboard ones wont be added 
+Solution:  ^ 
+
+
+
+
+

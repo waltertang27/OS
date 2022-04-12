@@ -135,7 +135,7 @@ int32_t execute (const uint8_t* command){
         i++;
     }
 
-        while (command[i] != '\0')
+        while (command[i] != '\0' && command[i] != ' ')
         {
             if(i < command_size){
                 args[j] = command[i];

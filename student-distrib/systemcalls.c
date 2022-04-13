@@ -555,8 +555,4 @@ int32_t write_fail(int32_t fd, const void *buf, int32_t nbytes){return -1; }
 int32_t open_fail(const uint8_t *filename) {return -1;}
 int32_t close_fail(int32_t fd){ return -1; }
 
-//FUnctions we will be writing in the future
-int32_t vidmap (uint8_t** screen_start) {return -1;}
-int32_t set_handler (int32_t signum, void* handler_address) {return -1;}
-int32_t sigreturn (void) {return -1;}
 

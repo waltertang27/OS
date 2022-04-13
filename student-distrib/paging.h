@@ -15,7 +15,8 @@
 #define USER_V 0x8000000	 // user virtual
 
 #define KERNEL_INDEX 1
-#define USER_INDEX 32
+#define USER_INDEX 32		// starts at 128 MB
+#define VIDMAP_INDEX 34		// starts at 136 MB
 
 // the entries used for the page directory (32 bits)
 typedef struct __attribute__(()) page_directory_entry

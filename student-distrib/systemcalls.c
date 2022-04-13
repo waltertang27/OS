@@ -486,8 +486,17 @@ int32_t getargs(uint8_t *buf, int32_t nbytes)
 }
 
 int32_t vidmap (uint8_t** screen_start){
+    // check if address is valid
+    if (screen_start == NULL){
+        return -1;
+    }
+
+    page_directory[VIDMAP_INDEX].user_supervisor = 1;
+    page_directory[VIDMAP_INDEX].present = 1;
+    page_directory[VIDMAP_INDEX].page_size = 0;
     video_mapping_pt[0].user_supervisor = 1;
     video_mapping_pt[0].present = 1;
+    // video_mapping_pt[0].page_table_addr = ??? B8000
 
     flush_tlb();
     return 0;

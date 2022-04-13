@@ -1,7 +1,7 @@
 //  to do in 6.3.1
 #include "systemcalls.h"
 
-
+int32_t idt_flag; 
 
 
 int32_t parent_id = 0; 
@@ -19,6 +19,7 @@ SIDE EFFECTS: Terminate the current program and return to the previous program
 */
 int32_t halt(uint8_t status)
 {
+    int32_t newStatus; 
     pcb_t * pcb, *parent ;
     // =============================== Restore parent data   ===============================
 
@@ -63,10 +64,13 @@ int32_t halt(uint8_t status)
     int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
 
-  //  if(flag_blue_screen){
-   //     status = 256; 
-   //     flag_blue_screen = 0; 
-  //  }
+
+
+    newStatus = (uint32_t)status; 
+    if(idt_flag){
+        newStatus = 256; 
+        idt_flag = 0; 
+    }
     
     //Push paramaters and jump to execute 
      asm volatile(
@@ -154,7 +158,7 @@ int32_t execute (const uint8_t* command){
             }
         }
  
-    printf("Args: %s \n",args); 
+    // printf("Args: %s \n",args); 
 
     // =============================== check for executable ===============================
 

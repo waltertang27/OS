@@ -12,6 +12,7 @@
 //#include "keyboard.h"
 #include "intr_link.h"
 #include "keyboard.h"
+#include "systemcalls.h"
 #define EXCEP_NUM 19
 #define RTC_INTERRUPT 40 
 #define KEYBOARD_IDT    33

@@ -85,11 +85,10 @@ RETURN VALUE: none
 SIDE EFFECTS:Kernel loops forever 
 */
 void blue_screen(char * exp_name){
-
-    idt_flag = 1; 
-    
-    halt(255); 
+    int error;
+    idt_flag = 1;
     printf("Exception: %s \n",exp_name);
+    error = halt(255); 
 }
 
 

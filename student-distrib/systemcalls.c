@@ -484,6 +484,16 @@ int32_t getargs(uint8_t *buf, int32_t nbytes)
     return 0; 
 }
 
+int32_t set_handler (int32_t signum, void* handler_address){
+    // apparently these are extra credit
+    return -1;
+}
+
+
+int32_t sigreturn(void){
+    return -1;
+}
+
 
 /*
 DESCRIPTION: gets address of pcb corresponding to id

@@ -79,6 +79,18 @@ Issue: We needed to re eable interrupts after our linkage or else keyboard ones 
 Solution:  ^ 
 
 
+Bug: Kept bootlooping after entering any command but doesnt happen after restarting test no debug
+Steps to recreate: 
+1. do "cat shell" (cat any executable)
+2. run pingpong 
+After it re runs it bootloops on any command 
+Can call cat on a non executable and it wont boot loop 
+
+Bug: Scrolling not implemented on "cat shell" . A bunch of errors when running cat shell at the end as well 
+
+Bug: syserr Fails 5 tests and page faults at the end 
+
+
 
 
 

@@ -1,5 +1,7 @@
+
 #include "idt.h"
-#include "intr_link.h"
+
+int32_t idt_flag; 
 
 /*
 DESCRIPTION: initializes the IDT with the first 18 entries
@@ -83,8 +85,10 @@ RETURN VALUE: none
 SIDE EFFECTS:Kernel loops forever 
 */
 void blue_screen(char * exp_name){
+    int error;
+    idt_flag = 1;
     printf("Exception: %s \n",exp_name);
-    while (1){}   ; 
+    error = halt(255); 
 }
 
 
@@ -155,6 +159,7 @@ extern void gen_protec_excep(){
 }
 extern void page_fault_excep(){
     char exception[] = "page fault" ; 
+
     blue_screen(exception);
 }
 extern void fpu_excep(){
@@ -179,4 +184,8 @@ extern void test_system(){
     printf("Second Line \n");
 }
 
+extern void inter_handler(uint32_t id){
+    printf("Interrupt Number: %d \n",id);
+    halt(173); 
+}
 

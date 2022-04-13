@@ -5,7 +5,7 @@ system_call_linkage.o: system_call_linkage.S x86_desc.h types.h
 x86_desc.o: x86_desc.S x86_desc.h types.h
 fs_system.o: fs_system.c fs_system.h lib.h types.h keyboard.h multiboot.h \
   x86_desc.h i8259.h debug.h tests.h systemcalls.h terminal.h paging.h \
-  rtc.h
+  rtc.h idt.h intr_link.h
 i8259.o: i8259.c i8259.h types.h lib.h keyboard.h multiboot.h x86_desc.h \
   debug.h tests.h
 idt.o: idt.c idt.h multiboot.h types.h x86_desc.h lib.h keyboard.h \
@@ -23,7 +23,7 @@ rtc.o: rtc.c rtc.h multiboot.h types.h x86_desc.h lib.h keyboard.h \
   i8259.h debug.h tests.h
 systemcalls.o: systemcalls.c systemcalls.h types.h x86_desc.h lib.h \
   keyboard.h multiboot.h i8259.h debug.h tests.h terminal.h fs_system.h \
-  paging.h rtc.h
+  paging.h rtc.h idt.h intr_link.h
 terminal.o: terminal.c terminal.h keyboard.h multiboot.h types.h \
   x86_desc.h lib.h i8259.h debug.h tests.h
 tests.o: tests.c tests.h x86_desc.h types.h lib.h keyboard.h multiboot.h \

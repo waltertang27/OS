@@ -1,7 +1,7 @@
 //  to do in 6.3.1
 #include "systemcalls.h"
 
-
+int32_t idt_flag; 
 
 
 int32_t parent_id = 0; 
@@ -19,6 +19,7 @@ SIDE EFFECTS: Terminate the current program and return to the previous program
 */
 int32_t halt(uint8_t status)
 {
+    int32_t newStatus; 
     pcb_t * pcb, *parent ;
     // =============================== Restore parent data   ===============================
 
@@ -56,12 +57,21 @@ int32_t halt(uint8_t status)
 
     tss.ss0 = KERNEL_DS;
     
+
     // =============================== jump to execute return   ===============================
     
     // Call assembly program to jump back to execute for the original PCB
     int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
 
+
+
+    newStatus = (uint32_t)status; 
+    if(idt_flag){
+        newStatus = 256; 
+        idt_flag = 0; 
+    }
+    
     //Push paramaters and jump to execute 
      asm volatile(
         "movl %%edx, %%esp \n "
@@ -90,6 +100,7 @@ int32_t execute (const uint8_t* command){
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
+    int j = 0;
     int spaces, error;
     uint32_t addr;
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
@@ -126,23 +137,28 @@ int32_t execute (const uint8_t* command){
 
     /* args */
 
-    // // check logic
-    // while (i < command_size){
-    //     while (command[i] == ' '){
-    //         if (i == command_size - 1){
-    //             break;
-    //         }
-    //         i++;
-    //         spaces++;
-    //     }
-    //     while (command[i] != ' '){
-    //         args[i - spaces] = command[i];
-    //         i++;
-    //     }
-    //     if (i != command_size - 1){
-    //         args[i - spaces] = ' ';
-    //     }
-    // }
+    memset((void *)args, 0, 32);
+    //Remove trailing spaces
+    while (command[i] == ' '){
+         if (i == command_size - 1){
+            return -1 ;
+        }
+        i++;
+    }
+
+        while (command[i] != '\0' && command[i] != ' ')
+        {
+            if(i < command_size){
+                args[j] = command[i];
+                i++;
+                j++;
+            }
+            else{
+                break; 
+            }
+        }
+ 
+    // printf("Args: %s \n",args); 
 
     // =============================== check for executable ===============================
 
@@ -217,10 +233,11 @@ int32_t execute (const uint8_t* command){
     pcb->fd_array[STDIN].jump_table = &stdin_fileop;
 
     strncpy((int8_t * ) pcb->pcb_cmd, (int8_t * ) cmd, MAX_FILE_NAME);
+    strncpy((int8_t *)pcb->pcb_arg, (const int8_t *)args, MAX_FILE_NAME);
 
-    // =============================== Prepare for Context Switch ===============================
+        // =============================== Prepare for Context Switch ===============================
 
-    uint8_t eip_value[SIZE_OF_INT32]; 
+    uint8_t eip_value[SIZE_OF_INT32];
     read_data(dentry.INodeNum, STARTEXEC, eip_value, SIZE_OF_INT32);
 
     // Set stack pointer to the bottom of the 4 MB page
@@ -442,7 +459,29 @@ void fileop_init(){
 
 }
 
+/*
+DESCRIPTION: Fills a buffer with the arguments for teh current pcb
+INPUTS: buf - buffer to copy into
+        nbytes: number of bytes to copy from arg
 
+OUTPUTS: none
+RETURN VALUE: 0 if it worked -1 if it didnt 
+SIDE EFFECTS:
+*/
+int32_t getargs(uint8_t *buf, int32_t nbytes)
+{
+    if(buf == NULL)
+        return -1; 
+    
+    pcb_t * curr = get_cur_pcb(); 
+    
+    if(*(curr->pcb_arg) == NULL)
+        return -1; 
+
+    strncpy((void *)buf,(const void *)curr->pcb_arg,nbytes); 
+    
+    return 0; 
+}
 
 
 /*
@@ -478,7 +517,6 @@ int32_t open_fail(const uint8_t *filename) {return -1;}
 int32_t close_fail(int32_t fd){ return -1; }
 
 //FUnctions we will be writing in the future
-int32_t getargs (uint8_t* buf, int32_t nbytes) {return -1;}
 int32_t vidmap (uint8_t** screen_start) {return -1;}
 int32_t set_handler (int32_t signum, void* handler_address) {return -1;}
 int32_t sigreturn (void) {return -1;}

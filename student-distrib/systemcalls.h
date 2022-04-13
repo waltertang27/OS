@@ -8,6 +8,8 @@
 #include "fs_system.h"
 #include "paging.h"
 #include "rtc.h"
+#include "idt.h"
+
 // #include "system_call_linkage.h"
 
 
@@ -67,6 +69,7 @@ typedef struct pcb {
     int32_t active;
     file_descriptor_t fd_array[FD_ARRAY_SIZE];
     int8_t pcb_cmd[MAX_CMD_LINE_SIZE]; 
+    int8_t pcb_arg[MAX_CMD_LINE_SIZE];
 } pcb_t;
 
 

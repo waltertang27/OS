@@ -1,16 +1,25 @@
+#ifndef IDT_H_
+#define IDT_H_
+
+
 #include "multiboot.h"
 #include "x86_desc.h"
 #include "lib.h"
 #include "i8259.h"
 #include "debug.h"
+#include "intr_link.h"
 #include "tests.h"
 //#include "keyboard.h"
 #include "intr_link.h"
 #include "keyboard.h"
+#include "systemcalls.h"
 #define EXCEP_NUM 19
 #define RTC_INTERRUPT 40 
 #define KEYBOARD_IDT    33
-#define SYS_IDT 0x80 
+#define SYS_IDT 0x80
+
+
+
 
 extern void IDT_init(void);
 void blue_screen(char * exception);
@@ -36,4 +45,10 @@ extern void machine_check_excep();
 extern void simd_excep();
 extern void system_call_linkage(); 
 extern void test_system(); 
+
+
+extern int32_t idt_flag; 
+
+
+#endif
 

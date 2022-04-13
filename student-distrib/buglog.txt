@@ -44,6 +44,7 @@ Issue: INode addresses are not calculated correctly, while loop is causing probl
 (should be buf + bytes)
 Solution: as of 3/28 4pm we haven't solved the issue yet.
 
+
 Description: cursor was not properly following after the backspace character
 Where: lib.c
 Issue: Since I was using a ' ' character to clear the character to be deleted by backspace, screen_x and screen_y were not being properly displayed. 

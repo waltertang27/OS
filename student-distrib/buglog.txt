@@ -79,7 +79,7 @@ Issue: We needed to re eable interrupts after our linkage or else keyboard ones 
 Solution:  ^ 
 
 
-Bug: Kept bootlooping after entering any command but doesnt happen after restarting test no debug
+Bug: After trying to read an executable and then calling pingpong it restarts the kernel and you can no longer run any functions
 Steps to recreate: 
 1. do "cat shell" (cat any executable)
 2. run pingpong 

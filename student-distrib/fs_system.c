@@ -150,7 +150,6 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
         // printf("Skipped: %u offset: %u \n",blocksSkipped,blockOffset); 
         return 0; 
     }
-     
     
 
     //If you reach the limit for bytes you can copy before the entirety of a block
@@ -215,14 +214,17 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 int32_t file_read(int32_t fd, void *buf, int32_t nbytes){
 
     // read file
-    open_((uint8_t*)&" ", fd);
+    pcb_t * curr = get_cur_pcb(); 
+    file_descriptor_t  * array =  curr->fd_array ;
+    int32_t filesize = startINode[curr->fd_array[fd].inode].bLength; 
     
-    int32_t bytes = read_data(fd, temp_global_array[fd].file_position, buf, nbytes);
+
+    int32_t bytes = read_data(curr->fd_array[fd].inode, array[fd].file_position, buf, nbytes);
     if(bytes == -1)
         return -1; 
 
-    printf("%s \n",buf);
-    temp_global_array[fd].file_position += bytes; 
+    // printf("%s \n",buf);
+    array[fd].file_position += bytes; 
     
     return bytes;
 }

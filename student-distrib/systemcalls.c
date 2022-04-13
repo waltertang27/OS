@@ -63,10 +63,10 @@ int32_t halt(uint8_t status)
     int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
 
-    if(int_flag){
-        status = 256; 
-        int_flag = 0; 
-    }
+  //  if(flag_blue_screen){
+   //     status = 256; 
+   //     flag_blue_screen = 0; 
+  //  }
     
     //Push paramaters and jump to execute 
      asm volatile(

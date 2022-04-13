@@ -1,3 +1,6 @@
+#ifndef RTC_H
+#define RTC_H
+
 
 #include "multiboot.h"
 #include "x86_desc.h"
@@ -30,3 +33,6 @@ extern void rtc_freq (int32_t freq);
 int testing_RTC; 
 
 int testing_RTC; 
+
+#endif
+

@@ -491,6 +491,15 @@ int32_t vidmap (uint8_t** screen_start){
         return -1;
     }
 
+    /* To avoid adding kernel-side exception handling for this sort of check, you can simply check whether the address falls
+        within the address range covered by the single user-level page.  --Appendix B*/
+    uint32_t screen_start_addr = (uint32_t)screen_start;
+    if (screen_start_addr < USER_V){
+        return -1;
+    } else if (screen_start_addr > USER_V + PAGE_SIZE) {
+        return -1;
+    }
+
     page_directory[VIDMAP_INDEX].user_supervisor = 1;
     page_directory[VIDMAP_INDEX].present = 1;
     page_directory[VIDMAP_INDEX].page_size = 0;

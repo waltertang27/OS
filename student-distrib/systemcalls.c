@@ -376,6 +376,7 @@ int32_t open (const uint8_t* filename){
             pcb->fd_array[i].file_position = 0; 
             pcb->fd_array[i].flags = IN_USE; // if it is not in use, turn it to in use
             pcb->fd_array[i].inode = dentry.INodeNum;
+            
             if (dentry.fileType == 0) { // rtc
                 pcb->fd_array[i].jump_table = &rtc_op; // rtc operation table
             }

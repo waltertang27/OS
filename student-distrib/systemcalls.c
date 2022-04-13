@@ -21,6 +21,7 @@ int32_t halt(uint8_t status)
 {
     int32_t newStatus; 
     pcb_t * pcb, *parent ;
+    uint32_t addr;
     // =============================== Restore parent data   ===============================
 
     pcb = get_cur_pcb();
@@ -40,7 +41,7 @@ int32_t halt(uint8_t status)
     // =============================== Restore parent paging data   ===============================
 
     //Get physical memory and then Change Page table 
-    uint32_t addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
+    addr = EIGHTMB + ((curr_id ) * PAGE_SIZE); // not sure if we need to minus 2 or not
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     //Always flush the tlb before returning to a new program 
@@ -482,6 +483,14 @@ int32_t getargs(uint8_t *buf, int32_t nbytes)
     strncpy((void *)buf,(const void *)curr->pcb_arg,nbytes); 
     
     return 0; 
+}
+
+int32_t vidmap (uint8_t** screen_start){
+    video_mapping_pt[0].user_supervisor = 1;
+    video_mapping_pt[0].present = 1;
+
+    flush_tlb();
+    return 0;
 }
 
 int32_t set_handler (int32_t signum, void* handler_address){

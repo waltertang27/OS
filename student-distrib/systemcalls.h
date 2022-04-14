@@ -37,6 +37,8 @@
 #define MAX_CMD_LINE_SIZE 32 
 #define BUF_SIZE 4
 
+#define VIDEO_MEMORY 0x8800000
+
 uint32_t process_array[PROCESS_ARRAY_SIZE];
 
 // https://stackoverflow.com/questions/9932212/jump-table-examples-in-c

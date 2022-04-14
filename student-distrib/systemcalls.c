@@ -485,6 +485,13 @@ int32_t getargs(uint8_t *buf, int32_t nbytes)
     return 0; 
 }
 
+/*
+DESCRIPTION: maps the text-mode video memory into user space at a pre-set virtual address
+INPUTS: screen_start -- double pointer of virtual address
+OUTPUTS: none
+RETURN VALUE: 0 
+SIDE EFFECTS: prints out animated fish
+*/
 int32_t vidmap (uint8_t** screen_start){
     // check if address is valid
     if (screen_start == NULL){
@@ -500,16 +507,24 @@ int32_t vidmap (uint8_t** screen_start){
         return -1;
     }
 
+    // setup page directory entry
     page_directory[VIDMAP_INDEX].user_supervisor = 1;
     page_directory[VIDMAP_INDEX].present = 1;
     page_directory[VIDMAP_INDEX].page_size = 0;
-    page_directory[VIDMAP_INDEX].page_size = (int32_t)video_mapping_pt / ALIGN_BYTES; // points to the video mapping page table
+    page_directory[VIDMAP_INDEX].read_write = 1;
+	page_directory[VIDMAP_INDEX].write_through = 0;
+	page_directory[VIDMAP_INDEX].cache_disable = 0;
+	page_directory[VIDMAP_INDEX].accessed = 0;
+	page_directory[VIDMAP_INDEX].dirty = 0;
+    page_directory[VIDMAP_INDEX].page_table_addr = (int32_t)video_mapping_pt / ALIGN_BYTES; // points to the video mapping page table
+
+    // setup video mapping table entry
     video_mapping_pt[0].user_supervisor = 1;
     video_mapping_pt[0].present = 1;
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
     flush_tlb();
-    *screen_start = (uint32_t * )(0x8800000);
+    *screen_start = (uint32_t * )(VIDEO_MEMORY); // video memory
     return 0;
 }
 

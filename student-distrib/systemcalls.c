@@ -506,9 +506,10 @@ int32_t vidmap (uint8_t** screen_start){
     page_directory[VIDMAP_INDEX].page_size = (int32_t)video_mapping_pt / ALIGN_BYTES; // points to the video mapping page table
     video_mapping_pt[0].user_supervisor = 1;
     video_mapping_pt[0].present = 1;
-    // video_mapping_pt[0].page_table_addr = ??? B8000
+    video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
     flush_tlb();
+    *screen_start = (uint32_t * )(0x8800000);
     return 0;
 }
 

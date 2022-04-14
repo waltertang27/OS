@@ -221,7 +221,7 @@ void update_cursor(void) {
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
 
-    if(c == '\b') {
+    if(backspace_detected) {
 
         if (screen_x == 0 && next_line == 1){
             // screen_y--;
@@ -247,6 +247,7 @@ void putc(uint8_t c) {
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = ' ';
             *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         }
+        backspace_detected = 0;
         
     }
     

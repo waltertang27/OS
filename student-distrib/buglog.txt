@@ -82,6 +82,11 @@ Solution:  ^
 
 3.4 
 
+Description: We are unable to use backspace after reaching the max capacity of the keyboard buffer.
+Where: keyboard.c, lib.c 
+Issue: We treated backspace as a character in the buffer '\n' so it would require a space in the buffer to work as intended. However, this made it so that once you reached 128 characters, you could no longer backspace as the buffer was full.
+Solution: We rewrote the functionality of backspace by using a flag instead to detected if backspace was pressed, so it would not require a space in the buffer. 
+
 Bug: syserr Fails 5 tests and page faults at the end. Tests that faul: empty string, open, invalid fd, unopened 
 Where: Systemcalls.c 
 Issue: 

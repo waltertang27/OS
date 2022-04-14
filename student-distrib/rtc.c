@@ -15,6 +15,7 @@ extern void rtc_init(void){
 
     outb(RTC_REG_B, RTC_PORT_1); // select Status Register B, and disable NMI (by setting the 0x80 bit)
     char prev = inb(RTC_PORT_2); // read the current value of register B
+    
     outb(RTC_REG_B,RTC_PORT_1); //set the index again (a read will reset the index to register D)
     outb(prev | SIXTH_BIT_MASK ,RTC_PORT_2); //write the previous value ORed with 0x40. This turns on bit 6 of register B
 
@@ -84,12 +85,15 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
     if (buf == NULL || nbytes != 4)
         return -1;
  	int32_t freq_int = *((int32_t *)buf);
+
     // check if the frequency is out of bounds and check if it is powers of two 
     if (freq_int < MIN_FREQ || freq_int > MAX_FREQ || (freq_int & (freq_int - 1)) != 0) 
         return -1;
 
     //printf("%u\n", freq_int);
+    cli();
     rtc_freq(freq_int); 
+    sti(); 
     return 0;
 }
 

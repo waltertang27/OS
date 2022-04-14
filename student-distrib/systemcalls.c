@@ -134,7 +134,7 @@ int32_t execute (const uint8_t* command){
         cmd[i - spaces] = command[i]; 
         i++;
     }
-
+    printf("cmd executed: %s| \n",cmd);
 
     /* args */
 
@@ -142,24 +142,24 @@ int32_t execute (const uint8_t* command){
     //Remove trailing spaces
     while (command[i] == ' '){
          if (i == command_size - 1){
-            return -1 ;
+            break ;
         }
         i++;
     }
 
-        while (command[i] != '\0' && command[i] != ' ')
-        {
-            if(i < command_size){
-                args[j] = command[i];
-                i++;
-                j++;
-            }
-            else{
-                break; 
-            }
+    while (command[i] != '\0' && command[i] != ' ')
+    {
+        if(i < command_size){
+            args[j] = command[i];
+            i++;
+            j++;
         }
+        else{
+            break; 
+        }
+    }
  
-    // printf("Args: %s \n",args); 
+    printf("Args: %s| \n",args); 
 
     // =============================== check for executable ===============================
 

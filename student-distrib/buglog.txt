@@ -92,5 +92,4 @@ Bug: syserr Fails 5 tests and page faults at the end
 
 Bug: Pingpong does not work. Only prints 2 lines and has spaces between them. In GDB it works until the last line and then seg faults 
 
-
-
+Bug: preceeding spaces dont execute call 

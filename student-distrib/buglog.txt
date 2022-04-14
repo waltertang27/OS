@@ -90,6 +90,9 @@ Bug: Scrolling not implemented on "cat shell" . A bunch of errors when running c
 
 Bug: syserr Fails 5 tests and page faults at the end 
 
-Bug: Pingpong does not work. Only prints 2 lines and has spaces between them. In GDB it works until the last line and then seg faults 
+Tests that faul: empty string, open, invalid fd, unopened 
 
-Bug: preceeding spaces dont execute call 
+Bug: Pingpong does not work. Only prints 2 lines and has spaces between them. In GDB it works until the last line and then seg faults
+
+Bug:A call is stil execute if you have preceeding spaces(but thats intentional)
+

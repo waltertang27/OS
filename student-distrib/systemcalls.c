@@ -49,7 +49,7 @@ int32_t halt(uint8_t status)
 
     // =============================== Close any relevant FD's   ===============================
     int i;
-    for(i = 0; i < FD_END; i++) {
+    for(i = 0; i < FD_ARRAY_SIZE; i++) {
         pcb->fd_array[i].flags = FREE;
     }
 
@@ -134,7 +134,7 @@ int32_t execute (const uint8_t* command){
         cmd[i - spaces] = command[i]; 
         i++;
     }
-    printf("cmd executed: %s| \n",cmd);
+    // printf("cmd executed: %s| \n",cmd);
 
     /* args */
 
@@ -159,7 +159,7 @@ int32_t execute (const uint8_t* command){
         }
     }
  
-    printf("Args: %s| \n",args); 
+    // printf("Args: %s| \n",args); 
 
     // =============================== check for executable ===============================
 
@@ -363,7 +363,7 @@ int32_t open (const uint8_t* filename){
     pcb_t * pcb = get_cur_pcb(); 
     int32_t i;
     dentry_t dentry;
-    if (filename == NULL){ // if the file does not exist, return -1
+    if (*filename == '\0' || filename == NULL){ // if the file does not exist, return -1
         return -1;
     }
     int error;
@@ -372,7 +372,7 @@ int32_t open (const uint8_t* filename){
     if (error == -1)
         return -1;
 
-    for(i = FD_START_INDEX; i < FD_END; i++) {
+    for(i = FD_START_INDEX; i < FD_ARRAY_SIZE; i++) {
         if (pcb->fd_array[i].flags == FREE) {
             pcb->fd_array[i].file_position = 0; 
             pcb->fd_array[i].flags = IN_USE; // if it is not in use, turn it to in use

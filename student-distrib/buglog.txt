@@ -62,6 +62,8 @@ Issue: The keyboard handler is printing the entire buffer on the new line, even 
 	buffer.
 Solution: By using a second buffer to store the extra characters, we can print out only the second line's content while also saving the first line's content.
 
+
+3.3 
 Description: After calling shell we were not able to backspace and get a proper input. For example if you types ls, deleted the s ad then typed it again it wouldnt execute 
 Where: terminal.c 
 Issue buffer was getting filled with a /b
@@ -78,6 +80,14 @@ Where: systemcalls.c
 Issue: We needed to re eable interrupts after our linkage or else keyboard ones wont be added 
 Solution:  ^ 
 
+3.4 
+
+Bug: syserr Fails 5 tests and page faults at the end. Tests that faul: empty string, open, invalid fd, unopened 
+Where: Systemcalls.c 
+Issue: 
+Was doing a null check on a pointer instead of a null check on a character
+Rest of the issue sstemmed from an incorrect macro. FD's were looping through 0-6 instead of 0-7 
+Fix: Do better edge case checks and fix macros 
 
 Bug: After trying to read an executable and then calling pingpong it restarts the kernel and you can no longer run any functions
 Steps to recreate: 
@@ -88,11 +98,7 @@ Can call cat on a non executable and it wont boot loop
 
 Bug: Scrolling not implemented on "cat shell" . A bunch of errors when running cat shell at the end as well 
 
-Bug: syserr Fails 5 tests and page faults at the end 
-
-Tests that faul: empty string, open, invalid fd, unopened 
-
 Bug: Pingpong does not work. Only prints 2 lines and has spaces between them. In GDB it works until the last line and then seg faults
 
-Bug:A call is stil execute if you have preceeding spaces(but thats intentional)
+Bug: Spaces after arguments still executes(small fix do this last)
 

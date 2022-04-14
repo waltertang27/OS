@@ -99,6 +99,7 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
  * Function: Close the RTC devices. 
  */
 int32_t close_rtc (int32_t fd) {
+    
     return 0;
 }
 

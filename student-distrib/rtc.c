@@ -23,6 +23,7 @@ extern void rtc_init(void){
     prev = inb(RTC_PORT_2);
     outb(RTC_REG_A,RTC_PORT_1);
     outb(prev & (TOP_FOUR_BITMASK | LOWER_FOUR_BITMASK) ,RTC_PORT_2); //0F allows to mask for top 4 bits
+   
     testing_RTC = 0; 
     
     // the initial frequency is set to 2 interrupts/second;
@@ -38,14 +39,13 @@ OUTPUTS: none
 RETURN VALUE: none
 SIDE EFFECTS: RTC continiously fires 
 */
-extern void rtc_handler(void){
-    cli();
+void rtc_handler(void){
+
     rtc_int = 1; // interrupts occur and not handled yet
     // test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C
     inb(RTC_PORT_2);		        // just throw away contents
     send_eoi(RTC_IRQ_NUM);
-    sti();
 }
 
 /* open_rtc
@@ -91,9 +91,7 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
         return -1;
 
     //printf("%u\n", freq_int);
-    cli();
     rtc_freq(freq_int); 
-    sti(); 
     return 0;
 }
 
@@ -112,7 +110,7 @@ int32_t close_rtc (int32_t fd) {
  * Return Value: none
  * Function: Output rate from input frequency and change the freq of rtc 
  */
-extern void rtc_freq (int32_t freq) {
+ void rtc_freq (int32_t freq) {
     // int range;
     char rate; // frequency =  32768 >> (rate - 1);
     // periodic interrupt rate and Square-Wave Output Frequency 
@@ -136,7 +134,7 @@ extern void rtc_freq (int32_t freq) {
     	rate = 0x0E;		//1110
     if (freq == 2) 
     	rate = 0x0F;		//1111
-    cli();
+
     outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
     char prev = inb(RTC_PORT_2);                    // get initial value of register A
 /*
@@ -147,7 +145,6 @@ extern void rtc_freq (int32_t freq) {
     outb(RTC_REG_A, RTC_PORT_1);                           // reset index to A
     outb((prev & TOP_FOUR_BITMASK) | rate, RTC_PORT_2);    // write rate (the bottom 4 bits that represent the 
                                                            // periodic interrupt rate) to A.
-    sti();
 }
 
 

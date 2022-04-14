@@ -512,10 +512,10 @@ int32_t vidmap (uint8_t** screen_start){
     page_directory[VIDMAP_INDEX].present = 1;
     page_directory[VIDMAP_INDEX].page_size = 0;
     page_directory[VIDMAP_INDEX].read_write = 1;
-	page_directory[VIDMAP_INDEX].write_through = 0;
-	page_directory[VIDMAP_INDEX].cache_disable = 0;
-	page_directory[VIDMAP_INDEX].accessed = 0;
-	page_directory[VIDMAP_INDEX].dirty = 0;
+    page_directory[VIDMAP_INDEX].write_through = 0;
+    page_directory[VIDMAP_INDEX].cache_disable = 0;
+    page_directory[VIDMAP_INDEX].accessed = 0;
+    page_directory[VIDMAP_INDEX].dirty = 0;
     page_directory[VIDMAP_INDEX].page_table_addr = (int32_t)video_mapping_pt / ALIGN_BYTES; // points to the video mapping page table
 
     // setup video mapping table entry

@@ -316,7 +316,7 @@ extern void keyboard_handler(void) {
         //printf("%u", index);
 
         if(index == 0) {
-            printf("%u\n", index);
+            //printf("%u\n", index);
             buffer[index] = '\0';
             send_eoi(KEYBOARD_IRQ);
             sti();

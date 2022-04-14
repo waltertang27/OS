@@ -21,9 +21,9 @@ system_call_linkage:
        pushl %ebx               ;\
 
        cmpl $0, %eax        ;\
-       jl invalid_cmd       ;\
+       jz invalid_cmd       ;\
        cmpl $10, %eax       ;\
-       jg invalid_cmd       ;\
+       ja invalid_cmd       ;\
 
        call *system_call_jmp_table(, %eax, 4)  ;\
 

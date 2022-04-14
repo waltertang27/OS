@@ -721,7 +721,6 @@ int terminal_rw_test(){
 /* Test suite entry point */
 void launch_tests() {
     clear(); 
-
     //TEST_OUTPUT("idt_test", idt_test());
     // TEST_OUTPUT("Paging test",paging_test());
 

@@ -46,7 +46,7 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
     if (buf == NULL){
         return -1;
     }
-    sti(); 
+    // sti(); 
     char byte;
     int bytes_read = 0;
 
@@ -114,9 +114,9 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
         return -1;
     }
     
-    cli();
+    //cli();
     int length = strlen(buf);
-    for (terminal_index = 0; terminal_index < nbytes; terminal_index++) {
+    for (terminal_index = 0; terminal_index < nbytes && terminal_index < length; terminal_index++) {
         // void can be anything
         byte = ((char * ) buf)[terminal_index];
 
@@ -132,7 +132,7 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
     //     printf("%c",((char * ) buf)[nbytes -1]);
     
     
-    sti();
+    //sti();
     return nbytes;
 }
 

@@ -166,7 +166,7 @@ SIDE EFFECTS: Displays the characters that are pressed on the keyboard to the sc
 extern void keyboard_handler(void) {
 
     //int loop;
-    cli();
+    // cli();
     uint32_t keycode = inb(KEYBOARD_DATA_PORT);
 
     // if (clear_buffer == 1){
@@ -184,62 +184,62 @@ extern void keyboard_handler(void) {
         capslock_flag = 1;
         CAPS_ON = 1;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     else if(keycode == CAPSLOCK_PRESSED && CAPS_ON == 1) {
         capslock_flag = 0;
         CAPS_ON = 0;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode == LSHIFT_PRESSED) {
         shift_flag = 1;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode == LSHIFT_RELEASED) {
         shift_flag = 0;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode == RSHIFT_PRESSED) {
         shift_flag = 1;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode == RSHIFT_RELEASED) {
         shift_flag = 0;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode == LALT_PRESSED) {
         alt_flag = 1;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode == LALT_RELEASED) {
         alt_flag = 0;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode == LCTRL_PRESSED) {
         ctrl_flag = 1;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode == LCTRL_RELEASED) {
         ctrl_flag = 0;
         send_eoi(KEYBOARD_IRQ);
-        cli();
+        // cli();
         return;
     }
     if(keycode >= SPECIAL_KEYCODES) {                           //for now, we won't handle keycodes after 0x81

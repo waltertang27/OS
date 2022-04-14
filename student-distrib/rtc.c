@@ -39,13 +39,13 @@ RETURN VALUE: none
 SIDE EFFECTS: RTC continiously fires 
 */
 extern void rtc_handler(void){
-    cli();
+
     rtc_int = 1; // interrupts occur and not handled yet
     // test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C
     inb(RTC_PORT_2);		        // just throw away contents
     send_eoi(RTC_IRQ_NUM);
-    sti();
+
 }
 
 /* open_rtc
@@ -68,8 +68,9 @@ int32_t open_rtc (const uint8_t* filename) {
  * Function: Sleep until receiving an interrupt and read the interrupt rate  
  */
 int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
-    while (!rtc_int); // set a flag until the interrupt is handled (rtc_int = 0)
     rtc_int = 0;
+    while (!rtc_int); // set a flag until the interrupt is handled (rtc_int = 0)
+    // rtc_int = 0;
     return 0;
 }
 
@@ -91,9 +92,9 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
         return -1;
 
     //printf("%u\n", freq_int);
-    cli();
+
     rtc_freq(freq_int); 
-    sti(); 
+ 
     return 0;
 }
 
@@ -136,7 +137,7 @@ extern void rtc_freq (int32_t freq) {
     	rate = 0x0E;		//1110
     if (freq == 2) 
     	rate = 0x0F;		//1111
-    cli();
+
     outb(RTC_REG_A, RTC_PORT_1);                    // set index to register A
     char prev = inb(RTC_PORT_2);                    // get initial value of register A
 /*
@@ -147,7 +148,7 @@ extern void rtc_freq (int32_t freq) {
     outb(RTC_REG_A, RTC_PORT_1);                           // reset index to A
     outb((prev & TOP_FOUR_BITMASK) | rate, RTC_PORT_2);    // write rate (the bottom 4 bits that represent the 
                                                            // periodic interrupt rate) to A.
-    sti();
+
 }
 
 

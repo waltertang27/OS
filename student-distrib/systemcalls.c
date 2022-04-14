@@ -521,6 +521,13 @@ int32_t vidmap (uint8_t** screen_start){
     // setup video mapping table entry
     video_mapping_pt[0].user_supervisor = 1;
     video_mapping_pt[0].present = 1;
+    video_mapping_pt[0].read_write = 1;
+    video_mapping_pt[0].write_through = 0;
+    video_mapping_pt[0].cache_disable = 1;
+    video_mapping_pt[0].accessed = 0;
+    video_mapping_pt[0].dirty = 0;
+    video_mapping_pt[0].attribute = 0;
+    video_mapping_pt[0].global = 0;
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
     flush_tlb();

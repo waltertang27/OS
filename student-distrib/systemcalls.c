@@ -363,7 +363,7 @@ int32_t open (const uint8_t* filename){
     pcb_t * pcb = get_cur_pcb(); 
     int32_t i;
     dentry_t dentry;
-    if (filename == '\0'){ // if the file does not exist, return -1
+    if (*filename == '\0' || filename == NULL){ // if the file does not exist, return -1
         return -1;
     }
     int error;

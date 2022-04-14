@@ -2,7 +2,7 @@
 
 // uint32_t rtc_rate;
 volatile uint32_t rtc_int;
-
+int testing_RTC; 
 /*
 DESCRIPTION: Initializes RTC registers and turn on IRQ 8
 INPUTS: none

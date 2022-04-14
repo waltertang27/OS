@@ -30,9 +30,8 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes);
 int32_t close_rtc (int32_t fd);
 extern void rtc_freq (int32_t freq);
 
-int testing_RTC; 
+extern int testing_RTC; 
 
-int testing_RTC; 
 
 #endif
 

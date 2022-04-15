@@ -216,7 +216,7 @@ int32_t file_read(int32_t fd, void *buf, int32_t nbytes){
     // read file
     pcb_t * curr = get_cur_pcb(); 
     file_descriptor_t  * array =  curr->fd_array ;
-    int32_t filesize = startINode[curr->fd_array[fd].inode].bLength; 
+    // int32_t filesize = startINode[curr->fd_array[fd].inode].bLength; 
     
 
     int32_t bytes = read_data(curr->fd_array[fd].inode, array[fd].file_position, buf, nbytes);

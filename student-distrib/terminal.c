@@ -115,7 +115,6 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
     }
     
     //cli();
-    int length = strlen(buf);
     for (terminal_index = 0; (terminal_index < nbytes) ; terminal_index++) {
         // void can be anything
         byte = ((char * ) buf)[terminal_index];

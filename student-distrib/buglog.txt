@@ -101,9 +101,11 @@ Steps to recreate:
 After it re runs it bootloops on any command 
 Can call cat on a non executable and it wont boot loop 
 
-Bug: Scrolling not implemented on "cat shell" . A bunch of errors when running cat shell at the end as well 
 
 Bug: Pingpong does not work. Only prints 2 lines and has spaces between them. In GDB it works until the last line and then seg faults
+Where: lib.c 
+Issue: There was an issue with scrolling that prevented the ping pongs from drawing correctly.
+Solution: We were not correctly implementing scrolling as the text was constantly getting overwritten. I added some edge cases to help fix that problem. 
 
 Bug: Spaces after arguments still executes(small fix do this last)
 

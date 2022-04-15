@@ -323,7 +323,7 @@ void putc(uint8_t c) {
 
     }
 
-    if (screen_x >= NUM_COLS - 1) {
+    if (screen_x > NUM_COLS - 1) {
 
 
         screen_y = screen_y + 1;

@@ -39,7 +39,7 @@ OUTPUTS: none
 RETURN VALUE: none
 SIDE EFFECTS: RTC continiously fires 
 */
-void rtc_handler(void){
+extern void rtc_handler(void){
 
     rtc_int = 1; // interrupts occur and not handled yet
     // test_interrupts();
@@ -68,6 +68,7 @@ int32_t open_rtc (const uint8_t* filename) {
  * Function: Sleep until receiving an interrupt and read the interrupt rate  
  */
 int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
+    // rtc_int = 0;
     while (!rtc_int); // set a flag until the interrupt is handled (rtc_int = 0)
     rtc_int = 0;
     return 0;
@@ -91,7 +92,9 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
         return -1;
 
     //printf("%u\n", freq_int);
+
     rtc_freq(freq_int); 
+ 
     return 0;
 }
 

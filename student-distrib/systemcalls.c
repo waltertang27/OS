@@ -531,7 +531,7 @@ int32_t vidmap (uint8_t** screen_start){
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
     flush_tlb();
-    *screen_start = (uint32_t * )(VIDEO_MEMORY); // video memory
+    *screen_start = (uint8_t * )(VIDEO_MEMORY); // video memory
     return 0;
 }
 

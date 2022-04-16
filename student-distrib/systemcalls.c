@@ -78,7 +78,7 @@ int32_t halt(uint8_t status)
         "movl %%ecx, %%ebp \n "
         "jmp leaveExec \n "
         :
-        : "a"(status), "d"(espSave), "c"(ebpSave)
+        : "a"(newStatus), "d"(espSave), "c"(ebpSave)
         : "memory", "ebx"
         );
 

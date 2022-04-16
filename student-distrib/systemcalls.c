@@ -7,7 +7,6 @@ int32_t idt_flag;
 int32_t parent_id = 0; 
 int32_t curr_id = 0;
 
-
 extern void flush_tlb(); 
 
 /*
@@ -33,7 +32,7 @@ int32_t halt(uint8_t status)
     }
 
     // New PID is now the parent since you are halting the current process 
-    curr_id = pcb->parent_id;
+    curr_id = curr_id - 1; 
     parent = get_pcb(curr_id);
     process_array[pcb->process_id] = 0; 
 
@@ -186,6 +185,8 @@ int32_t execute (const uint8_t* command){
 
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] != 1){
+        //    pcb_t * curr = get_cur_pcb; 
+         //   curr->parent_id = curr_id - 1;
             process_array[curr_id] = 1;
             break;
         }

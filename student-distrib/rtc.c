@@ -41,10 +41,11 @@ SIDE EFFECTS: RTC continiously fires
 */
 extern void rtc_handler(void){
 
-    rtc_int = 1; // interrupts occur and not handled yet
+   
     // test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C
     inb(RTC_PORT_2);		        // just throw away contents
+     rtc_int = 1; // interrupts occur and not handled yet
     send_eoi(RTC_IRQ_NUM);
 }
 

@@ -69,11 +69,14 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
 
                 // if enter (\n) is read, finish
                 if (byte == '\n') {
+                    bytes_read = terminal_index +1; 
                     break;
-                } else { // edge case: already read nbytes, adding new line
-                    if (nbytes < BUFFER_SIZE){
-                        if (terminal_index == nbytes - 1){
+                } 
+                else { // edge case: already read nbytes, adding new line
+                    if (terminal_index < BUFFER_SIZE){
+                        if (terminal_index == nbytes - 1 || byte == '\0'){
                             ((char * ) buf)[terminal_index] = '\n';
+                            bytes_read = terminal_index + 1; 
                             break;
                         }
                     }

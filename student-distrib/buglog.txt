@@ -107,5 +107,8 @@ Where: lib.c
 Issue: There was an issue with scrolling that prevented the ping pongs from drawing correctly.
 Solution: We were not correctly implementing scrolling as the text was constantly getting overwritten. I added some edge cases to help fix that problem. 
 
-Bug: Spaces after arguments still executes(small fix do this last)
+Bug: Kernel restarts when max characters reached 
+Where: idk yet(prolly terminal read/write )
+Issue: If you type the maximum characters you can in shell, then hit ennter once, the next time you hit enter it will restart the cpu or in our case kernel 
+Solution: SOMEONE FIX THIS
 

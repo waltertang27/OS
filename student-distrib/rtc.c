@@ -2,7 +2,9 @@
 
 // uint32_t rtc_rate;
 volatile uint32_t rtc_int;
-int testing_RTC; 
+int testing_RTC;
+volatile uint32_t curr_freq; 
+volatile uint32_t counter;
 /*
 DESCRIPTION: Initializes RTC registers and turn on IRQ 8
 INPUTS: none
@@ -28,6 +30,8 @@ extern void rtc_init(void){
     
     // the initial frequency is set to 2 interrupts/second;
     rtc_freq(MAX_FREQ);
+    curr_freq = MIN_FREQ;
+    counter = MAX_FREQ / curr_freq;
     rtc_int = 0;
     enable_irq(RTC_IRQ_NUM);
 }
@@ -40,12 +44,14 @@ RETURN VALUE: none
 SIDE EFFECTS: RTC continiously fires 
 */
 extern void rtc_handler(void){
-
-   
     // test_interrupts();
     outb(RTC_REG_C, RTC_PORT_1);	// select register C
     inb(RTC_PORT_2);		        // just throw away contents
-     rtc_int = 1; // interrupts occur and not handled yet
+    counter = counter - 1;
+    if (counter == 0) {
+        counter = MAX_FREQ / curr_freq;
+        rtc_int = 1; // interrupts occur and not handled yet
+    }
     send_eoi(RTC_IRQ_NUM);
 }
 
@@ -57,7 +63,9 @@ extern void rtc_handler(void){
 int32_t open_rtc (const uint8_t* filename) {
     if (filename == NULL)
         return -1;                  // if the filename does not exist, return -1
-    rtc_freq(2);
+    // rtc_freq(2);
+    curr_freq = MIN_FREQ;
+    counter = MAX_FREQ / curr_freq; // HF/Curr Operating
     return 0;
 }
 
@@ -69,9 +77,9 @@ int32_t open_rtc (const uint8_t* filename) {
  * Function: Sleep until receiving an interrupt and read the interrupt rate  
  */
 int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
-    // rtc_int = 0;
-    while (!rtc_int); // set a flag until the interrupt is handled (rtc_int = 0)
     rtc_int = 0;
+    while (!rtc_int); // set a flag until the interrupt is handled (rtc_int = 0)
+    // rtc_int = 0;
     return 0;
 }
 
@@ -94,8 +102,9 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
 
     //printf("%u\n", freq_int);
 
-    rtc_freq(freq_int); 
- 
+    // rtc_freq(freq_int); 
+    curr_freq = freq_int;
+    counter = MAX_FREQ / curr_freq;
     return 0;
 }
 
@@ -105,7 +114,6 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
  * Function: Close the RTC devices. 
  */
 int32_t close_rtc (int32_t fd) {
-    
     return 0;
 }
 

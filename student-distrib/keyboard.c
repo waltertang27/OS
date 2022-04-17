@@ -250,9 +250,38 @@ extern void keyboard_handler(void) {
     if(index >= BUFFER_SIZE) {
         
         if(keycode == ENTER) {
-            buffer[0] = '\0';
-            index = 0;
+            enter_detected = 1;
             putc('\n');
+            terminal_buffer[0] = '\0';
+            //buffer[index - 2] = '\n';
+            //buffer[index - 1] = '\0';
+  //          if (index >= 80){
+  //              second_line_buffer[index - 80] = '\n';
+  //              second_line_buffer[index - 80 + 1] = '\0';
+            //puts(second_line_buffer);
+  //              putc(second_line_buffer[index - 80]);
+  //      } else {
+            //puts(buffer);
+            //putc(buffer[index - 2]);
+
+            //enter_index = index - 1;
+            //memcpy(enter_buffer, buffer, strlen(buffer) + 1);
+
+            //puts(buffer);
+   //     }
+
+            //terminal_buffer[0] = '\0';
+            //index = 0;
+            //memcpy(enter_buffer, buffer, strlen(buffer) + 1);
+            //index = 0;
+            //index = index - 1;
+            send_eoi(KEYBOARD_IRQ);
+            index = 0;
+            buffer[index] = '\0';
+            second_line_buffer[index] = '\n';
+            
+            sti();
+            return;
         }
         else if(keycode == BACKSPACE) {
             backspace_detected = 1;
@@ -273,6 +302,8 @@ extern void keyboard_handler(void) {
         enter_detected = 1;
         buffer[index] = '\n';
         buffer[index + 1] = '\0';
+        //terminal_buffer[index] = '\n';
+        //terminal_buffer[index + 1] = '\0';
         if (index >= 80){
             second_line_buffer[index - 80] = '\n';
             second_line_buffer[index - 80 + 1] = '\0';
@@ -294,6 +325,7 @@ extern void keyboard_handler(void) {
         index = 0;
         buffer[index] = '\0';
         second_line_buffer[index] = '\n';
+        //terminal_buffer[index] = '\0';
         sti();
         return;
     }
@@ -542,3 +574,4 @@ extern void keyboard_handler(void) {
     sti();
     return;
 }
+ 

@@ -464,7 +464,7 @@ void fileop_init(){
 }
 
 /*
-DESCRIPTION: Fills a buffer with the arguments for teh current pcb
+DESCRIPTION: Fills a buffer with the arguments for the current pcb
 INPUTS: buf - buffer to copy into
         nbytes: number of bytes to copy from arg
 
@@ -482,6 +482,7 @@ int32_t getargs(uint8_t *buf, int32_t nbytes)
     if(*(curr->pcb_arg) == NULL)
         return -1; 
 
+    // Copy the arg into the buf 
     strncpy((void *)buf,(const void *)curr->pcb_arg,nbytes); 
     
     return 0; 

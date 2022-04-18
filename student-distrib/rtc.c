@@ -30,7 +30,7 @@ extern void rtc_init(void){
     
     // the initial frequency is set to 2 interrupts/second;
     rtc_freq(MAX_FREQ);
-    curr_freq = MIN_FREQ;
+    curr_freq = MIN_FREQ;                // Virtualizing the rtc with three variables: 1.hardware frequency 2.Current Operating frequency 3.Counter
     counter = MAX_FREQ / curr_freq;
     rtc_int = 0;
     enable_irq(RTC_IRQ_NUM);
@@ -65,7 +65,7 @@ int32_t open_rtc (const uint8_t* filename) {
         return -1;                  // if the filename does not exist, return -1
     // rtc_freq(2);
     curr_freq = MIN_FREQ;
-    counter = MAX_FREQ / curr_freq; // HF/Curr Operating
+    counter = MAX_FREQ / curr_freq; // Update the counter with the current frequency
     return 0;
 }
 
@@ -104,7 +104,7 @@ int32_t write_rtc (int32_t fd, const void* buf, int32_t nbytes) {
 
     // rtc_freq(freq_int); 
     curr_freq = freq_int;
-    counter = MAX_FREQ / curr_freq;
+    counter = MAX_FREQ / curr_freq;       // Update the counter with the written frequncy
     return 0;
 }
 

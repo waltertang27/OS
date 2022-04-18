@@ -65,7 +65,7 @@ int32_t open_rtc (const uint8_t* filename) {
         return -1;                  // if the filename does not exist, return -1
     // rtc_freq(2);
     curr_freq = MIN_FREQ;
-    counter = MAX_FREQ / curr_freq; // Update the counter with the current frequency
+    counter = MAX_FREQ / curr_freq; // Update the counter with the current operating frequency
     return 0;
 }
 
@@ -78,7 +78,9 @@ int32_t open_rtc (const uint8_t* filename) {
  */
 int32_t read_rtc (int32_t fd, void* buf, int32_t nbytes) {
     rtc_int = 0;
-    while (!rtc_int); // set a flag until the interrupt is handled (rtc_int = 0)
+    while (!rtc_int){
+        
+    } // set a flag until the interrupt is handled (rtc_int = 0)
     // rtc_int = 0;
     return 0;
 }

@@ -194,6 +194,7 @@ int32_t execute (const uint8_t* command){
     }
     // full array
     if (curr_id >= PROCESS_ARRAY_SIZE){
+        curr_id = curr_id - 1; 
         printf("Maximum number of shells reached\n");
         return 1;
     }

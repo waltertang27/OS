@@ -143,7 +143,7 @@ int32_t read_data(uint32_t inodeIdx, uint32_t offset, uint8_t *buf, uint32_t len
 
     uint32_t blockIDX = curr_inode->blockData[blocksSkipped];               //The index of the start block
     uint32_t bytesToCopy = FOURKB - blockOffset;                            //The amount of bytes to copy to go from the offset to the end of the block 
-    void*  currBlock = (dataBlock + ((blockIDX ) * FOURKB) + offset);          //Pointer to the first byte in the block INCLUDING the offset 
+    void*  currBlock = (dataBlock + ((blockIDX ) * FOURKB) + blockOffset);          //Pointer to the first byte in the block INCLUDING the offset 
 
 
     if(blocksSkipped * FOURKB + blockOffset > file_byte_size){

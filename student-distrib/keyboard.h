@@ -35,6 +35,10 @@
 #define L_KEY 0x26
 #define TAB 0x0F
 
+#define F1 0x3B
+#define F2 0x3C
+#define F3 0x3D
+
 //represents the index in keycode_to_char, when it is the original or (shifted) version of the key
 #define INDEX0 0
 #define INDEX1 1

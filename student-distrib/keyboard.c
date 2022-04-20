@@ -17,6 +17,11 @@ int shift_flag = 0;
 int ctrl_flag = 0;
 int capslock_flag = 0;
 int alt_flag = 0;
+
+int terminal1_flag = 0;
+int terminal2_flag = 0;
+int terminal3_flag = 0;
+
 /*
 extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
 extern int index;     //index of what we want to display till
@@ -247,6 +252,36 @@ extern void keyboard_handler(void) {
         sti();
         return;
     }
+    if(alt_flag == 1) {
+        if(keycode == F1) {
+            terminal1_flag = 1;
+            terminal2_flag = 0;
+            terminal3_flag = 0;
+            send_eoi(KEYBOARD_IRQ);
+            sti();
+            return;
+        }
+        else if(keycode == F2) {
+            terminal1_flag = 0;
+            terminal2_flag = 1;
+            terminal3_flag = 0;
+            send_eoi(KEYBOARD_IRQ);
+            sti();
+            return;
+        }
+        else if(keycode == F3) {
+            terminal1_flag = 0;
+            terminal2_flag = 0;
+            terminal3_flag = 1;
+            send_eoi(KEYBOARD_IRQ);
+            sti();
+            return;
+        }
+        
+    }
+
+
+
     if(index >= BUFFER_SIZE) {
         
         if(keycode == ENTER) {

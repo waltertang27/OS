@@ -18,9 +18,7 @@ int ctrl_flag = 0;
 int capslock_flag = 0;
 int alt_flag = 0;
 
-int terminal1_flag = 0;
-int terminal2_flag = 0;
-int terminal3_flag = 0;
+int terminal_flag = 0;
 
 /*
 extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
@@ -32,7 +30,7 @@ extern int enter_detected;
 
 char buffer[BUFFER_SIZE];
 char enter_buffer[BUFFER_SIZE];
-char terminal_buffer[BUFFER_SIZE];
+char terminal_buffer[3][BUFFER_SIZE];
 char second_line_buffer[BUFFER_SIZE];
 int terminal_index;
 
@@ -254,25 +252,19 @@ extern void keyboard_handler(void) {
     }
     if(alt_flag == 1) {
         if(keycode == F1) {
-            terminal1_flag = 1;
-            terminal2_flag = 0;
-            terminal3_flag = 0;
+            terminal_flag = 0;
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
         }
         else if(keycode == F2) {
-            terminal1_flag = 0;
-            terminal2_flag = 1;
-            terminal3_flag = 0;
+            terminal_flag = 1; 
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
         }
         else if(keycode == F3) {
-            terminal1_flag = 0;
-            terminal2_flag = 0;
-            terminal3_flag = 1;
+            terminal_flag = 2; 
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
@@ -287,29 +279,7 @@ extern void keyboard_handler(void) {
         if(keycode == ENTER) {
             enter_detected = 1;
             putc('\n');
-            terminal_buffer[0] = '\0';
-            //buffer[index - 2] = '\n';
-            //buffer[index - 1] = '\0';
-  //          if (index >= 80){
-  //              second_line_buffer[index - 80] = '\n';
-  //              second_line_buffer[index - 80 + 1] = '\0';
-            //puts(second_line_buffer);
-  //              putc(second_line_buffer[index - 80]);
-  //      } else {
-            //puts(buffer);
-            //putc(buffer[index - 2]);
-
-            //enter_index = index - 1;
-            //memcpy(enter_buffer, buffer, strlen(buffer) + 1);
-
-            //puts(buffer);
-   //     }
-
-            //terminal_buffer[0] = '\0';
-            //index = 0;
-            //memcpy(enter_buffer, buffer, strlen(buffer) + 1);
-            //index = 0;
-            //index = index - 1;
+            terminal_buffer[terminal_flag][0] = '\0';
             send_eoi(KEYBOARD_IRQ);
             index = 0;
             buffer[index] = '\0';
@@ -320,14 +290,11 @@ extern void keyboard_handler(void) {
         }
         else if(keycode == BACKSPACE) {
             backspace_detected = 1;
-            terminal_buffer[BUFFER_SIZE - 1] = '\0';
+            terminal_buffer[terminal_flag][BUFFER_SIZE - 1] = '\0';
             buffer[BUFFER_SIZE - 1] = '\0';
             putc(buffer[BUFFER_SIZE - 2]);
             
         }
-        //else {
-            //printf("%s", "char buffer is full!\n");
-        //}
         send_eoi(KEYBOARD_IRQ);
         sti();
         return;
@@ -337,15 +304,11 @@ extern void keyboard_handler(void) {
         enter_detected = 1;
         buffer[index] = '\n';
         buffer[index + 1] = '\0';
-        //terminal_buffer[index] = '\n';
-        //terminal_buffer[index + 1] = '\0';
         if (index >= 80){
             second_line_buffer[index - 80] = '\n';
             second_line_buffer[index - 80 + 1] = '\0';
-            //puts(second_line_buffer);
             putc(second_line_buffer[index - 80]);
         } else {
-            //puts(buffer);
             putc(buffer[index]);
         }
 
@@ -410,9 +373,8 @@ extern void keyboard_handler(void) {
             
             backspace_detected = 1;
             //if we want to delete a tab
-            
-           
-            terminal_buffer[index - 1] = '\0';
+
+            terminal_buffer[terminal_flag][index - 1] = '\0';
 
             //buffer[index] = '\b';
             //buffer[index + 1] = '\0';
@@ -493,8 +455,8 @@ extern void keyboard_handler(void) {
         } */
         buffer[index] = '\t';
         buffer[index + 1] = '\0';
-        terminal_buffer[index] = '\t';
-        terminal_buffer[index + 1] = '\0';
+        terminal_buffer[terminal_flag][index] = '\t';
+        terminal_buffer[terminal_flag][index + 1] = '\0';
         index++;
         //puts(buffer);
         putc(buffer[index - 1]);
@@ -507,7 +469,7 @@ extern void keyboard_handler(void) {
         if(shift_flag == 1) {
             char temp = keycode_to_char[keycode][INDEX0];
             if(temp >= 'a' && temp <= 'z') {
-                terminal_buffer[index] = keycode_to_char[keycode][INDEX0];
+                terminal_buffer[terminal_flag][index] = keycode_to_char[keycode][INDEX0];
                 buffer[index] = keycode_to_char[keycode][INDEX0];
                 buffer[index + 1] = '\0';
                 index = index + 1;
@@ -528,7 +490,7 @@ extern void keyboard_handler(void) {
         //checks if it is a letter, if so, display the uppercase version
         if(temp >= 'a' && temp <= 'z') {
             //printf("%c", keycode_to_char[keycode][INDEX1]);
-            terminal_buffer[index] = keycode_to_char[keycode][INDEX1];
+            terminal_buffer[terminal_flag][index] = keycode_to_char[keycode][INDEX1];
             buffer[index] = keycode_to_char[keycode][INDEX1];
             buffer[index + 1] = '\0';
             index = index + 1;
@@ -547,7 +509,7 @@ extern void keyboard_handler(void) {
         }
         //otherwise, display original
         else {
-            terminal_buffer[index] = keycode_to_char[keycode][INDEX0];
+            terminal_buffer[terminal_flag][index] = keycode_to_char[keycode][INDEX0];
             //printf("%c", keycode_to_char[keycode][INDEX0]);
             buffer[index] = keycode_to_char[keycode][INDEX0];
             buffer[index + 1] = '\0';
@@ -568,8 +530,8 @@ extern void keyboard_handler(void) {
     }
     //if shift is held
     if(shift_flag == 1 && index <= BUFFER_SIZE - 2) {
-        terminal_buffer[index] = keycode_to_char[keycode][INDEX1];
-        
+        terminal_buffer[terminal_flag][index] = keycode_to_char[keycode][INDEX1];
+
         //printf("%c", keycode_to_char[keycode][INDEX1]);
         buffer[index] = keycode_to_char[keycode][INDEX1];
         buffer[index + 1] = '\0';
@@ -591,7 +553,7 @@ extern void keyboard_handler(void) {
     
 
     //printf("%c", keycode_to_char[keycode][INDEX0]);
-    terminal_buffer[index] = keycode_to_char[keycode][INDEX0];
+    terminal_buffer[terminal_flag][index] = keycode_to_char[keycode][INDEX0];
     buffer[index] = keycode_to_char[keycode][INDEX0];
     buffer[index + 1] = '\0';
     index = index + 1;

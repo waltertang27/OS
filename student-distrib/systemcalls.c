@@ -6,8 +6,9 @@ int32_t idt_flag;
 
 int32_t parent_id = 0; 
 int32_t curr_id = 0;
+int terminal_flag ;
 
-extern void flush_tlb(); 
+extern void flush_tlb();
 
 /*
 DESCRIPTION: The halt system call terminates a process, returning the specified value to its parent process.
@@ -326,7 +327,6 @@ int32_t read (int32_t fd, void* buf, int32_t nbytes){
         int32_t val = pcb->fd_array[fd].jump_table->read(fd, buf, nbytes);
         return val;
     }
-    
 }
 /*
 DESCRIPTION: write system call; writes from keyboard, rtc, file, directory, etc.

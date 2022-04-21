@@ -1,22 +1,22 @@
 
 #include "terminal.h"
 
+int terminal_flag;
 
+    // extern char buffer[BUFFER_SIZE];
+    // extern int index;
+    // extern int enter_detected;
 
-
-//extern char buffer[BUFFER_SIZE];
-//extern int index;
-//extern int enter_detected;
-
-/*
-DESCRIPTION: terminal_open function for terminal driver
-INPUTS: const uint8_t *filename - pointer to the filename that we want to use
-OUTPUTS: none
-RETURN VALUE: 0 if success, -1 if fail
-SIDE EFFECTS: none
-*/
-int32_t terminal_open(const uint8_t *filename) {
-    terminal_buffer[0] = '\0';
+    /*
+    DESCRIPTION: terminal_open function for terminal driver
+    INPUTS: const uint8_t *filename - pointer to the filename that we want to use
+    OUTPUTS: none
+    RETURN VALUE: 0 if success, -1 if fail
+    SIDE EFFECTS: none
+    */
+    int32_t terminal_open(const uint8_t *filename)
+{
+    terminal_buffer[terminal_flag][0] = '\0';
 
     return 0;
 }
@@ -61,7 +61,7 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
             for (terminal_index = 0; terminal_index < nbytes; terminal_index++) {
 
                 // get data from terminal buffer
-                ((char * ) buf)[terminal_index] = terminal_buffer[terminal_index];
+                ((char *)buf)[terminal_index] = terminal_buffer[terminal_flag][terminal_index];
                 bytes_read++;
 
                 // for cleaner code
@@ -86,7 +86,7 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
 
             // clear terminal buffer
             for (terminal_index = 0; terminal_index < BUFFER_SIZE; terminal_index++) {
-                terminal_buffer[terminal_index] = '\0';
+                terminal_buffer[terminal_flag][terminal_index] = '\0';
             }
 
             enter_detected = 0;

@@ -52,9 +52,9 @@
 extern char enter_buffer[BUFFER_SIZE];
 
 extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
-extern char terminal_buffer[BUFFER_SIZE];
+extern char terminal_buffer[3][BUFFER_SIZE];
 extern int terminal_index;
-
+extern int terminal_flag
 extern int clear_buffer;
 
 extern int index;     //index of what we want to display till

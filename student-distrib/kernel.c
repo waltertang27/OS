@@ -23,7 +23,7 @@
 #define CHECK_FLAG(flags, bit)   ((flags) & (1 << (bit)))
 
  uint32_t fileSystemStart; 
-
+    int terminal_shell[3]; 
 
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
@@ -176,15 +176,11 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Execute the first program ("shell") ... */
     fileop_init();
     terminal_flag = 0; 
+    terminal_shell[0] = 0; 
+    terminal_shell[1] = 0;
+    terminal_shell[2] = 0; 
     execute((const uint8_t * )"shell");
-    
-    terminal_flag = 1;
-    execute((const uint8_t *)"shell");
-
-    terminal_flag = 2;
-    execute((const uint8_t *)"shell");
-
-    // Maybe switch back to terminal 1 idk if that matters
+    printf("Shell 1 executed"); 
 
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");

@@ -8,7 +8,7 @@
 #include "debug.h"
 #include "tests.h"
 #include "types.h"
-
+#include "systemcalls.h"
 #define KEYBOARD_IRQ  1
 
 #define KEYBOARD_DATA_PORT   0x60
@@ -55,6 +55,7 @@ extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
 extern char terminal_buffer[3][BUFFER_SIZE];
 extern int terminal_index;
 extern int terminal_flag;
+extern int terminal_shell[3]; 
 extern int clear_buffer;
 
 extern int index;     //index of what we want to display till

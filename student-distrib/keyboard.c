@@ -19,7 +19,7 @@ int capslock_flag = 0;
 int alt_flag = 0;
 
 int terminal_flag = 0;
-
+int terminal_shell[3]; 
 /*
 extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
 extern int index;     //index of what we want to display till
@@ -33,7 +33,7 @@ char enter_buffer[BUFFER_SIZE];
 char terminal_buffer[3][BUFFER_SIZE];
 char second_line_buffer[BUFFER_SIZE];
 int terminal_index;
-
+char buf[1046]; 
 int clear_buffer;
 
 int index;
@@ -252,13 +252,28 @@ extern void keyboard_handler(void) {
     }
     if(alt_flag == 1) {
         if(keycode == F1) {
+            clear(); 
+            printf("Switched to Terminal 1\n");
             terminal_flag = 0;
+            terminal_read(1,buf,1046);
+            terminal_write(1,buf,1046);
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
         }
         else if(keycode == F2) {
+            clear(); 
+            printf("Switched to Terminal 2\n");
             terminal_flag = 1; 
+
+            if(terminal_shell[1] == 0){
+                terminal_shell[1] = 1; 
+                execute("shell"); 
+            }
+            terminal_read(1,buf,1046);
+            terminal_write(1,buf,1046);
+
+
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;

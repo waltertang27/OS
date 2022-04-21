@@ -175,7 +175,17 @@ void entry(unsigned long magic, unsigned long addr) {
 #endif
     /* Execute the first program ("shell") ... */
     fileop_init();
+    terminal_flag = 0; 
     execute((const uint8_t * )"shell");
+    
+    terminal_flag = 1;
+    execute((const uint8_t *)"shell");
+
+    terminal_flag = 2;
+    execute((const uint8_t *)"shell");
+
+    // Maybe switch back to terminal 1 idk if that matters
+
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

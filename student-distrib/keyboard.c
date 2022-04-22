@@ -251,7 +251,7 @@ extern void keyboard_handler(void) {
         return;
     }
     if(alt_flag == 1) {
-        if(keycode == F1) {
+        if(keycode == F1 && terminal_flag != 0) {
             clear(); 
             printf("Switched to Terminal 1\n");
 
@@ -271,7 +271,7 @@ extern void keyboard_handler(void) {
             sti();
             return;
         }
-        else if(keycode == F2) {
+        else if(keycode == F2 && terminal_flag != 1) {
             clear(); 
             printf("Switched to Terminal 2\n");
             
@@ -291,16 +291,28 @@ extern void keyboard_handler(void) {
             sti();
             return;
         }
-        else if(keycode == F3) {
+        else if(keycode == F3 && terminal_flag != 2) {
+
+            clear();
+            printf("Switched to Terminal 3\n");
    
             terminal_flag = 2; 
 
             memcpy(buffer, terminal_buffer[terminal_flag], strlen(terminal_buffer[terminal_flag]) + 1);
 
+            terminal_read(1,buf,1046);
+            terminal_write(1,buf,1046);
+
 
             send_eoi(KEYBOARD_IRQ);
             sti();
             return;
+        }
+        else {
+            send_eoi(KEYBOARD_IRQ);
+            sti();
+            return;
+
         }
         
     }
@@ -606,4 +618,3 @@ extern void keyboard_handler(void) {
 }
  
 
- 

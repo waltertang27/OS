@@ -33,7 +33,7 @@ int32_t halt(uint8_t status)
     }
 
     // New PID is now the parent since you are halting the current process 
-    curr_id = curr_id - 1; 
+    curr_id = pcb->parent_id ; 
     parent = get_pcb(curr_id);
     process_array[pcb->process_id] = 0; 
 
@@ -104,6 +104,7 @@ int32_t execute (const uint8_t* command){
     int j = 0;
     int spaces, error;
     uint32_t addr;
+    uint32_t prevPid; 
     uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
     uint8_t args[MAX_CMD_LINE_SIZE];
     uint8_t buf[BUF_SIZE];
@@ -184,6 +185,7 @@ int32_t execute (const uint8_t* command){
 
     // ===============================     Set up paging     ===============================
 
+    prevPid = curr_id; 
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] != 1){
         //    pcb_t * curr = get_cur_pcb; 
@@ -219,6 +221,7 @@ int32_t execute (const uint8_t* command){
     // ===============================      Create PCB       ===============================
     pcb = get_pcb(curr_id);
     pcb->process_id = curr_id;
+    pcb->parent_id = prevPid; 
 
     // Fill all 8 FD's with values
     for (i = 0; i < FD_ARRAY_SIZE; i++)

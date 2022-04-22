@@ -96,6 +96,11 @@ void paging_init()
 		video_mapping_pt[i].page_table_addr = i;
 	}
 
+	// Check with Kevin but as of now there is a page for each terminal 
+	video_mapping_pt[2].present = 1; 
+	video_mapping_pt[3].present = 1; 
+	video_mapping_pt[4].present = 1; 
+
 	asm (
 		"movl $page_directory, %%eax ;"
 		"andl $0xFFFFFC00, %%eax ;" // gets the argument
@@ -108,6 +113,8 @@ void paging_init()
 		"movl %%cr0, %%eax ;"
 		"orl  $0x80000001, %%eax ;" // set paging bits
 		"movl %%eax, %%cr0"
-		::: "eax", "cc"
+		:
+		:
+		: "eax", "cc"
 	);
 }

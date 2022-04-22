@@ -136,7 +136,15 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
     return nbytes;
 }
 
-// void set_terminal_buffer(){
-//     terminal_buffer[0] = 'q';
-// }
+extern void switch_terminals(int32_t prevTerminal)
+{
+    clear(); 
+    printf(" Switching from Terminal %d to Terminal %d \n",prevTerminal,terminal_flag); 
 
+    //Save the previous terminal to its video page
+
+    // Check if its the first time that you are opening the terminal, if so boot shell 
+
+    // If not get its video page and move it to actual video memory 
+
+}

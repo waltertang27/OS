@@ -167,7 +167,7 @@ RETURN VALUE: none
 SIDE EFFECTS: Displays the characters that are pressed on the keyboard to the screen
 */
 extern void keyboard_handler(void) {
-
+    int prevTerminal = terminal_flag;
     //int loop;
     // cli();
     uint32_t keycode = inb(KEYBOARD_DATA_PORT);
@@ -252,60 +252,29 @@ extern void keyboard_handler(void) {
     }
     if(alt_flag == 1) {
         if(keycode == F1 && terminal_flag != 0) {
-            clear(); 
-            printf("Switched to Terminal 1\n");
-
-            
-
+            prevTerminal = terminal_flag; 
             terminal_flag = 0;
-
-            memcpy(buffer, terminal_buffer[terminal_flag], strlen(terminal_buffer[terminal_flag]) + 1);
-
-
-            terminal_read(1,buf,1046);
-            terminal_write(1,buf,1046);
-
-
-
             send_eoi(KEYBOARD_IRQ);
             sti();
+            switch_terminals(prevTerminal);
             return;
         }
         else if(keycode == F2 && terminal_flag != 1) {
-            clear(); 
-            printf("Switched to Terminal 2\n");
-            
-            terminal_flag = 1; 
-
-            memcpy(buffer, terminal_buffer[terminal_flag], strlen(terminal_buffer[terminal_flag]) + 1);
-
-            if(terminal_shell[1] == 0){
-                terminal_shell[1] = 1; 
-                execute("shell"); 
-            }
-            terminal_read(1,buf,1046);
-            terminal_write(1,buf,1046);
-
-
+            prevTerminal = terminal_flag;
+            terminal_flag = 1;
             send_eoi(KEYBOARD_IRQ);
             sti();
+            switch_terminals(prevTerminal);
+
             return;
         }
         else if(keycode == F3 && terminal_flag != 2) {
-
-            clear();
-            printf("Switched to Terminal 3\n");
-   
-            terminal_flag = 2; 
-
-            memcpy(buffer, terminal_buffer[terminal_flag], strlen(terminal_buffer[terminal_flag]) + 1);
-
-            terminal_read(1,buf,1046);
-            terminal_write(1,buf,1046);
-
-
+            prevTerminal = terminal_flag;
+            terminal_flag = 2;
             send_eoi(KEYBOARD_IRQ);
             sti();
+            switch_terminals(prevTerminal);
+
             return;
         }
         else {

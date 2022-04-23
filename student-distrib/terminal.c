@@ -16,7 +16,9 @@ int terminal_flag;
     */
     int32_t terminal_open(const uint8_t *filename)
 {
-    terminal_buffer[terminal_flag][0] = '\0';
+    terminal_buffer[0][0] = '\0';
+    terminal_buffer[1][0] = '\0';
+    terminal_buffer[2][0] = '\0';
 
    // terminal_flag = 0;
 
@@ -59,6 +61,8 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
             if (nbytes > BUFFER_SIZE){
                 nbytes = BUFFER_SIZE;
             }
+
+            
 
             for (terminal_index = 0; terminal_index < nbytes; terminal_index++) {
 

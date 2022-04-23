@@ -141,7 +141,27 @@ extern void switch_terminals(int32_t prevTerminal)
     clear(); 
     printf(" Switching from Terminal %d to Terminal %d \n",prevTerminal,terminal_flag); 
 
-    //Save the previous terminal to its video page
+    // Store page is where you are copying video memory too(Save what is in video memory to store page)
+    void * storePage = (((2+prevTerminal) * FOURKB)); 
+    //Movepage is the videomemory you are moving into video memory 
+    void * movePage = (((2+terminal_flag) * FOURKB)) ; 
+
+    // ^ those both are def not right which is calusing the issue 
+
+    // Move the 4kb Vid memory into a seperate page to preserve it 
+    memcpy(storePage,(void *)VID_ADDR,FOURKB);
+
+    // Check if you have opened this terminal if not, execute shell 
+    if(terminal_shell[terminal_flag] == 0){
+        terminal_shell[terminal_flag] == 1 ;
+        // Execute shell 
+    }
+    else{
+        //If it has already been opened, move its memory ito video memory(grey 4kb page)
+    memcpy((void *)VID_ADDR,movePage,FOURKB); 
+    }
+
+
 
     // Check if its the first time that you are opening the terminal, if so boot shell 
 

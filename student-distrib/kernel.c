@@ -176,7 +176,7 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Execute the first program ("shell") ... */
     fileop_init();
     terminal_flag = 0; 
-    terminal_shell[0] = 0; 
+    terminal_shell[0] = 1; 
     terminal_shell[1] = 0;
     terminal_shell[2] = 0; 
     execute((const uint8_t * )"shell");

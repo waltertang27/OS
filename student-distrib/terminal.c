@@ -18,6 +18,8 @@ int terminal_flag;
 {
     terminal_buffer[terminal_flag][0] = '\0';
 
+   // terminal_flag = 0;
+
     return 0;
 }
 /*
@@ -142,7 +144,7 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
 extern void switch_terminals(int32_t prevTerminal)
 {
     clear(); 
-    printf(" Switching from Terminal %d to Terminal %d \n",prevTerminal,terminal_flag); 
+    printf(" Switching from Terminal %d to Terminal %d \n",prevTerminal + 1,terminal_flag + 1); 
 
     //Save the previous terminal to its video page
 

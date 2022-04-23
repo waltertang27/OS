@@ -18,7 +18,7 @@ int ctrl_flag = 0;
 int capslock_flag = 0;
 int alt_flag = 0;
 
-int terminal_flag = 0;
+int terminal_flag;
 int terminal_shell[3]; 
 /*
 extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
@@ -151,13 +151,15 @@ SIDE EFFECTS: sets IRQ1 to keyboard interrupts
 void keyboard_init(void) {
     enable_irq(KEYBOARD_IRQ);   //enables the irq for keyboard (irq num is 1 according to google)
     buffer[0] = '\0';
-    second_line_buffer[0] = '\0';
+    //second_line_buffer[0] = '\0';
     index = 0;
     terminal_index = 0;
     enter_detected = 0;
     backspace_detected = 0;
     ctrl_l_detected = 0;
     clear_buffer = 0;
+
+    terminal_flag = 0;
     //enable_cursor();
     //update_cursor();
 }
@@ -253,29 +255,48 @@ extern void keyboard_handler(void) {
         return;
     }
     if(alt_flag == 1) {
+
         if(keycode == F1 && terminal_flag != 0) {
+
+            //memcpy(terminal_buffer[terminal_flag], buffer, strlen(terminal_buffer[terminal_flag] + 1));
+
             prevTerminal = terminal_flag; 
             terminal_flag = 0;
+            memcpy(buffer, terminal_buffer[terminal_flag], strlen(terminal_buffer[terminal_flag]) + 1);
+            
             send_eoi(KEYBOARD_IRQ);
             sti();
             switch_terminals(prevTerminal);
+            puts(buffer);
             return;
         }
         else if(keycode == F2 && terminal_flag != 1) {
+
+            //memcpy(terminal_buffer[terminal_flag], buffer, strlen(terminal_buffer[terminal_flag] + 1));
+
             prevTerminal = terminal_flag;
             terminal_flag = 1;
+            memcpy(buffer, terminal_buffer[terminal_flag], strlen(terminal_buffer[terminal_flag]) + 1);
+            
             send_eoi(KEYBOARD_IRQ);
             sti();
             switch_terminals(prevTerminal);
+            puts(buffer);
 
             return;
         }
         else if(keycode == F3 && terminal_flag != 2) {
+
+            //memcpy(terminal_buffer[terminal_flag], buffer, strlen(terminal_buffer[terminal_flag] + 1));
+
             prevTerminal = terminal_flag;
             terminal_flag = 2;
+            memcpy(buffer, terminal_buffer[terminal_flag], strlen(terminal_buffer[terminal_flag]) + 1);
+            
             send_eoi(KEYBOARD_IRQ);
             sti();
             switch_terminals(prevTerminal);
+            puts(buffer);
 
             return;
         }

@@ -428,7 +428,8 @@ extern void keyboard_handler(void) {
     if(keycode == BACKSPACE) {
        
 
-        if(index == 0) {
+        if(index[index_flag] == 0) {
+
             
             buffer[index[index_flag]] = '\0';
             terminal_buffer[terminal_flag][index[index_flag]] = '\0';

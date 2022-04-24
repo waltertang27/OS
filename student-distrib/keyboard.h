@@ -60,7 +60,9 @@ extern int terminal_flag;
 extern int terminal_shell[3]; 
 extern int clear_buffer;
 
-extern int index;     //index of what we want to display till
+extern int index[3];     //index of what we want to display till
+extern int index_flag;
+
 extern int enter_index;
 //buffer[index] = '\0';
 extern int enter_detected;

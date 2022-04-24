@@ -49,7 +49,7 @@ finish:
     
 
 
-
+.align 4
 system_call_jmp_table:
     .long 0x00000000
     .long halt

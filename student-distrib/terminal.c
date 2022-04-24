@@ -72,6 +72,7 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
 
                 // for cleaner code
                 byte = ((char * ) buf)[terminal_index];
+                
 
                 // if enter (\n) is read, finish
                 if (byte == '\n') {
@@ -88,7 +89,6 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
                         }
                     }
                 }
-                
                 
                 
             }
@@ -148,7 +148,7 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
 extern void switch_terminals(int32_t prevTerminal)
 {
     clear(); 
-    printf(" Switching from Terminal %d to Terminal %d \n",prevTerminal + 1,terminal_flag + 1); 
+    printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
 
     //Save the previous terminal to its video page
 

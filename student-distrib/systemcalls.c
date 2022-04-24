@@ -105,12 +105,12 @@ int32_t execute (const uint8_t* command){
     int spaces, error;
     uint32_t addr;
     uint32_t prevPid; 
-    uint8_t cmd[MAX_CMD_LINE_SIZE]; // again, size not sure
-    uint8_t args[MAX_CMD_LINE_SIZE];
+    uint8_t cmd[MAX_ARGUMENT_SIZE]; // again, size not sure
+    uint8_t args[MAX_ARGUMENT_SIZE];
     uint8_t buf[BUF_SIZE];
     uint32_t returnVal; 
-    memset((void *)cmd,0,MAX_CMD_LINE_SIZE );
-    memset((void *)args,0,MAX_CMD_LINE_SIZE );
+    memset((void *)cmd,0,MAX_ARGUMENT_SIZE );
+    memset((void *)args,0,MAX_ARGUMENT_SIZE );
 
     INode_t * inode;
     dentry_t dentry;

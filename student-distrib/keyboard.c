@@ -36,7 +36,7 @@ extern int enter_detected;
 char buffer[BUFFER_SIZE];
 
 
-char enter_buffer[BUFFER_SIZE];
+
 char terminal_buffer[3][BUFFER_SIZE];
 char second_line_buffer[BUFFER_SIZE];
 int terminal_index;

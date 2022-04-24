@@ -51,7 +51,7 @@
 #define RALT_RELEASED 
 */
 
-extern char enter_buffer[BUFFER_SIZE];
+
 
 extern char buffer[BUFFER_SIZE];   //buffer to hold what to display to print
 extern char terminal_buffer[3][BUFFER_SIZE];

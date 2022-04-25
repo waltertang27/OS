@@ -186,6 +186,7 @@ int32_t execute (const uint8_t* command){
     // ===============================     Set up paging     ===============================
 
     prevPid = terminals[terminal_flag].currPID ; 
+
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] != 1){
         //    pcb_t * curr = get_cur_pcb; 
@@ -221,6 +222,7 @@ int32_t execute (const uint8_t* command){
     // ===============================      Create PCB       ===============================
 
     pcb = get_pcb(curr_id);
+    
     pcb->parent_id = prevPid; 
     
     terminals[terminal_flag].currPID = curr_id ;

@@ -156,7 +156,7 @@ extern void switch_terminals(int32_t prevTerminal)
     // Check if you have opened this terminal if not, execute shell 
     if(terminal_shell[terminal_flag] == 0){
         terminal_shell[terminal_flag] = 1 ;
-        // execute((const uint8_t *)"shell"); 
+        execute((const uint8_t *)"shell"); 
     }
     else{
         //If it has already been opened, move its memory ito video memory(grey 4kb page)

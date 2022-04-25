@@ -58,10 +58,10 @@ extern void IDT_init(void){
     SET_IDT_ENTRY(idt[18],simd_excep);
 
   
-    idt[0x80].dpl = 3; 
-    idt[0x80].present = 1; 
-    idt[0x80].reserved3 = 1;
-    SET_IDT_ENTRY(idt[0x80],system_call_linkage); 
+    idt[SYS_IDT].dpl = 3; 
+    idt[SYS_IDT].present = 1; 
+    idt[SYS_IDT].reserved3 = 1;
+    SET_IDT_ENTRY(idt[SYS_IDT],system_call_linkage); 
 
 
     idt[KEYBOARD_IDT].present = 1;
@@ -85,9 +85,20 @@ RETURN VALUE: none
 SIDE EFFECTS:Kernel loops forever 
 */
 void blue_screen(char * exp_name){
-    int error;
+    int error, chip_select, ESP, EBP, EIP,FLAGS ;
     idt_flag = 1;
     printf("Exception: %s \n",exp_name);
+    asm(" movl %%cs, %0 \n"
+        " movl %%esp, %1 \n"
+        " movl %%ebp, %2 \n"
+        " pushf \n"
+        " popl %3 \n"
+    : "=r"(chip_select), "=r"(ESP), "=r"(EBP), "=r"(FLAGS)
+    : 
+    : "memory"
+    );
+    printf("CS: 0x%x  ESP:0x%x EBP:0x%x Flags:0x%x \n",chip_select,ESP,EBP,EBP,FLAGS); 
+
     error = halt(255); 
 }
 

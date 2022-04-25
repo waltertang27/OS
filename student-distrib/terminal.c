@@ -16,7 +16,11 @@ int terminal_flag;
     */
     int32_t terminal_open(const uint8_t *filename)
 {
-    terminal_buffer[terminal_flag][0] = '\0';
+    terminal_buffer[0][0] = '\0';
+    terminal_buffer[1][0] = '\0';
+    terminal_buffer[2][0] = '\0';
+
+   // terminal_flag = 0;
 
     return 0;
 }
@@ -58,6 +62,8 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
                 nbytes = BUFFER_SIZE;
             }
 
+            
+
             for (terminal_index = 0; terminal_index < nbytes; terminal_index++) {
 
                 // get data from terminal buffer
@@ -66,12 +72,14 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
 
                 // for cleaner code
                 byte = ((char * ) buf)[terminal_index];
+                
 
                 // if enter (\n) is read, finish
                 if (byte == '\n') {
-                    bytes_read = terminal_index +1; 
+                    bytes_read = terminal_index + 1; 
                     break;
                 } 
+                
                 else { // edge case: already read nbytes, adding new line
                     if (terminal_index < BUFFER_SIZE){
                         if (terminal_index == nbytes - 1 || byte == '\0'){
@@ -81,9 +89,7 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
                         }
                     }
                 }
-                
             }
-
             // clear terminal buffer
             for (terminal_index = 0; terminal_index < BUFFER_SIZE; terminal_index++) {
                 terminal_buffer[terminal_flag][terminal_index] = '\0';
@@ -97,7 +103,7 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
         }
 
     }
-
+    //printf("%u\n", bytes_read);
     return bytes_read;
 }
 
@@ -139,7 +145,7 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
 extern void switch_terminals(int32_t prevTerminal)
 {
     clear(); 
-    printf(" Switching from Terminal %d to Terminal %d \n",prevTerminal,terminal_flag); 
+    printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
 
     // Store page is where you are copying video memory too(Save what is in video memory to store page)
     void * storePage = (((2+prevTerminal) * FOURKB)); 

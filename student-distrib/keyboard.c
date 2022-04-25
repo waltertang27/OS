@@ -170,8 +170,7 @@ void keyboard_init(void) {
 
 
     terminal_flag = 0;
-    //enable_cursor();
-    //update_cursor();
+
 }
 /*
 DESCRIPTION: handles the interrupts for keyboard. stores the pressed key values into a buffer. 

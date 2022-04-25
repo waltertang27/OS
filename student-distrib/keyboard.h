@@ -58,17 +58,17 @@ extern char terminal_buffer[3][BUFFER_SIZE];
 extern int terminal_index;
 extern int terminal_flag;
 extern int terminal_shell[3]; 
-extern int clear_buffer;
+
 
 extern int index[3];     //index of what we want to display till
 extern int index_flag;
 
-extern int enter_index;
-//buffer[index] = '\0';
+
+
 extern int enter_detected;
 
 extern int backspace_detected;
-extern int ctrl_l_detected;
+
  
 
 void keyboard_init(void);

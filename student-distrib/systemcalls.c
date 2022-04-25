@@ -185,7 +185,7 @@ int32_t execute (const uint8_t* command){
 
     // ===============================     Set up paging     ===============================
 
-    prevPid = curr_id; 
+    prevPid = terminals[terminal_flag].currPID ; 
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] != 1){
         //    pcb_t * curr = get_cur_pcb; 
@@ -219,9 +219,15 @@ int32_t execute (const uint8_t* command){
     }
 
     // ===============================      Create PCB       ===============================
+
     pcb = get_pcb(curr_id);
-    pcb->process_id = curr_id;
     pcb->parent_id = prevPid; 
+    
+    terminals[terminal_flag].currPID = pcb->process_id ;
+
+    pcb->process_id = curr_id;
+
+   
 
     // Fill all 8 FD's with values
     for (i = 0; i < FD_ARRAY_SIZE; i++)

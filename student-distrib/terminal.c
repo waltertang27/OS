@@ -151,11 +151,10 @@ extern void switch_terminals(int32_t prevTerminal)
 
     // Move the 4kb Vid memory into a seperate page to preserve it 
     memcpy(storePage,(void *)VID_ADDR,FOURKB);
-    clear(); 
   //   printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
     // Check if you have opened this terminal if not, execute shell 
-    if(terminal_shell[terminal_flag] == 0){
-        terminal_shell[terminal_flag] = 1 ;
+    if(terminals[terminal_flag].shellRunning == 0){
+        terminals[terminal_flag].shellRunning = 1 ;
         execute((const uint8_t *)"shell"); 
     }
     else{

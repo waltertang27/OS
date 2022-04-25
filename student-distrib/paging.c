@@ -65,7 +65,6 @@ void paging_init()
 		if (i * ALIGN_BYTES == VID_ADDR || i * ALIGN_BYTES == VID_ADDR + FOURKB || i * ALIGN_BYTES == VID_ADDR +(2 * FOURKB) || i * ALIGN_BYTES == VID_ADDR + (3 * FOURKB) )
 		{
 			page_table[i].present = 1;
-			// 3 additional pages
 		}
 		else // unused 4KB pages
 		{

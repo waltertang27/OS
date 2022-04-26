@@ -85,7 +85,7 @@ RETURN VALUE: none
 SIDE EFFECTS:Kernel loops forever 
 */
 void blue_screen(char * exp_name){
-    int error, chip_select, ESP, EBP, EIP,FLAGS ;
+    int error, chip_select, ESP, EBP,FLAGS ;
     idt_flag = 1;
     printf("Exception: %s \n",exp_name);
     asm(" movl %%cs, %0 \n"

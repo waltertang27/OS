@@ -27,7 +27,6 @@ paging.o: paging.c paging.h types.h x86_desc.h lib.h keyboard.h \
 rtc.o: rtc.c rtc.h multiboot.h types.h x86_desc.h lib.h keyboard.h \
   i8259.h debug.h tests.h systemcalls.h terminal.h fs_system.h paging.h \
   idt.h intr_link.h
-  i8259.h debug.h tests.h
 scheduling.o: scheduling.c scheduling.h types.h lib.h keyboard.h \
   multiboot.h x86_desc.h i8259.h debug.h tests.h systemcalls.h terminal.h \
   fs_system.h paging.h rtc.h idt.h intr_link.h

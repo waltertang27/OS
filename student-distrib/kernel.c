@@ -181,9 +181,9 @@ void entry(unsigned long magic, unsigned long addr) {
     }
     terminals[i].shellRunning = 1; 
     
-    memset(VID_ADDR + FOURKB,0,FOURKB); 
-    memset(VID_ADDR + (2*FOURKB),0,FOURKB); 
-    memset(VID_ADDR + (3* FOURKB),0,FOURKB); 
+    memset((void *)VID_ADDR + FOURKB,0,FOURKB); 
+    memset((void *)VID_ADDR + (2*FOURKB),0,FOURKB); 
+    memset((void *)VID_ADDR + (3* FOURKB),0,FOURKB); 
 
     execute((const uint8_t * )"shell");
 

@@ -9,6 +9,7 @@
 
 volatile uint8_t prev = 0;
 volatile uint8_t cur = 0;
+extern int terminal_flag; 
 
 extern void pit_init(void) {
     outb(FREQ_SET, MC_REG);
@@ -28,7 +29,7 @@ extern void pit_handler(void) {
 extern void scheduler() {
     // get current process; terminal_flag tells us the current terminal
     pcb_t new_process;
-    pcb_t * pcb = terminal_pcb[terminal_flag];
+    pcb_t * pcb = terminals[terminal_flag].currPCB;
 
     // if no process is runnning at current terminal
     if(pcb == NULL)
@@ -37,18 +38,18 @@ extern void scheduler() {
         asm volatile(
             "movl %%esp, %%edx \n "
             "movl %%ebp, %%ecx \n "
-            : "d"(new_process->save_esp), "c"(new_process->save_ebp)
+            : "=d"(new_process.save_esp), "=c"(new_process.save_ebp)
             : 
             : "memory"
         );
         
-        terminal_pcb[terminal_flag] = &new_process;
+        terminals[terminal_flag].currPCB = &new_process;
 
         // switch terminal
         switch_terminals(terminal_flag);
 
         // send eoi and execute shell
-        send_eoi(PIT_IRQ);
+        send_eoi(PIT_IRQ_NUM);
         execute((uint8_t * )"shell");
     }
 
@@ -56,7 +57,7 @@ extern void scheduler() {
     asm volatile(
         "movl %%esp, %%edx \n "
         "movl %%ebp, %%ecx \n "
-        : "d"(pcb->save_esp), "c"(pcb->save_ebp)
+        : "=d"(pcb->save_esp), "=c"(pcb->save_ebp)
         : 
         : "memory"
     );
@@ -65,20 +66,18 @@ extern void scheduler() {
     prev = cur;
     cur = (cur + 1);
     cur = cur % MAX_TERM;
-    
-    int i;
 
 
     // more asm
 
-    pcb = terminal_pcb[terminal_flag];
+    pcb = terminals[terminal_flag].currPCB;
 
     cont_switch();
 }
 
 extern void cont_switch() {
     // context switch, save esp and ebp
-    pcb_t * pcb = terminal_pcb[terminal_flag];
+    pcb_t * pcb = terminals[terminal_flag].currPCB;
     int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
 
@@ -91,3 +90,4 @@ extern void cont_switch() {
     );
 
 }
+

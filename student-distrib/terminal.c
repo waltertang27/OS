@@ -161,5 +161,23 @@ extern void switch_terminals(int32_t prevTerminal)
         terminals[terminal_flag].shellRunning = 1 ;
         execute((const uint8_t *)"shell"); 
     }
-    
+
 }
+
+void init_terminal(){
+    int i; 
+    terminal_flag = 0; 
+    for(i = 0; i<3; i++){
+        terminals[i].shellRunning = 0; 
+        terminals[i].currPCB = (void *)NULL ;
+        terminals[i].screen_x = 0; 
+        terminals[i].screen_y = 0; 
+    }
+    terminals[0].shellRunning = 1; 
+    
+    memset((void *)VID_ADDR + FOURKB,0,FOURKB); 
+    memset((void *)VID_ADDR + (2*FOURKB),0,FOURKB); 
+    memset((void *)VID_ADDR + (3* FOURKB),0,FOURKB); 
+}
+
+

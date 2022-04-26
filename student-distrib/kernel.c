@@ -23,7 +23,6 @@
 #define CHECK_FLAG(flags, bit)   ((flags) & (1 << (bit)))
 
  uint32_t fileSystemStart; 
-int i;  
 
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
@@ -175,15 +174,7 @@ void entry(unsigned long magic, unsigned long addr) {
 #endif
     /* Execute the first program ("shell") ... */
     fileop_init();
-    terminal_flag = 0; 
-    for(i = 0; i<3; i++){
-        terminals[i].shellRunning = 0; 
-    }
-    terminals[i].shellRunning = 1; 
-    
-    memset((void *)VID_ADDR + FOURKB,0,FOURKB); 
-    memset((void *)VID_ADDR + (2*FOURKB),0,FOURKB); 
-    memset((void *)VID_ADDR + (3* FOURKB),0,FOURKB); 
+    init_terminal(); 
 
     execute((const uint8_t * )"shell");
 

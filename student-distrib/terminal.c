@@ -164,6 +164,7 @@ extern void switch_terminals(int32_t prevTerminal)
 
     screen_x = terminals[terminal_flag].screen_x; 
     screen_y = terminals[terminal_flag].screen_y; 
+    update_cursor(); 
 
     if(terminals[terminal_flag].shellRunning == 0){
         terminals[terminal_flag].shellRunning = 1 ;
@@ -171,6 +172,7 @@ extern void switch_terminals(int32_t prevTerminal)
         terminals[terminal_flag].screen_y = 0 ; 
         screen_x = 0; 
         screen_y = 0; 
+        update_cursor(); 
         execute((const uint8_t *)"shell"); 
     }
 

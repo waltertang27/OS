@@ -12,7 +12,6 @@ typedef struct terminal_data{
     int screen_x; 
     int screen_y; 
     int currPID; 
-
 }terminal_data_t; 
 
 int32_t terminal_open(const uint8_t *filename);

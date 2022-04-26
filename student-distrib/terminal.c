@@ -153,71 +153,13 @@ extern void switch_terminals(int32_t prevTerminal)
     memcpy(storePage,(void *)VID_ADDR,FOURKB);
     // clear(); 
 
-     printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
+    // printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
     // Check if you have opened this terminal if not, execute shell 
     memcpy((void *)VID_ADDR,movePage,FOURKB); 
+
     if(terminals[terminal_flag].shellRunning == 0){
         terminals[terminal_flag].shellRunning = 1 ;
         execute((const uint8_t *)"shell"); 
     }
-
-
-
-    // uint8_t eip_value[SIZE_OF_INT32];
-    // read_data(dentry.INodeNum, STARTEXEC, eip_value, SIZE_OF_INT32);
-
-    // // Set stack pointer to the bottom of the 4 MB page
-    // esp_usr = PAGE_SIZE - SIZE_OF_INT32 + USER_V;
-    // eip_usr = * ((int * )eip_value);
-
-    // // TSS initalization
-    // pcb->active = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
-    // tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * curr_id);
-    // tss.ss0 = KERNEL_DS;
     
-
-
-    // // Save old EBP and ESP
-    // register uint32_t saved_ebp asm("ebp");
-    // register uint32_t saved_esp asm("esp");
-    // pcb->save_ebp = saved_ebp;
-    // pcb->save_esp = saved_esp;
-    // pcb->usr_eip = eip_usr;
-    // pcb->usr_esp = esp_usr;
-
-    // // =============================== Push IRET context to kernel stack  ===============================
-    // // Set the registers that we want to pop to the correct values
-    // // Possible reasons it doesnt work: segment registers need to be set
-    // sti();
-
-    // // Push an iret stack to switch to our user program in the following order
-    // // USER_DS, ESP_USR, EFLAGS, USER_CS, EIP
-    // //Also set the value of DS(Might happen when iret is called but we did it to be safe )
-    // asm volatile (
-    //     "andl $0x00FF, %%edx \n "
-    //     "movw %%dx,%%ds \n "
-    //     "pushl %%edx \n"
-    //     "pushl %%ecx \n" 
-    //     "pushfl      \n"
-    //     "popl %%ecx  \n"
-    //     "orl $0x0200, %%ecx   \n"
-    //     "pushl %%ecx \n"
-    //     "pushl %%ebx \n"
-    //     "pushl %%eax \n"
-    //     "iret \n"
-    //     :
-    //     : "a"(eip_usr), "b"(USER_CS), "c"(esp_usr), "d"(USER_DS)
-    //     : "memory" 
-    // );
-    // //Label for halt to jump to after 
-    // asm volatile("leaveExec: \n");
-
-    // // Move the return value from halt(status) into a value we can return in C
-    // asm volatile("movl %%eax, %%ebx \n"
-    // :   "=b"(returnVal)
-    // : 
-    // : "memory"
-    // );
-
-
 }

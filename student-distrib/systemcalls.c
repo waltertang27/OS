@@ -35,6 +35,7 @@ int32_t halt(uint8_t status)
 
     // New PID is now the parent since you are halting the current process 
     curr_id = pcb->parent_id ; 
+    terminals[terminal_flag].currPID = curr_id; 
     parent = get_pcb(curr_id);
     process_array[pcb->process_id] = 0; 
 

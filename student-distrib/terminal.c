@@ -174,7 +174,7 @@ void init_terminal(){
         terminals[i].screen_y = 0; 
     }
     terminals[0].shellRunning = 1; 
-    terminals[0].currPID = 0;
+    terminals[0].currPID = -1;
     terminals[1].currPID = -1;
     terminals[2].currPID = -1;
 

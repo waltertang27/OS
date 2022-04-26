@@ -98,7 +98,7 @@ extern void scheduler() {
     pcb = (pcb_t *)terminals[terminal_flag].currPCB;
 
     // paging
-    page_directory[USER_INDEX].user_suprevisor = 1;
+    page_directory[USER_INDEX].user_supervisor = 1;
     page_directory[USER_INDEX].present = 1;
     page_directory[USER_INDEX].page_size = 1;
     page_directory[USER_INDEX].read_write = 1;

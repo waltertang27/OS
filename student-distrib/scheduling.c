@@ -91,24 +91,16 @@ extern void scheduler() {
     video_mapping_pt[0].global = 0;
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
+    // if running process is not on visible terminal
+    if(terminal_flag != cur){
+        video_mapping_pt[0].page_table_addr = (VID_ADDR + (cur + 1) * FOURKB) / ALIGN_BYTES;
+    }
+    
     flush_tlb();
 
     // store video memory
     
     pcb = (pcb_t *)terminals[terminal_flag].currPCB;
-
-    // paging
-    page_directory[USER_INDEX].user_supervisor = 1;
-    page_directory[USER_INDEX].present = 1;
-    page_directory[USER_INDEX].page_size = 1;
-    page_directory[USER_INDEX].read_write = 1;
-    page_directory[USER_INDEX].write_through = 0;
-	page_directory[USER_INDEX].cache_disable = 0;
-	page_directory[USER_INDEX].accessed = 0;
-	page_directory[USER_INDEX].dirty = 0;
-    page_directory[USER_INDEX].page_table_addr = (int32_t)(EIGHTMB + pcb->process_id * PAGE_SIZE) / ALIGN_BYTES;
-
-    flush_tlb();
 
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);
     tss.ss0 = KERNEL_DS;

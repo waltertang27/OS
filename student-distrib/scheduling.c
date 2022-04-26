@@ -29,7 +29,7 @@ extern void pit_handler(void) {
 extern void scheduler() {
     // get current process; terminal_flag tells us the current terminal
     pcb_t new_process;
-    pcb_t * pcb = terminals[terminal_flag].currPCB;
+    pcb_t * pcb = (pcb_t *)terminals[terminal_flag].currPCB;
 
     // if no process is runnning at current terminal
     if(pcb == NULL)
@@ -43,7 +43,7 @@ extern void scheduler() {
             : "memory"
         );
         
-        terminals[terminal_flag].currPCB = &new_process;
+        terminals[terminal_flag].currPCB = (void *)&new_process;
 
         // switch terminal
         switch_terminals(terminal_flag);
@@ -70,7 +70,7 @@ extern void scheduler() {
 
     // more asm
 
-    pcb = terminals[terminal_flag].currPCB;
+    pcb = (pcb_t *)terminals[terminal_flag].currPCB;
 
     cont_switch();
 }

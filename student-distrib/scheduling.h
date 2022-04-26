@@ -19,4 +19,6 @@ extern void pit_handler(void);
 extern void scheduler();
 extern void cont_switch();
 
+pcb_t terminal_pcb[MAX_TERM];
+
 #endif

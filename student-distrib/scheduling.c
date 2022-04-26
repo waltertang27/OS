@@ -26,14 +26,68 @@ extern void pit_handler(void) {
 }
 
 extern void scheduler() {
-    prev = cur;
-    int i;
-    for (i = 0; i < MAX_TERM; i++) {
-        cur = (cur + 1) % MAX_TERM;
+    // get current process; terminal_flag tells us the current terminal
+    pcb_t new_process;
+    pcb_t * pcb = terminal_pcb[terminal_flag];
+
+    // if no process is runnning at current terminal
+    if(pcb == NULL)
+    {
+        // create new process
+        asm volatile(
+            "movl %%esp, %%edx \n "
+            "movl %%ebp, %%ecx \n "
+            : "d"(new_process->save_esp), "c"(new_process->save_ebp)
+            : 
+            : "memory"
+        );
+        
+        terminal_pcb[terminal_flag] = &new_process;
+
+        // switch terminal
+        switch_terminals(terminal_flag);
+
+        // send eoi and execute shell
+        send_eoi(PIT_IRQ);
+        execute((uint8_t * )"shell");
     }
+
+    // save esp, ebp to current pcb
+    asm volatile(
+        "movl %%esp, %%edx \n "
+        "movl %%ebp, %%ecx \n "
+        : "d"(pcb->save_esp), "c"(pcb->save_ebp)
+        : 
+        : "memory"
+    );
+
+    // round robin
+    prev = cur;
+    cur = (cur + 1);
+    cur = cur % MAX_TERM;
+    
+    int i;
+
+
+    // more asm
+
+    pcb = terminal_pcb[terminal_flag];
+
     cont_switch();
 }
 
 extern void cont_switch() {
+    // context switch, save esp and ebp
+    pcb_t * pcb = terminal_pcb[terminal_flag];
+    int32_t ebpSave = pcb->save_ebp; 
+    int32_t espSave = pcb->save_esp;
+
+    asm volatile(
+        "movl %%edx, %%esp \n "
+        "movl %%ecx, %%ebp \n "
+        :
+        : "d"(espSave), "c"(ebpSave)
+        : "memory"
+    );
 
 }

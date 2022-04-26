@@ -10,6 +10,8 @@
 volatile uint8_t prev = 0;
 volatile uint8_t cur = 0;
 extern int terminal_flag; 
+extern void flush_tlb();
+
 
 extern void pit_init(void) {
     outb(FREQ_SET, MC_REG);

@@ -2,6 +2,9 @@
 #include "terminal.h"
 
 int terminal_flag;
+int screen_x;
+int screen_y;
+
 
     // extern char buffer[BUFFER_SIZE];
     // extern int index;
@@ -148,17 +151,26 @@ extern void switch_terminals(int32_t prevTerminal)
     void * storePage = (void *)(VID_ADDR + ((1+prevTerminal) * FOURKB)); 
     //Movepage is the videomemory you are moving into video memory 
     void * movePage = ( (void*)(VID_ADDR + (1+terminal_flag) * FOURKB)) ; 
-
     // Move the 4kb Vid memory into a seperate page to preserve it 
     memcpy(storePage,(void *)VID_ADDR,FOURKB);
     // clear(); 
+    
+    terminals[prevTerminal].screen_x = screen_x ; 
+    terminals[prevTerminal].screen_y = screen_y ; 
 
     // printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
     // Check if you have opened this terminal if not, execute shell 
     memcpy((void *)VID_ADDR,movePage,FOURKB); 
 
+    screen_x = terminals[terminal_flag].screen_x; 
+    screen_y = terminals[terminal_flag].screen_y; 
+
     if(terminals[terminal_flag].shellRunning == 0){
         terminals[terminal_flag].shellRunning = 1 ;
+        terminals[terminal_flag].screen_x = 0 ; 
+        terminals[terminal_flag].screen_y = 0 ; 
+        screen_x = 0; 
+        screen_y = 0; 
         execute((const uint8_t *)"shell"); 
     }
 

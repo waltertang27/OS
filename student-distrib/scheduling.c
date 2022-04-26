@@ -84,21 +84,32 @@ extern void scheduler() {
     video_mapping_pt[0].present = 1;
     video_mapping_pt[0].read_write = 1;
     video_mapping_pt[0].write_through = 0;
-    video_mapping_pt[0].cache_disable = 1;
+    video_mapping_pt[0].cache_disable = 0;
     video_mapping_pt[0].accessed = 0;
     video_mapping_pt[0].dirty = 0;
     video_mapping_pt[0].attribute = 0;
     video_mapping_pt[0].global = 0;
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
-    // if running process is not on visible terminal
-    if(terminal_flag != cur){
-        video_mapping_pt[0].page_table_addr = (VID_ADDR + (cur + 1) * FOURKB) / ALIGN_BYTES;
-    }
-    
-    flush_tlb();
+    // video memory into video page
+    page_table[VIDEO_PAGE_INDEX].user_supervisor = 1;
+    page_table[VIDEO_PAGE_INDEX].present = 1;
+    page_table[VIDEO_PAGE_INDEX].read_write = 1;
+    page_table[VIDEO_PAGE_INDEX].write_through = 0;
+    page_table[VIDEO_PAGE_INDEX].cache_disable = 0;
+    page_table[VIDEO_PAGE_INDEX].accessed = 0;
+    page_table[VIDEO_PAGE_INDEX].dirty = 0;
+    page_table[VIDEO_PAGE_INDEX].attribute = 0;
+    page_table[VIDEO_PAGE_INDEX].global = 0;
+    page_table[VIDEO_PAGE_INDEX].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
-    // store video memory
+    // if running process is not on visible terminal
+    if (terminal_flag != cur){
+        video_mapping_pt[0].page_table_addr = (VID_ADDR + (cur + 1) * FOURKB) / ALIGN_BYTES;
+        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + (cur + 1) * FOURKB) / ALIGN_BYTES;
+    }
+
+    flush_tlb();
     
     pcb = (pcb_t *)terminals[terminal_flag].currPCB;
 

@@ -18,6 +18,8 @@
 #define USER_INDEX 32		// starts at 128 MB
 #define VIDMAP_INDEX 34		// starts at 136 MB
 
+#define VIDEO_PAGE_INDEX 184
+
 // the entries used for the page directory (32 bits)
 typedef struct __attribute__(()) page_directory_entry
 {

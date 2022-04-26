@@ -62,7 +62,7 @@ void paging_init()
 	for (i = 0; i < TABLE_SIZE; i++)
 	{
 		// video memory page
-		if (i * ALIGN_BYTES == VID_ADDR || i * ALIGN_BYTES == VID_ADDR + FOURKB || i * ALIGN_BYTES == VID_ADDR +(2 * FOURKB) || i * ALIGN_BYTES == VID_ADDR + (3 * FOURKB) )
+		if (i >= VIDEO_PAGE_INDEX && i <= VIDEO_PAGE_INDEX + 3)
 		{
 			page_table[i].present = 1;
 		}

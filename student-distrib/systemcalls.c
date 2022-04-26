@@ -27,7 +27,8 @@ int32_t halt(uint8_t status)
     pcb = get_cur_pcb();
 
     //If you are the last PID execute a new shell 
-    if(pcb->process_id == 0){
+    // Added -1 check for different shells
+    if(pcb->process_id <= 0){
         process_array[pcb->process_id] = 0; 
         execute((const uint8_t * )"shell");
     }
@@ -186,7 +187,7 @@ int32_t execute (const uint8_t* command){
     // ===============================     Set up paging     ===============================
 
     prevPid = terminals[terminal_flag].currPID ; 
-
+    
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] != 1){
         //    pcb_t * curr = get_cur_pcb; 
@@ -224,7 +225,7 @@ int32_t execute (const uint8_t* command){
     pcb = get_pcb(curr_id);
     
     pcb->parent_id = prevPid; 
-    
+
     terminals[terminal_flag].currPID = curr_id ;
     pcb->process_id = curr_id;
 

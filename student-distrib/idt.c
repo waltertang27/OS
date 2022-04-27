@@ -74,9 +74,9 @@ extern void IDT_init(void){
     idt[RTC_INTERRUPT].reserved3 = 0;
     SET_IDT_ENTRY(idt[RTC_INTERRUPT], rtc_handler_linkage);
 
-    idt[20].present = 1; 
-    idt[20].reserved3 = 0;
-    SET_IDT_ENTRY(idt[20],pit_handler_linkage); 
+    idt[0x20].present = 1; 
+    idt[0x20].reserved3 = 0;
+    SET_IDT_ENTRY(idt[0x20],pit_handler_linkage); 
 
     lidt(idt_desc_ptr);
 }

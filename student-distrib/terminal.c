@@ -145,6 +145,14 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
     return nbytes;
 }
 
+
+/*
+DESCRIPTION: Switched the video memory when a terminal switch happens and updates the screen x and y 
+INPUTS: prevTerminal - The terminal you are switching from The global flag terminal_flag is used to see which terminal we are switching to 
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: The video memory from the previous terminal is saved into its respective page and a new page is loved into video memory 
+*/
 extern void switch_terminals(int32_t prevTerminal)
 {
     // Store page is where you are copying video memory too(Save what is in video memory to store page)
@@ -153,7 +161,6 @@ extern void switch_terminals(int32_t prevTerminal)
     void * movePage = ( (void*)(VID_ADDR + (1+terminal_flag) * FOURKB)) ; 
     // Move the 4kb Vid memory into a seperate page to preserve it 
     memcpy(storePage,(void *)VID_ADDR,FOURKB);
-    // clear(); 
     
     terminals[prevTerminal].screen_x = screen_x ; 
     terminals[prevTerminal].screen_y = screen_y ; 

@@ -7,8 +7,8 @@
 #include "terminal.h"
 #include "x86_desc.h"
 
-volatile uint8_t prev = 0;
-volatile uint8_t cur = 0;
+// volatile uint8_t prev = 0;
+// volatile uint8_t cur = 0;
 extern int terminal_flag; 
 extern void flush_tlb();
 
@@ -32,6 +32,9 @@ extern void scheduler() {
     // get current process; terminal_flag tells us the current terminal
     pcb_t new_process;
     pcb_t * pcb = (pcb_t *)terminals[terminal_flag].currPCB;
+    int curid = terminals[terminal_flag].currPID;
+    int next_id;
+
 
     // if no process is runnning at current terminal
     if(pcb == NULL)
@@ -65,9 +68,10 @@ extern void scheduler() {
     );
 
     // round robin
-    prev = cur;
-    cur = (cur + 1);
-    cur = cur % MAX_TERM;
+
+    next_id = curid;
+    next_id = (next_id + 1);
+    next_id = next_id % MAX_TERM;
 
     /* setup video memory (from vidmap) */
     // setup page directory entry
@@ -106,9 +110,9 @@ extern void scheduler() {
     page_table[VIDEO_PAGE_INDEX].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
     // if running process is not on visible terminal
-    if (terminal_flag != cur){
-        video_mapping_pt[0].page_table_addr = (VID_ADDR + (cur + 1) * FOURKB) / ALIGN_BYTES;
-        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + (cur + 1) * FOURKB) / ALIGN_BYTES;
+    if (terminal_flag != curid){
+        video_mapping_pt[0].page_table_addr = (VID_ADDR + (curid + 1) * FOURKB) / ALIGN_BYTES;
+        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + (curid + 1) * FOURKB) / ALIGN_BYTES;
     }
 
     flush_tlb();

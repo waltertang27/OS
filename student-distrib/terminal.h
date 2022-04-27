@@ -5,7 +5,7 @@
 #include "lib.h"
 #include "types.h"
 #include "systemcalls.h"
-
+#include "scheduling.h"
 
 typedef struct terminal_data{
     int shellRunning; 

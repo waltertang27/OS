@@ -175,8 +175,11 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Execute the first program ("shell") ... */
     fileop_init();
     init_terminal(); 
-
+    pit_init(); 
     execute((const uint8_t * )"shell");
+    
+
+    
 
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");

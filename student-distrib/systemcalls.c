@@ -100,6 +100,7 @@ RETURN VALUE:  -1 if command cannot be executed
 SIDE EFFECTS: hands processor to new program until it terminates
 */
 int32_t execute (const uint8_t* command){
+    // printf(" Curr Shell: %d\n", curr_id); 
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;

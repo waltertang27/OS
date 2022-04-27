@@ -182,7 +182,6 @@ extern void switch_terminals(int32_t prevTerminal)
         update_cursor(); 
         execute((const uint8_t *)"shell"); 
     }
-
 }
 
 void init_terminal(){

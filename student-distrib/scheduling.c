@@ -39,23 +39,8 @@ extern void scheduler() {
     // if no process is runnning at current terminal
     if(pcb == NULL)
     {
-        // create new process
-        asm volatile(
-            "movl %%esp, %%edx \n "
-            "movl %%ebp, %%ecx \n "
-            : "=d"(new_process.save_esp), "=c"(new_process.save_ebp)
-            : 
-            : "memory"
-        );
-        
-        terminals[terminal_flag].currPCB = (void *)&new_process;
-
-        // switch terminal
-        switch_terminals(terminal_flag);
-
-        // send eoi and execute shell
         send_eoi(PIT_IRQ_NUM);
-        execute((uint8_t * )"shell");
+        return; 
     }
 
     // save esp, ebp to current pcb
@@ -152,6 +137,5 @@ extern void cont_switch() {
         : "d"(espSave), "c"(ebpSave)
         : "memory"
     );
-
 }
 

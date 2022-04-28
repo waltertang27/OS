@@ -228,6 +228,7 @@ int32_t execute (const uint8_t* command){
     
     pcb->parent_id = prevPid; 
 
+    terminals[terminal_flag].currPCB = pcb;
     terminals[terminal_flag].currPID = curr_id ;
     pcb->process_id = curr_id;
 

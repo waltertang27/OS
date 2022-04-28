@@ -130,17 +130,12 @@ extern void scheduler() {
     currScheduled++; 
     currScheduled %=3 ; 
 
-    if(terminals[currScheduled].shellRunning != 1){
-        send_eoi(0);
-        return; 
-    }
     pcb = get_pcb( terminals[currScheduled].currPID);
 
     if(pcb == NULL){
         send_eoi(0);
         return; 
     }
-
 
 
 
@@ -160,6 +155,10 @@ extern void scheduler() {
 	page_directory[USER_INDEX].accessed = 0;
 	page_directory[USER_INDEX].dirty = 0;
     page_directory[USER_INDEX].page_table_addr = (int32_t)(EIGHTMB + pcb->process_id * PAGE_SIZE) / ALIGN_BYTES;
+
+
+
+    
 
 
     flush_tlb();

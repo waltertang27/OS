@@ -37,7 +37,7 @@
 #define MAX_CMD_LINE_SIZE 32 
 #define BUF_SIZE 4
 #define MAX_ARGUMENT_SIZE 126 
-#define VIDEO_MEMORY 0x8800000
+#define VIDEO_MEMORY 0x8800000 // 132 * 4KB
 
 uint32_t process_array[PROCESS_ARRAY_SIZE];
 

@@ -167,6 +167,10 @@ extern void switch_terminals(int32_t prevTerminal)
     // Check if you have opened this terminal if not, execute shell 
     memcpy((void *)VID_ADDR,movePage,FOURKB); 
 
+    int addr = EIGHTMB + ((terminals[terminal_flag].currPID) * PAGE_SIZE); 
+    page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
+
+
     screen_x = terminals[terminal_flag].screen_x; 
     screen_y = terminals[terminal_flag].screen_y; 
     update_cursor(); 

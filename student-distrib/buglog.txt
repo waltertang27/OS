@@ -122,3 +122,6 @@ Where: keyboard.c
 Issue: The buffers were being overwritten with '\0.' It turns out that this was happening because the indexes of the characters were not being correctly updated within the buffers after terminals were being switched. 
 Solution: Add an index flag and separate index counters for each terminal. 
 
+Bug: Switching between terminals when fish is running is continuing to run fish on every terminal that is switched to (When put it is turned off)
+
+Bug: When running counter afte switching terminals, counter continues to run on that terminal. 

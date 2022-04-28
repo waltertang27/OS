@@ -171,14 +171,6 @@ extern void switch_terminals(int32_t prevTerminal)
     screen_y = terminals[terminal_flag].screen_y; 
     update_cursor(); 
 
-    if(terminals[terminal_flag].shellRunning == 0){
-        terminals[terminal_flag].shellRunning = 1 ;
-        terminals[terminal_flag].screen_x = 0 ; 
-        terminals[terminal_flag].screen_y = 0 ; 
-        screen_x = 0; 
-        screen_y = 0; 
-        update_cursor(); 
-    }
 }
 
 void init_terminal(){

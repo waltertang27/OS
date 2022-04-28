@@ -34,6 +34,8 @@ extern void pit_handler(void) {
     {
     case 0:
         execute("shell"); 
+        terminal_flag = 0; 
+        switch_terminals(0);
         terminals[0].shellRunning = 1; 
         break;
     case 1: 

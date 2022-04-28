@@ -37,6 +37,7 @@ int32_t halt(uint8_t status)
     curr_id = pcb->parent_id ; 
     terminals[terminal_flag].currPID = curr_id; 
     parent = get_pcb(curr_id);
+    terminals[terminal_flag].currPCB = pcb;
     process_array[pcb->process_id] = 0; 
 
 

@@ -65,8 +65,6 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
                 nbytes = BUFFER_SIZE;
             }
 
-            
-
             for (terminal_index = 0; terminal_index < nbytes; terminal_index++) {
 
                 // get data from terminal buffer

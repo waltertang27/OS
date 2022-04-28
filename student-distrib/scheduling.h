@@ -18,7 +18,7 @@ extern void pit_init(void);
 extern void pit_handler(void);
 extern void scheduler();
 extern void cont_switch();
-
+extern void setup_mem(int index, uint32_t page_address, int is_vid_table);
 #endif
 
 

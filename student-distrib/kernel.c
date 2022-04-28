@@ -149,13 +149,15 @@ void entry(unsigned long magic, unsigned long addr) {
     IDT_init();
     /* Init the PIC */
     i8259_init();
+    paging_init();
+
 
     keyboard_init();
-    rtc_init();
     FileSystem_Init((uint32_t *)fileSystemStart);
-
-
-    paging_init();
+    fileop_init();
+    init_terminal(); 
+    pit_init();
+    rtc_init();
 
     terminal_open(NULL);
     /* Initialize devices, memory, filesystem, enable device interrupts on the
@@ -173,9 +175,7 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-    fileop_init();
-    init_terminal(); 
-    pit_init(); 
+
     execute((const uint8_t * )"shell");
     
 

@@ -172,12 +172,14 @@ extern void switch_terminals(int32_t prevTerminal)
     update_cursor(); 
 
     if(terminals[terminal_flag].shellRunning == 0){
+        cli(); 
         terminals[terminal_flag].shellRunning = 1 ;
         terminals[terminal_flag].screen_x = 0 ; 
         terminals[terminal_flag].screen_y = 0 ; 
         screen_x = 0; 
         screen_y = 0; 
         update_cursor(); 
+        sti(); 
         execute((const uint8_t *)"shell"); 
     }
 }
@@ -195,10 +197,6 @@ void init_terminal(){
     terminals[0].currPID = -1;
     terminals[1].currPID = -1;
     terminals[2].currPID = -1;
-
-    memset((void *)VID_ADDR + FOURKB,0,FOURKB); 
-    memset((void *)VID_ADDR + (2*FOURKB),0,FOURKB); 
-    memset((void *)VID_ADDR + (3* FOURKB),0,FOURKB); 
 }
 
 

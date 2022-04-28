@@ -574,6 +574,8 @@ RETURN VALUE: pointer to pcb corresponding to id
 SIDE EFFECTS: 
 */
 pcb_t * get_pcb(int32_t id){
+    if(id <0)
+        return 0; 
 	uint32_t addr = EIGHTMB - EIGHTKB * (id + 1);
 	return (pcb_t * )addr;
 }

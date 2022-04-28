@@ -23,7 +23,7 @@ extern void pit_init(void) {
 }
 
 extern void pit_handler(void) {
-    send_eoi(PIT_IRQ_NUM);
+    // send_eoi(PIT_IRQ_NUM);
     // if (prev == cur) 
     //     scheduler(prev, cur);
     scheduler();
@@ -31,9 +31,9 @@ extern void pit_handler(void) {
 
 extern void scheduler() {
     currScheduled = currScheduled % 3; 
+    currScheduled++; 
 
-
-    if(terminals[currScheduled+1].shellRunning != 1){
+    if(terminals[currScheduled].shellRunning != 1){
         send_eoi(0);
         return; 
     }
@@ -42,12 +42,13 @@ extern void scheduler() {
     // get current process; terminal_flag tells us the current terminal
     pcb_t * pcb = get_pcb( terminals[currScheduled].currPID);
 
-    // if no process is runnning at current terminal
-    if((void *)pcb == NULL )
-    {
+    if(pcb == NULL){
         send_eoi(0);
         return; 
     }
+
+
+    // if no process is runnning at current terminal
 
     // save esp, ebp to current pcb
     asm volatile(
@@ -139,8 +140,7 @@ extern void cont_switch() {
         : "d"(espSave), "c"(ebpSave)
         : "memory"
     );
-    
-    currScheduled++; 
+
 }
 
 

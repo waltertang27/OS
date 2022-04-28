@@ -33,17 +33,19 @@ extern void scheduler() {
     currScheduled = currScheduled % 3; 
 
 
-    if(terminals[currScheduled+1].shellRunning != 1)
+    if(terminals[currScheduled+1].shellRunning != 1){
+        send_eoi(0);
         return; 
+    }
+        
 
     // get current process; terminal_flag tells us the current terminal
-    // pcb_t new_process;
-    // int next_id; 
-    pcb_t * pcb = get_pcb(currScheduled);
+    pcb_t * pcb = get_pcb( terminals[currScheduled].currPID);
 
     // if no process is runnning at current terminal
     if((void *)pcb == NULL )
     {
+        send_eoi(0);
         return; 
     }
 
@@ -61,14 +63,43 @@ extern void scheduler() {
 
     /* setup video memory (from vidmap) */
     // setup page directory entry
-    setup_mem(VIDMAP_INDEX,(int32_t)video_mapping_pt / ALIGN_BYTES,2); 
+    page_directory[VIDMAP_INDEX].user_supervisor = 1;
+    page_directory[VIDMAP_INDEX].present = 1;
+    page_directory[VIDMAP_INDEX].page_size = 0;
+    page_directory[VIDMAP_INDEX].read_write = 1;
+    page_directory[VIDMAP_INDEX].write_through = 0;
+    page_directory[VIDMAP_INDEX].cache_disable = 0;
+    page_directory[VIDMAP_INDEX].accessed = 0;
+    page_directory[VIDMAP_INDEX].dirty = 0;
+    page_directory[VIDMAP_INDEX].page_table_addr = (int32_t)video_mapping_pt / ALIGN_BYTES; // points to the video mapping page table
 
     // setup video mapping table entry
-    setup_mem(0,VID_ADDR/ALIGN_BYTES,1); 
+    video_mapping_pt[0].user_supervisor = 1;
+    video_mapping_pt[0].present = 1;
+    video_mapping_pt[0].read_write = 1;
+    video_mapping_pt[0].write_through = 0;
+    video_mapping_pt[0].cache_disable = 0;
+    video_mapping_pt[0].accessed = 0;
+    video_mapping_pt[0].dirty = 0;
+    video_mapping_pt[0].attribute = 0;
+    video_mapping_pt[0].global = 0;
+    video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
+
 
 
     // video memory into video page
-    setup_mem(VIDEO_PAGE_INDEX,(VID_ADDR / ALIGN_BYTES),0); 
+    page_table[VIDEO_PAGE_INDEX].user_supervisor = 1;
+    page_table[VIDEO_PAGE_INDEX].present = 1;
+    page_table[VIDEO_PAGE_INDEX].read_write = 1;
+    page_table[VIDEO_PAGE_INDEX].write_through = 0;
+    page_table[VIDEO_PAGE_INDEX].cache_disable = 0;
+    page_table[VIDEO_PAGE_INDEX].accessed = 0;
+    page_table[VIDEO_PAGE_INDEX].dirty = 0;
+    page_table[VIDEO_PAGE_INDEX].attribute = 0;
+    page_table[VIDEO_PAGE_INDEX].global = 0;
+    page_table[VIDEO_PAGE_INDEX].page_table_addr = VID_ADDR / ALIGN_BYTES;
+
+
 
 
     // if running process is not on visible terminal
@@ -77,16 +108,18 @@ extern void scheduler() {
         page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + (currScheduled + 1) * FOURKB) / ALIGN_BYTES;
     }
 
-    flush_tlb();
-    
-    pcb = (pcb_t *)terminals[currScheduled].currPCB;
-
     // paging
-    setup_mem(USER_INDEX,((int32_t)(EIGHTMB + pcb->process_id * PAGE_SIZE) / ALIGN_BYTES),0);
+    page_directory[USER_INDEX].user_supervisor = 1;
+    page_directory[USER_INDEX].present = 1;
+    page_directory[USER_INDEX].page_size = 1;
+    page_directory[USER_INDEX].read_write = 1;
+    page_directory[USER_INDEX].write_through = 0;
+	page_directory[USER_INDEX].cache_disable = 0;
+	page_directory[USER_INDEX].accessed = 0;
+	page_directory[USER_INDEX].dirty = 0;
+    page_directory[USER_INDEX].page_table_addr = (int32_t)(EIGHTMB + pcb->process_id * PAGE_SIZE) / ALIGN_BYTES;
 
     flush_tlb();
-
-
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);
     tss.ss0 = KERNEL_DS;
     send_eoi(PIT_IRQ_NUM);
@@ -108,47 +141,6 @@ extern void cont_switch() {
     );
     
     currScheduled++; 
-}
-
-
-void setup_mem(int index, uint32_t page_address, int table){
-        switch (table)
-        {
-        case 1:
-            video_mapping_pt[index].user_supervisor = 1;
-            video_mapping_pt[index].present = 1;
-            video_mapping_pt[index].read_write = 1;
-            video_mapping_pt[index].write_through = 0;
-            video_mapping_pt[index].cache_disable = 0;
-            video_mapping_pt[index].accessed = 0;
-            video_mapping_pt[index].dirty = 0;
-            video_mapping_pt[index].attribute = 0;
-            video_mapping_pt[index].global = 0;
-            video_mapping_pt[index].page_table_addr = page_address; 
-            break;
-        case 2: 
-            page_directory[index].user_supervisor = 1;
-            page_directory[index].present = 1;
-            page_directory[index].page_size = 1;
-            page_directory[index].read_write = 1;
-            page_directory[index].write_through = 0;
-            page_directory[index].cache_disable = 0;
-            page_directory[index].accessed = 0;
-            page_directory[index].dirty = 0;
-            page_directory[index].page_table_addr = page_address ; 
-        case 3:
-            page_table[index].user_supervisor = 1;
-            page_table[index].present = 1;
-            page_table[index].read_write = 1;
-            page_table[index].write_through = 0;
-            page_table[index].cache_disable = 0;
-            page_table[index].accessed = 0;
-            page_table[index].dirty = 0;
-            page_table[index].attribute = 0;
-            page_table[index].global = 0;
-            page_table[index].page_table_addr = VID_ADDR / ALIGN_BYTES;
-            break;
-        }
 }
 
 

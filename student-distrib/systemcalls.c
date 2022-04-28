@@ -5,7 +5,7 @@ int32_t idt_flag;
 
 
 int32_t parent_id = 0; 
-int32_t curr_id = 0;
+extern int32_t curr_id = 0;
 int terminal_flag ;
 
 extern void flush_tlb();
@@ -101,7 +101,7 @@ RETURN VALUE:  -1 if command cannot be executed
 SIDE EFFECTS: hands processor to new program until it terminates
 */
 int32_t execute (const uint8_t* command){
-   //  printf(" Curr Shell: %d\n", curr_id); 
+    // printf(" Curr Shell: %d\n", curr_id); 
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
@@ -228,7 +228,7 @@ int32_t execute (const uint8_t* command){
     pcb = get_pcb(curr_id);
     
     pcb->parent_id = prevPid; 
-
+    // printf("Curr ID: %d Prev: %d \n",curr_id,prevPid); 
     terminals[terminal_flag].currPCB = pcb;
     terminals[terminal_flag].currPID = curr_id;
     

@@ -17,7 +17,7 @@ int shift_flag = 0;
 int ctrl_flag = 0;
 int capslock_flag = 0;
 int alt_flag = 0;
-
+extern int32_t curr_id; 
 
 int terminal_flag;
 int terminal_shell[3]; 
@@ -196,6 +196,7 @@ extern void keyboard_handler(void) {
         return;
     }
     if(keycode == LSHIFT_PRESSED) {
+        printf("CurrID: %d",curr_id);
         shift_flag = 1;
         send_eoi(KEYBOARD_IRQ);
         return;
@@ -300,7 +301,6 @@ extern void keyboard_handler(void) {
 
         
         if(keycode == ENTER) {
-
             enter_detected = 1;
 
             terminal_buffer[terminal_flag][index[index_flag]] = '\n';

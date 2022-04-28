@@ -11,6 +11,7 @@
 // volatile uint8_t cur = 0;
 extern int terminal_flag; 
 extern void flush_tlb();
+extern int32_t curr_id ;
 // Curent terminal that is being executed
 int currScheduled; 
 
@@ -19,6 +20,8 @@ extern void pit_init(void) {
     outb(PIT_FREQ & PIT_MASK, CHAN_0);
     outb(PIT_FREQ >> SHIFT, CHAN_0);
     currScheduled = 0; 
+
+  //  terminals[0].shellRunning = 1; 
     enable_irq(PIT_IRQ_NUM);
 }
 
@@ -33,10 +36,9 @@ extern void pit_handler(void) {
     switch (sum)
     {
     case 0:
-        execute("shell"); 
-        terminal_flag = 0; 
-        switch_terminals(0);
-        terminals[0].shellRunning = 1; 
+        terminal_flag = 0;
+         // terminals[0].shellRunning = 1; 
+        execute("shell");  
         break;
     case 1: 
         terminal_flag = 1; 
@@ -49,6 +51,7 @@ extern void pit_handler(void) {
         terminals[2].shellRunning = 1; 
         execute("shell"); 
     default:
+        curr_id = terminals[terminal_flag].currPID ; 
         break;
     }
  
@@ -90,40 +93,13 @@ extern void scheduler() {
 
     /* setup video memory (from vidmap) */
     // setup page directory entry
-    page_directory[VIDMAP_INDEX].user_supervisor = 1;
-    page_directory[VIDMAP_INDEX].present = 1;
-    page_directory[VIDMAP_INDEX].page_size = 0;
-    page_directory[VIDMAP_INDEX].read_write = 1;
-    page_directory[VIDMAP_INDEX].write_through = 0;
-    page_directory[VIDMAP_INDEX].cache_disable = 0;
-    page_directory[VIDMAP_INDEX].accessed = 0;
-    page_directory[VIDMAP_INDEX].dirty = 0;
-    page_directory[VIDMAP_INDEX].page_table_addr = (int32_t)video_mapping_pt / ALIGN_BYTES; // points to the video mapping page table
 
     // setup video mapping table entry
-    video_mapping_pt[0].user_supervisor = 1;
-    video_mapping_pt[0].present = 1;
-    video_mapping_pt[0].read_write = 1;
-    video_mapping_pt[0].write_through = 0;
-    video_mapping_pt[0].cache_disable = 0;
-    video_mapping_pt[0].accessed = 0;
-    video_mapping_pt[0].dirty = 0;
-    video_mapping_pt[0].attribute = 0;
-    video_mapping_pt[0].global = 0;
+
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
-
-
     // video memory into video page
-    page_table[VIDEO_PAGE_INDEX].user_supervisor = 1;
-    page_table[VIDEO_PAGE_INDEX].present = 1;
-    page_table[VIDEO_PAGE_INDEX].read_write = 1;
-    page_table[VIDEO_PAGE_INDEX].write_through = 0;
-    page_table[VIDEO_PAGE_INDEX].cache_disable = 0;
-    page_table[VIDEO_PAGE_INDEX].accessed = 0;
-    page_table[VIDEO_PAGE_INDEX].dirty = 0;
-    page_table[VIDEO_PAGE_INDEX].attribute = 0;
-    page_table[VIDEO_PAGE_INDEX].global = 0;
+
     page_table[VIDEO_PAGE_INDEX].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
 
@@ -137,29 +113,13 @@ extern void scheduler() {
         return; 
     }
 
-
-
-    // if running process is not on visible terminal
+  //  if running process is not on visible terminal
     if (terminal_flag != currScheduled){
         video_mapping_pt[0].page_table_addr = (VID_ADDR + (currScheduled + 1) * FOURKB) / ALIGN_BYTES;
         page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + (currScheduled + 1) * FOURKB) / ALIGN_BYTES;
     }
-
     // paging
-    page_directory[USER_INDEX].user_supervisor = 1;
-    page_directory[USER_INDEX].present = 1;
-    page_directory[USER_INDEX].page_size = 1;
-    page_directory[USER_INDEX].read_write = 1;
-    page_directory[USER_INDEX].write_through = 0;
-	page_directory[USER_INDEX].cache_disable = 0;
-	page_directory[USER_INDEX].accessed = 0;
-	page_directory[USER_INDEX].dirty = 0;
     page_directory[USER_INDEX].page_table_addr = (int32_t)(EIGHTMB + pcb->process_id * PAGE_SIZE) / ALIGN_BYTES;
-
-
-
-    
-
 
     flush_tlb();
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);
@@ -174,15 +134,32 @@ extern void cont_switch() {
     pcb_t * pcb = terminals[currScheduled].currPCB;
     int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
+    
 
     asm volatile(
-        "movl %%edx, %%esp \n "
         "movl %%ecx, %%ebp \n "
         :
-        : "d"(espSave), "c"(ebpSave)
+        : "c"(ebpSave)
         : "memory"
     );
-
+    asm volatile (
+        "andl $0x00FF, %%edx \n "
+        "movw %%dx,%%ds \n "
+        "pushl %%edx \n"
+        "pushl %%ecx \n" 
+        "pushfl      \n"
+        "popl %%ecx  \n"
+        "orl $0x0200, %%ecx   \n"
+        "pushl %%ecx \n"
+        "pushl %%ebx \n"
+        "movl label1, %%eax \n"
+        "pushl %%eax \n"
+        "iret \n"
+        "label1: \n"
+        :
+        : "b"(USER_CS), "c"(espSave), "d"(USER_DS)
+        : "memory" 
+    );
 }
 
 

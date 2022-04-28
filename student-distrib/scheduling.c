@@ -22,7 +22,8 @@ extern void pit_init(void) {
     enable_irq(PIT_IRQ_NUM);
 }
 
-extern void pit_handler(void) {
+extern void pit_handler(void) { 
+    
     // send_eoi(PIT_IRQ_NUM);
     // if (prev == cur) 
     //     scheduler(prev, cur);
@@ -31,7 +32,6 @@ extern void pit_handler(void) {
 
 extern void scheduler() {
     currScheduled = currScheduled % 3; 
-    currScheduled++; 
 
     if(terminals[currScheduled].shellRunning != 1){
         send_eoi(0);
@@ -101,6 +101,21 @@ extern void scheduler() {
     page_table[VIDEO_PAGE_INDEX].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
 
+    currScheduled++; 
+    currScheduled %=3 ; 
+
+    if(terminals[currScheduled].shellRunning != 1){
+        send_eoi(0);
+        return; 
+    }
+    pcb = get_pcb( terminals[currScheduled].currPID);
+
+    if(pcb == NULL){
+        send_eoi(0);
+        return; 
+    }
+
+
 
 
     // if running process is not on visible terminal
@@ -120,9 +135,11 @@ extern void scheduler() {
 	page_directory[USER_INDEX].dirty = 0;
     page_directory[USER_INDEX].page_table_addr = (int32_t)(EIGHTMB + pcb->process_id * PAGE_SIZE) / ALIGN_BYTES;
 
+
     flush_tlb();
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);
     tss.ss0 = KERNEL_DS;
+
     send_eoi(PIT_IRQ_NUM);
     cont_switch();
 }

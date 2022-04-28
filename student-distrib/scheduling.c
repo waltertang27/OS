@@ -23,10 +23,34 @@ extern void pit_init(void) {
 }
 
 extern void pit_handler(void) { 
-    
-    // send_eoi(PIT_IRQ_NUM);
-    // if (prev == cur) 
-    //     scheduler(prev, cur);
+    send_eoi(0);
+
+    int i,sum;
+    sum = 0;  
+    for(i = 0;i<PROCESS_ARRAY_SIZE;i++)
+        sum += process_array[i];
+
+    switch (sum)
+    {
+    case 0:
+        execute("shell"); 
+        terminals[0].shellRunning = 1; 
+        break;
+    case 1: 
+        terminal_flag = 1; 
+        switch_terminals(0); 
+        terminals[1].shellRunning = 1; 
+        execute("shell"); 
+    case 2: 
+        terminal_flag = 2; 
+        switch_terminals(1); 
+        terminals[2].shellRunning = 1; 
+        execute("shell"); 
+    default:
+        break;
+    }
+ 
+  //  printf("sum: %d\n",sum);
     scheduler();
 }
 

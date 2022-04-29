@@ -254,7 +254,7 @@ extern void keyboard_handler(void) {
             send_eoi(KEYBOARD_IRQ);
             sti();
             switch_terminals(prevTerminal);
-            puts(buffer);
+            //puts(buffer);
             return;
         }
         else if(keycode == F2 && terminal_flag != 1) {
@@ -268,7 +268,7 @@ extern void keyboard_handler(void) {
             send_eoi(KEYBOARD_IRQ);
             sti();
             switch_terminals(prevTerminal);
-            puts(buffer);
+            //puts(buffer);
         
             return;
         }
@@ -283,7 +283,7 @@ extern void keyboard_handler(void) {
             send_eoi(KEYBOARD_IRQ);
             sti();
             switch_terminals(prevTerminal);
-            puts(buffer);
+            //puts(buffer);
             
             return;
         }

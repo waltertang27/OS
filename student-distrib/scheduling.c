@@ -54,7 +54,7 @@ extern void pit_handler(void) {
         terminals[2].shellRunning = 1; 
         execute("shell"); 
     default:
-        curr_id = terminals[terminal_flag].currPID ; 
+       // curr_id = terminals[terminal_flag].currPID ; 
         break;
     }
  

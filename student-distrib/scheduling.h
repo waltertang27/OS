@@ -13,6 +13,11 @@
 #define UP_MASK         0xFF00
 #define MAX_TERM        3
 
+extern int currScheduled; 
+extern int nextScheduled; 
+extern int currScheduledPID; 
+extern int nextScheduledPID; 
+
 
 extern void pit_init(void);
 extern void pit_handler(void);

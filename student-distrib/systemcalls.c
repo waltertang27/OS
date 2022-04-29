@@ -8,6 +8,11 @@ int32_t parent_id = 0;
 extern int32_t curr_id = 0;
 int terminal_flag ;
 
+int currScheduled; 
+int nextScheduled; 
+int currScheduledPID; 
+int nextScheduledPID; 
+
 extern void flush_tlb();
 
 /*
@@ -35,6 +40,8 @@ int32_t halt(uint8_t status)
 
     // New PID is now the parent since you are halting the current process 
     curr_id = pcb->parent_id ; 
+
+
     terminals[terminal_flag].currPID = curr_id; 
     parent = get_pcb(curr_id);
     terminals[terminal_flag].currPCB = pcb;
@@ -83,7 +90,7 @@ int32_t halt(uint8_t status)
         "jmp leaveExec \n "
         :
         : "a"(newStatus), "d"(espSave), "c"(ebpSave)
-        : "memory", "ebx"
+        : "memory"
         );
 
     //If code gets here something went horribly wrong 
@@ -101,6 +108,7 @@ RETURN VALUE:  -1 if command cannot be executed
 SIDE EFFECTS: hands processor to new program until it terminates
 */
 int32_t execute (const uint8_t* command){
+    cli(); 
     // printf(" Curr Shell: %d\n", curr_id); 
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
@@ -272,10 +280,14 @@ int32_t execute (const uint8_t* command){
 
 
     // Save old EBP and ESP
-    register uint32_t saved_ebp asm("ebp");
-    register uint32_t saved_esp asm("esp");
-    pcb->save_ebp = saved_ebp;
-    pcb->save_esp = saved_esp;
+    asm volatile(
+        "movl %%esp, %%edx \n "
+        "movl %%ebp, %%ecx \n "
+        : "=d"(pcb->save_esp), "=c"(pcb->save_ebp)
+        : 
+        : "memory"
+    );
+
     pcb->usr_eip = eip_usr;
     pcb->usr_esp = esp_usr;
 

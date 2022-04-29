@@ -66,6 +66,8 @@ typedef struct pcb {
     int32_t parent_id;
     int32_t save_ebp;
     int32_t save_esp;
+    int32_t task_ebp; 
+    int32_t task_esp; 
     int32_t usr_eip;
     int32_t usr_esp;
     int32_t active;

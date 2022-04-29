@@ -135,7 +135,6 @@ extern void scheduler() {
         : "c"(ebpSave), "d"(espSave)
         : "memory"
     );
-
 }
 
 extern void cont_switch() {

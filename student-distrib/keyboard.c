@@ -196,6 +196,11 @@ extern void keyboard_handler(void) {
         return;
     }
     if(keycode == LSHIFT_PRESSED) {
+        // page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX;
+       // memcpy((void *)VID_ADDR,(void *)VID_ADDR + (FOURKB * 2),FOURKB);
+        // terminal_flag = 1; 
+        // switch_terminals(0);
+
         shift_flag = 1;
         send_eoi(KEYBOARD_IRQ);
         return;

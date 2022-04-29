@@ -25,6 +25,7 @@ extern void pit_init(void) {
     outb(PIT_FREQ >> SHIFT, CHAN_0);
     currScheduled = 0; 
     curr_id = 0; 
+   // page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX + 2;
     enable_irq(PIT_IRQ_NUM);
 }
 
@@ -64,26 +65,27 @@ extern void scheduler() {
 
     if (nextScheduledPID == -1)
     {
-; 
         send_eoi(0);
-        // int prev = terminal_flag; 
-        // terminal_flag = currScheduled; 
+         // int prev = terminal_flag; 
+         // terminal_flag = nextScheduled; 
         // switch_terminals(prev); 
-        currScheduled = nextScheduled; 
+         currScheduled = nextScheduled; 
         
-        // page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX + currScheduled;
+
         //Do some sort of mapping so this shell prints in another terminal
         execute("shell");
         return; 
     }
     else{
         page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX;
+
         pcb = get_pcb(terminals[nextScheduled].currPID);
+
         addr = EIGHTMB + ((nextScheduledPID)*PAGE_SIZE);
         page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
-
         currScheduled = nextScheduled;
     }
+
     flush_tlb();
     
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);

@@ -38,8 +38,19 @@ extern void scheduler() {
     int32_t addr;
     currScheduledPID = terminals[currScheduled].currPID ;
     nextScheduledPID = terminals[nextScheduled].currPID ;  
+ 
+     //Until first shell has booted
+    if(currScheduledPID == -1 && nextScheduledPID == -1){
+        send_eoi(0);
+        return; 
+    }
+
+    
 
     pcb_t *pcb = get_pcb(currScheduledPID);
+
+
+
 
     // save esp, ebp to current pcb
     asm volatile(
@@ -55,8 +66,10 @@ extern void scheduler() {
 
     if (nextScheduledPID == -1)
     {
+       // switch_terminals(currScheduled);
         currScheduled = nextScheduled; 
         send_eoi(0);
+
         execute("shell");
     }
     else{

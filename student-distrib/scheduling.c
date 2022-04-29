@@ -13,6 +13,9 @@ extern int terminal_flag;
 extern void flush_tlb();
 // Curent terminal that is being executed
 int currScheduled; 
+int nextScheduled; 
+int currScheduledPID; 
+int nextScheduledPID; 
 
 extern void pit_init(void) {
     outb(FREQ_SET, MC_REG);
@@ -23,58 +26,20 @@ extern void pit_init(void) {
 }
 
 extern void pit_handler(void) { 
-    send_eoi(0);
-
-    int i,sum;
-    sum = 0;  
-    for(i = 0;i<PROCESS_ARRAY_SIZE;i++)
-        sum += process_array[i];
-
-    switch (sum)
-    {
-    case 0:
-        execute("shell"); 
-        terminal_flag = 0; 
-        switch_terminals(0);
-        terminals[0].shellRunning = 1; 
-        break;
-    case 1: 
-        terminal_flag = 1; 
-        switch_terminals(0); 
-        terminals[1].shellRunning = 1; 
-        execute("shell"); 
-    case 2: 
-        terminal_flag = 2; 
-        switch_terminals(1); 
-        terminals[2].shellRunning = 1; 
-        execute("shell"); 
-    default:
-        break;
-    }
- 
-  //  printf("sum: %d\n",sum);
+    send_eoi(0); 
     scheduler();
 }
 
 extern void scheduler() {
-    currScheduled = currScheduled % 3; 
 
-    if(terminals[currScheduled].shellRunning != 1){
-        send_eoi(0);
-        return; 
-    }
-        
-
-    // get current process; terminal_flag tells us the current terminal
-    pcb_t * pcb = get_pcb( terminals[currScheduled].currPID);
-
-    if(pcb == NULL){
-        send_eoi(0);
-        return; 
-    }
+    nextScheduled = ((currScheduled + 1) % 3);
 
 
-    // if no process is runnning at current terminal
+    int32_t addr;
+    currScheduledPID = terminals[currScheduled].currPID ;
+    nextScheduledPID = terminals[nextScheduled].currPID ;  
+
+    pcb_t *pcb = get_pcb(currScheduledPID);
 
     // save esp, ebp to current pcb
     asm volatile(
@@ -85,95 +50,31 @@ extern void scheduler() {
         : "memory"
     );
 
-    // round robin
-    // next_id = terminals[currScheduled].currPID ; 
-
-    /* setup video memory (from vidmap) */
-    // setup page directory entry
-    page_directory[VIDMAP_INDEX].user_supervisor = 1;
-    page_directory[VIDMAP_INDEX].present = 1;
-    page_directory[VIDMAP_INDEX].page_size = 0;
-    page_directory[VIDMAP_INDEX].read_write = 1;
-    page_directory[VIDMAP_INDEX].write_through = 0;
-    page_directory[VIDMAP_INDEX].cache_disable = 0;
-    page_directory[VIDMAP_INDEX].accessed = 0;
-    page_directory[VIDMAP_INDEX].dirty = 0;
-    page_directory[VIDMAP_INDEX].page_table_addr = (int32_t)video_mapping_pt / ALIGN_BYTES; // points to the video mapping page table
-
-    // setup video mapping table entry
-    video_mapping_pt[0].user_supervisor = 1;
-    video_mapping_pt[0].present = 1;
-    video_mapping_pt[0].read_write = 1;
-    video_mapping_pt[0].write_through = 0;
-    video_mapping_pt[0].cache_disable = 0;
-    video_mapping_pt[0].accessed = 0;
-    video_mapping_pt[0].dirty = 0;
-    video_mapping_pt[0].attribute = 0;
-    video_mapping_pt[0].global = 0;
+    page_directory[VIDMAP_INDEX].page_table_addr = (int32_t)video_mapping_pt / ALIGN_BYTES; 
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
-
-
-    // video memory into video page
-    page_table[VIDEO_PAGE_INDEX].user_supervisor = 1;
-    page_table[VIDEO_PAGE_INDEX].present = 1;
-    page_table[VIDEO_PAGE_INDEX].read_write = 1;
-    page_table[VIDEO_PAGE_INDEX].write_through = 0;
-    page_table[VIDEO_PAGE_INDEX].cache_disable = 0;
-    page_table[VIDEO_PAGE_INDEX].accessed = 0;
-    page_table[VIDEO_PAGE_INDEX].dirty = 0;
-    page_table[VIDEO_PAGE_INDEX].attribute = 0;
-    page_table[VIDEO_PAGE_INDEX].global = 0;
-    page_table[VIDEO_PAGE_INDEX].page_table_addr = VID_ADDR / ALIGN_BYTES;
-
-
-    currScheduled++; 
-    currScheduled %=3 ; 
-
-    if(terminals[currScheduled].shellRunning != 1){
+    if (nextScheduledPID == -1)
+    {
+        currScheduled = nextScheduled; 
         send_eoi(0);
-        return; 
+        execute("shell");
     }
-    pcb = get_pcb( terminals[currScheduled].currPID);
+    else{
+        pcb = get_pcb(terminals[nextScheduled].currPID);
+        addr = EIGHTMB + ((nextScheduledPID)*PAGE_SIZE);
+        page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
-    if(pcb == NULL){
-        send_eoi(0);
-        return; 
+        currScheduled = nextScheduled;
     }
-
-
-
-
-    // if running process is not on visible terminal
-    if (terminal_flag != currScheduled){
-        video_mapping_pt[0].page_table_addr = (VID_ADDR + (currScheduled + 1) * FOURKB) / ALIGN_BYTES;
-        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + (currScheduled + 1) * FOURKB) / ALIGN_BYTES;
-    }
-
-    // paging
-    page_directory[USER_INDEX].user_supervisor = 1;
-    page_directory[USER_INDEX].present = 1;
-    page_directory[USER_INDEX].page_size = 1;
-    page_directory[USER_INDEX].read_write = 1;
-    page_directory[USER_INDEX].write_through = 0;
-	page_directory[USER_INDEX].cache_disable = 0;
-	page_directory[USER_INDEX].accessed = 0;
-	page_directory[USER_INDEX].dirty = 0;
-    page_directory[USER_INDEX].page_table_addr = (int32_t)(EIGHTMB + pcb->process_id * PAGE_SIZE) / ALIGN_BYTES;
-
-
     flush_tlb();
+    
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);
     tss.ss0 = KERNEL_DS;
 
-    send_eoi(PIT_IRQ_NUM);
-    cont_switch();
-}
 
-extern void cont_switch() {
-    // context switch, save esp and ebp
-    pcb_t * pcb = terminals[currScheduled].currPCB;
-    int32_t ebpSave = pcb->save_ebp; 
+    send_eoi(PIT_IRQ_NUM);
+
+    int32_t ebpSave = pcb->save_ebp;
     int32_t espSave = pcb->save_esp;
 
     asm volatile(
@@ -181,8 +82,7 @@ extern void cont_switch() {
         "movl %%ecx, %%ebp \n "
         :
         : "d"(espSave), "c"(ebpSave)
-        : "memory"
-    );
+        : "memory");
 
 }
 

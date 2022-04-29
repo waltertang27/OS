@@ -234,8 +234,6 @@ int32_t execute (const uint8_t* command){
     
     pcb->process_id = curr_id;
 
-   
-
     // Fill all 8 FD's with values
     for (i = 0; i < FD_ARRAY_SIZE; i++)
     {

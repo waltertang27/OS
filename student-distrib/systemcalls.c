@@ -287,6 +287,8 @@ int32_t execute (const uint8_t* command){
         : 
         : "memory"
     );
+    pcb->task_ebp = pcb->save_ebp;
+    pcb->task_esp = pcb->save_esp;
 
     pcb->usr_eip = eip_usr;
     pcb->usr_esp = esp_usr;

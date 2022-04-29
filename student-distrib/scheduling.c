@@ -112,8 +112,8 @@ extern void scheduler() {
 
   //  if running process is not on visible terminal
     if (terminal_flag != nextScheduled){
-       // video_mapping_pt[0].page_table_addr = (VID_ADDR + (nextScheduled + 1) * FOURKB) / ALIGN_BYTES;
-        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + nextScheduled + 1) ;
+        video_mapping_pt[0].page_table_addr = (VID_ADDR + (nextScheduled + 1) * FOURKB) / ALIGN_BYTES;
+        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VIDEO_PAGE_INDEX + nextScheduled + 1) ;
     }
 
     addr = EIGHTMB + ((nextScheduledPID)*PAGE_SIZE);

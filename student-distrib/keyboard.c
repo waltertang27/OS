@@ -181,6 +181,8 @@ RETURN VALUE: none
 SIDE EFFECTS: Displays the characters that are pressed on the keyboard to the screen
 */
 extern void keyboard_handler(void) {
+    page_table[VIDEO_PAGE_INDEX].page_table_addr = 184; 
+
     uint32_t keycode = inb(KEYBOARD_DATA_PORT);
 
     if(keycode == CAPSLOCK_PRESSED && CAPS_ON == 0) {

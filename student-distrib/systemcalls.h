@@ -118,6 +118,8 @@ fileop_jmp_table_t rtc_op;
 fileop_jmp_table_t dir_op;
 fileop_jmp_table_t file_op;
 
+extern int32_t curr_id; 
+
 
 #endif
 

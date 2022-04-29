@@ -11,6 +11,8 @@
 // volatile uint8_t cur = 0;
 extern int terminal_flag; 
 extern void flush_tlb();
+int32_t curr_id; 
+
 // Curent terminal that is being executed
 int currScheduled; 
 int nextScheduled; 
@@ -22,6 +24,7 @@ extern void pit_init(void) {
     outb(PIT_FREQ & PIT_MASK, CHAN_0);
     outb(PIT_FREQ >> SHIFT, CHAN_0);
     currScheduled = 0; 
+    curr_id = 0; 
     enable_irq(PIT_IRQ_NUM);
 }
 
@@ -45,12 +48,7 @@ extern void scheduler() {
         return; 
     }
 
-    
-
     pcb_t *pcb = get_pcb(currScheduledPID);
-
-
-
 
     // save esp, ebp to current pcb
     asm volatile(
@@ -66,13 +64,20 @@ extern void scheduler() {
 
     if (nextScheduledPID == -1)
     {
-       // switch_terminals(currScheduled);
-        currScheduled = nextScheduled; 
+; 
         send_eoi(0);
-
+        // int prev = terminal_flag; 
+        // terminal_flag = currScheduled; 
+        // switch_terminals(prev); 
+        currScheduled = nextScheduled; 
+        
+        // page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX + currScheduled;
+        //Do some sort of mapping so this shell prints in another terminal
         execute("shell");
+        return; 
     }
     else{
+        page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX;
         pcb = get_pcb(terminals[nextScheduled].currPID);
         addr = EIGHTMB + ((nextScheduledPID)*PAGE_SIZE);
         page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;

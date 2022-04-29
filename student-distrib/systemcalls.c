@@ -5,7 +5,7 @@ int32_t idt_flag;
 
 
 int32_t parent_id = 0; 
-int32_t curr_id = 0;
+int32_t curr_id; 
 int terminal_flag ;
 
 extern void flush_tlb();

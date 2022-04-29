@@ -14,6 +14,9 @@ extern void flush_tlb();
 extern int32_t curr_id ;
 // Curent terminal that is being executed
 int currScheduled; 
+int nextScheduled; 
+int currScheduledPID; 
+int nextScheduledPID; 
 
 extern void pit_init(void) {
     outb(FREQ_SET, MC_REG);
@@ -60,21 +63,20 @@ extern void pit_handler(void) {
 }
 
 extern void scheduler() {
-    currScheduled = currScheduled % 3; 
+    nextScheduled = (currScheduled + 1) % 3; 
+    int32_t addr;
+    currScheduledPID = terminals[currScheduled].currPID ;
+    nextScheduledPID = terminals[nextScheduled].currPID ;  
 
-    if(terminals[currScheduled].shellRunning != 1){
+
+    if(currScheduledPID == -1 && nextScheduledPID == -1){
         send_eoi(0);
         return; 
     }
         
 
     // get current process; terminal_flag tells us the current terminal
-    pcb_t * pcb = get_pcb( terminals[currScheduled].currPID);
-
-    if(pcb == NULL){
-        send_eoi(0);
-        return; 
-    }
+    pcb_t *pcb = get_pcb(currScheduledPID);
 
 
     // if no process is runnning at current terminal
@@ -97,16 +99,11 @@ extern void scheduler() {
     // setup video mapping table entry
 
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
+    page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX; 
 
-    // video memory into video page
+    currScheduled = nextScheduled; 
 
-    page_table[VIDEO_PAGE_INDEX].page_table_addr = VID_ADDR / ALIGN_BYTES;
-
-
-    currScheduled++; 
-    currScheduled %=3 ; 
-
-    pcb = get_pcb( terminals[currScheduled].currPID);
+    pcb = get_pcb(nextScheduledPID);
 
     if(pcb == NULL){
         send_eoi(0);
@@ -114,19 +111,31 @@ extern void scheduler() {
     }
 
   //  if running process is not on visible terminal
-    if (terminal_flag != currScheduled){
-        video_mapping_pt[0].page_table_addr = (VID_ADDR + (currScheduled + 1) * FOURKB) / ALIGN_BYTES;
-        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + (currScheduled + 1) * FOURKB) / ALIGN_BYTES;
+    if (terminal_flag != nextScheduled){
+       // video_mapping_pt[0].page_table_addr = (VID_ADDR + (nextScheduled + 1) * FOURKB) / ALIGN_BYTES;
+        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VID_ADDR + nextScheduled + 1) ;
     }
-    // paging
-    page_directory[USER_INDEX].page_table_addr = (int32_t)(EIGHTMB + pcb->process_id * PAGE_SIZE) / ALIGN_BYTES;
+
+    addr = EIGHTMB + ((nextScheduledPID)*PAGE_SIZE);
+    page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     flush_tlb();
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);
     tss.ss0 = KERNEL_DS;
 
     send_eoi(PIT_IRQ_NUM);
-    cont_switch();
+
+    int32_t ebpSave = pcb->save_ebp; 
+    int32_t espSave = pcb->save_esp;
+
+     asm volatile(
+        "movl %%ecx, %%ebp \n "
+        "movl %%edx, %%esp \n "
+        :
+        : "c"(ebpSave), "d"(espSave)
+        : "memory"
+    );
+
 }
 
 extern void cont_switch() {

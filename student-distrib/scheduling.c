@@ -98,7 +98,9 @@ extern void scheduler() {
     nextScheduled = (currScheduled + 1) % 3; 
     currScheduledPID = terminals[currScheduled].currPID ;
     nextScheduledPID = terminals[nextScheduled].currPID ;  
-
+    //Uncomment line to see if paging is working right 
+    
+   // printf("Running %d switching %d\n",currScheduledPID,nextScheduledPID); 
 
     if(currScheduledPID == -1 && nextScheduledPID == -1){
         send_eoi(0);

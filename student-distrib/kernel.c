@@ -156,7 +156,7 @@ void entry(unsigned long magic, unsigned long addr) {
     FileSystem_Init((uint32_t *)fileSystemStart);
     fileop_init();
     init_terminal(); 
-    pit_init();
+
     rtc_init();
 
     terminal_open(NULL);
@@ -175,7 +175,7 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-
+        pit_init();
 
 
     /* Spin (nicely, so we don't chew up cycles) */

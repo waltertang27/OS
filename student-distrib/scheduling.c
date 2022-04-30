@@ -11,6 +11,9 @@
 // volatile uint8_t cur = 0;
 extern int terminal_flag; 
 extern void flush_tlb();
+
+
+
 extern int32_t curr_id ;
 // Curent terminal that is being executed
 int currScheduled; 
@@ -18,11 +21,23 @@ int nextScheduled;
 int currScheduledPID; 
 int nextScheduledPID; 
 
+
+extern void save_reg(void * savePCB){
+        asm volatile(
+        "movl %%ebp, %%ecx \n "
+        "movl %%esp, %%edx \n "
+        : "=c"(((pcb_t *)savePCB)->task_ebp), "=d"(((pcb_t *)savePCB)->task_esp)
+        : 
+        : "memory"
+    );
+}
+
+
 extern void pit_init(void) {
     outb(FREQ_SET, MC_REG);
     outb(PIT_FREQ & PIT_MASK, CHAN_0);
     outb(PIT_FREQ >> SHIFT, CHAN_0);
-    currScheduled = 0; 
+    currScheduled = 2; 
 
   //  terminals[0].shellRunning = 1; 
     enable_irq(PIT_IRQ_NUM);
@@ -40,37 +55,46 @@ extern void pit_handler(void) {
     {
     case 0:
         terminal_flag = 0;
-         // terminals[0].shellRunning = 1; 
-        execute("shell");  
+        terminals[0].shellRunning = 1; 
+        execute("shell"); 
+        return;  
         break;
     case 1: 
         terminal_flag = 1; 
         switch_terminals(0); 
         terminals[1].shellRunning = 1; 
+        save_reg((void *)get_pcb(0)); 
         execute("shell"); 
+        return; 
+        break; 
     case 2: 
         terminal_flag = 2; 
         switch_terminals(1); 
         terminals[2].shellRunning = 1; 
+        save_reg((void *)get_pcb(1)); 
         execute("shell"); 
+        return; 
+        break; 
     default:
        // curr_id = terminals[terminal_flag].currPID ; 
         break;
     }
  
   //  printf("sum: %d\n",sum);
-    scheduler();
+    // scheduler();
 }
 
 extern void scheduler() {
-    nextScheduled = (currScheduled + 1) % 3; 
     int32_t addr;
+
+    nextScheduled = (currScheduled + 1) % 3; 
     currScheduledPID = terminals[currScheduled].currPID ;
     nextScheduledPID = terminals[nextScheduled].currPID ;  
 
 
     if(currScheduledPID == -1 && nextScheduledPID == -1){
         send_eoi(0);
+        currScheduled = nextScheduled; 
         return; 
     }
         
@@ -78,25 +102,10 @@ extern void scheduler() {
     // get current process; terminal_flag tells us the current terminal
     pcb_t *pcb = get_pcb(currScheduledPID);
 
-
     // if no process is runnning at current terminal
 
     // save esp, ebp to current pcb
-    asm volatile(
-        "movl %%esp, %%edx \n "
-        "movl %%ebp, %%ecx \n "
-        : "=d"(pcb->save_esp), "=c"(pcb->save_ebp)
-        : 
-        : "memory"
-    );
-
-    // round robin
-    // next_id = terminals[currScheduled].currPID ; 
-
-    /* setup video memory (from vidmap) */
-    // setup page directory entry
-
-    // setup video mapping table entry
+    save_reg((void *)pcb); 
 
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
     page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX; 
@@ -109,6 +118,8 @@ extern void scheduler() {
         send_eoi(0);
         return; 
     }
+
+
 
   //  if running process is not on visible terminal
     if (terminal_flag != nextScheduled){
@@ -125,8 +136,8 @@ extern void scheduler() {
 
     send_eoi(PIT_IRQ_NUM);
 
-    int32_t ebpSave = pcb->save_ebp; 
-    int32_t espSave = pcb->save_esp;
+    int32_t ebpSave = pcb->task_ebp; 
+    int32_t espSave = pcb->task_esp;
 
      asm volatile(
         "movl %%ecx, %%ebp \n "
@@ -134,39 +145,6 @@ extern void scheduler() {
         :
         : "c"(ebpSave), "d"(espSave)
         : "memory"
-    );
-}
-
-extern void cont_switch() {
-    // context switch, save esp and ebp
-    pcb_t * pcb = terminals[currScheduled].currPCB;
-    int32_t ebpSave = pcb->save_ebp; 
-    int32_t espSave = pcb->save_esp;
-    
-
-    asm volatile(
-        "movl %%ecx, %%ebp \n "
-        :
-        : "c"(ebpSave)
-        : "memory"
-    );
-    asm volatile (
-        "andl $0x00FF, %%edx \n "
-        "movw %%dx,%%ds \n "
-        "pushl %%edx \n"
-        "pushl %%ecx \n" 
-        "pushfl      \n"
-        "popl %%ecx  \n"
-        "orl $0x0200, %%ecx   \n"
-        "pushl %%ecx \n"
-        "pushl %%ebx \n"
-        "movl label1, %%eax \n"
-        "pushl %%eax \n"
-        "iret \n"
-        "label1: \n"
-        :
-        : "b"(USER_CS), "c"(espSave), "d"(USER_DS)
-        : "memory" 
     );
 }
 

@@ -166,7 +166,6 @@ extern void switch_terminals(int32_t prevTerminal)
     terminals[prevTerminal].screen_y = screen_y ; 
 
     // printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
-    // Check if you have opened this terminal if not, execute shell 
     memcpy((void *)VID_ADDR,movePage,FOURKB); 
 
     screen_x = terminals[terminal_flag].screen_x; 
@@ -174,6 +173,7 @@ extern void switch_terminals(int32_t prevTerminal)
     update_cursor(); 
 
 }
+
 
 void init_terminal(){
     int i; 
@@ -188,5 +188,6 @@ void init_terminal(){
     terminals[1].currPID = -1;
     terminals[2].currPID = -1;
 }
+
 
 

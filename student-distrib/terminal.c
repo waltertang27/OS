@@ -153,17 +153,18 @@ OUTPUTS: none
 RETURN VALUE: none
 SIDE EFFECTS: The video memory from the previous terminal is saved into its respective page and a new page is loved into video memory 
 */
-extern void switch_terminals(int32_t prevTerminal)
+extern void switch_terminals(int32_t newTerminal)
 {
+    cli(); 
     // Store page is where you are copying video memory too(Save what is in video memory to store page)
-    void * storePage = (void *)(VID_ADDR + ((1+prevTerminal) * FOURKB)); 
+    void * storePage = (void *)(VID_ADDR + ((1+terminal_flag) * FOURKB)); 
     //Movepage is the videomemory you are moving into video memory 
-    void * movePage = ( (void*)(VID_ADDR + (1+terminal_flag) * FOURKB)) ; 
+    void * movePage = ( (void*)(VID_ADDR + (1+newTerminal) * FOURKB)) ; 
     // Move the 4kb Vid memory into a seperate page to preserve it 
     memcpy(storePage,(void *)VID_ADDR,FOURKB);
     
-    terminals[prevTerminal].screen_x = screen_x ; 
-    terminals[prevTerminal].screen_y = screen_y ; 
+    terminals[newTerminal].screen_x = screen_x ; 
+    terminals[newTerminal].screen_y = screen_y ; 
 
     // printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
     // Check if you have opened this terminal if not, execute shell 
@@ -173,6 +174,25 @@ extern void switch_terminals(int32_t prevTerminal)
     screen_y = terminals[terminal_flag].screen_y; 
     update_cursor(); 
 
+    if(terminals[newTerminal].shellRunning){
+        terminal_flag = newTerminal; 
+        return; 
+    }
+    
+    //Old Pcb 
+    pcb_t * currPcb = get_pcb(terminal_flag); 
+    terminal_flag = newTerminal; 
+
+       asm volatile(
+        "movl %%esp, %%edx \n "
+        "movl %%ebp, %%ecx \n "
+        : "=d"(currPcb->task_esp), "=c"(currPcb->task_ebp)
+        : 
+        : "memory"
+    );
+
+    sti(); 
+    execute("shell"); 
 }
 
 void init_terminal(){
@@ -187,6 +207,9 @@ void init_terminal(){
     terminals[0].currPID = -1;
     terminals[1].currPID = -1;
     terminals[2].currPID = -1;
+
+    
+
 }
 
 

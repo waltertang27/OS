@@ -33,9 +33,10 @@ int32_t halt(uint8_t status)
 
     //If you are the last PID execute a new shell 
     // Added -1 check for different shells
-    if(pcb->process_id <= 2){
+    if(pcb->process_id == 0){
         process_array[pcb->process_id] = 0; 
         execute((const uint8_t * )"shell");
+        return -1 ; 
     }
 
     // New PID is now the parent since you are halting the current process 
@@ -242,6 +243,7 @@ int32_t execute (const uint8_t* command){
     
     pcb->process_id = curr_id;
 
+    terminals[terminal_flag].shellRunning = 1; 
    
 
     // Fill all 8 FD's with values
@@ -279,6 +281,7 @@ int32_t execute (const uint8_t* command){
     
 
 
+
     // Save old EBP and ESP
     asm volatile(
         "movl %%esp, %%edx \n "
@@ -287,8 +290,8 @@ int32_t execute (const uint8_t* command){
         : 
         : "memory"
     );
-    pcb->task_ebp = pcb->save_ebp;
-    pcb->task_esp = pcb->save_esp;
+    // pcb->task_ebp = pcb->save_ebp;
+    // pcb->task_esp = pcb->save_esp;
 
     pcb->usr_eip = eip_usr;
     pcb->usr_esp = esp_usr;

@@ -175,7 +175,20 @@ void entry(unsigned long magic, unsigned long addr) {
     launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
+    terminal_flag = 0; 
+    terminals[terminal_flag].shellRunning = 1; 
 
+
+    // pcb_t * currPcb = get_pcb(terminal_flag); 
+    //    asm volatile(
+    //     "movl %%esp, %%edx \n "
+    //     "movl %%ebp, %%ecx \n "
+    //     : "=d"(currPcb->task_esp), "=c"(currPcb->task_ebp)
+    //     : 
+    //     : "memory"
+    // );
+    // set vidmap to terminal 0 
+    execute("shell"); 
 
 
     /* Spin (nicely, so we don't chew up cycles) */

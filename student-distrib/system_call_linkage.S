@@ -7,6 +7,7 @@
 
 #linkage for system calls
 system_call_linkage:
+       sti                       ;\
        pushl %ecx                ;\
        pushl %edx                ;\
        pushl %ebx                ;\

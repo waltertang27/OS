@@ -12,7 +12,7 @@
 extern int terminal_flag; 
 extern void flush_tlb();
 int finalFlag; 
-
+int sum; 
 
 extern int32_t curr_id ;
 // Curent terminal that is being executed
@@ -25,9 +25,9 @@ int nextScheduledPID;
 extern void save_reg(void * savePCB){
 
         asm volatile(
-        "movl %%ebp, %%ecx \n "
-        "movl %%esp, %%edx \n "
-        : "=c"(((pcb_t *)savePCB)->task_ebp), "=d"(((pcb_t *)savePCB)->task_esp)
+        "movl %%ebp, %0 \n "
+        "movl %%esp, %1 \n "
+        : "=r"(((pcb_t *)savePCB)->task_ebp), "=r"(((pcb_t *)savePCB)->task_esp)
         : 
         : "memory"
     );
@@ -39,7 +39,8 @@ extern void pit_init(void) {
     outb(PIT_FREQ & PIT_MASK, CHAN_0);
     outb(PIT_FREQ >> SHIFT, CHAN_0);
     currScheduled = 2; 
-
+    finalFlag = 0; 
+    sum = -1; 
   //  terminals[0].shellRunning = 1; 
     enable_irq(PIT_IRQ_NUM);
 }
@@ -47,10 +48,12 @@ extern void pit_init(void) {
 extern void pit_handler(void) { 
     send_eoi(0);
 
-    int i,sum;
-    sum = 0;  
-    for(i = 0;i<PROCESS_ARRAY_SIZE;i++)
-        sum += process_array[i];
+    int i; 
+    sum++; 
+
+    if(sum > 100)
+        sum = 5; 
+
 
     switch (sum)
     {
@@ -65,30 +68,49 @@ extern void pit_handler(void) {
         terminal_flag = 1; 
         switch_terminals(0); 
         terminals[1].shellRunning = 1; 
-        save_reg((void *)get_pcb(0)); 
-        execute("shell"); 
+
+         asm volatile(
+        "movl %%ebp, %0 \n "
+        "movl %%esp, %1 \n "
+        : "=r"((get_pcb(0))->task_ebp), "=r"((get_pcb(0))->task_esp)
+        : 
+        : "memory"
+    );
+
+        execute("shell"); //get_pcb(1)
         return; 
         break; 
     case 2: 
         terminal_flag = 2; 
         switch_terminals(1); 
         terminals[2].shellRunning = 1; 
-        save_reg((void *)get_pcb(1)); 
+
+        asm volatile(
+        "movl %%ebp, %0 \n "
+        "movl %%esp, %1 \n "
+        : "=r"((get_pcb(1))->task_ebp), "=r"((get_pcb(1))->task_esp)
+        : 
+        : "memory"
+        );
+
         execute("shell"); 
         return; 
         break;
     case 3: 
-        save_reg((void *)get_pcb(2)); 
-        finalFlag = 1; 
+          asm volatile(
+        "movl %%ebp, %0 \n "
+        "movl %%esp, %1 \n "
+        : "=r"((get_pcb(2))->task_ebp), "=r"((get_pcb(2))->task_esp)
+        : 
+        : "memory"
+        );
+        return; 
         break; 
-    case 4: 
-        finalFlag = 0; 
-        break; 
+        //By this point esp and ebp of terminal 1 2 and 3 will be set and we can begin to call scheduler
     default:
         break;
     }
  
-  //  printf("sum: %d\n",sum);
      scheduler();
 }
 
@@ -100,7 +122,7 @@ extern void scheduler() {
     nextScheduledPID = terminals[nextScheduled].currPID ;  
     //Uncomment line to see if paging is working right 
     
-   // printf("Running %d switching %d\n",currScheduledPID,nextScheduledPID); 
+    // printf("Running %d switching %d\n",currScheduledPID,nextScheduledPID); 
 
     if(currScheduledPID == -1 && nextScheduledPID == -1){
         send_eoi(0);
@@ -108,15 +130,19 @@ extern void scheduler() {
         return; 
     }
         
-
     // get current process; terminal_flag tells us the current terminal
     pcb_t *pcb = get_pcb(currScheduledPID);
 
-    // if no process is runnning at current terminal
 
-    // save esp, ebp to current pcb
-    if(!finalFlag)
-        save_reg((void *)pcb); 
+   asm volatile(
+        "movl %%ebp, %0 \n "
+        "movl %%esp, %1 \n "
+        : "=r"(((pcb_t *)pcb)->task_ebp), "=r"(((pcb_t *)pcb)->task_esp)
+        : 
+        : "memory"
+    );
+
+
 
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
     page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX; 
@@ -124,6 +150,11 @@ extern void scheduler() {
     currScheduled = nextScheduled; 
 
     pcb = get_pcb(nextScheduledPID);
+
+   if(pcb->task_ebp == 0 || pcb->task_esp == 0){
+       return; 
+    }
+
 
   //  if running process is not on visible terminal
     if (terminal_flag != nextScheduled){

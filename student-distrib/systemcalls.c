@@ -290,6 +290,15 @@ int32_t execute (const uint8_t* command){
 
     pcb->usr_eip = eip_usr;
     pcb->usr_esp = esp_usr;
+    
+  //  if(parent_id != -1){
+    //    pcb_t * parent = get_pcb(parent_id);
+    //    parent->task_ebp = pcb->save_ebp;
+     //   parent->task_esp = pcb->save_esp; 
+    //}
+
+  //  pcb_t * parent = get_pcb(parent_id);
+
 
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values

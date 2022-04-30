@@ -198,7 +198,7 @@ extern void keyboard_handler(void) {
         return;
     }
     if(keycode == LSHIFT_PRESSED) {
-        printf("CurrID: %d",curr_id);
+      //  printf("CurrID: %d",curr_id);
         shift_flag = 1;
         send_eoi(KEYBOARD_IRQ);
         return;

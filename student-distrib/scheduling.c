@@ -76,12 +76,12 @@ extern void pit_handler(void) {
         return; 
         break; 
     default:
-       // curr_id = terminals[terminal_flag].currPID ; 
         break;
     }
  
   //  printf("sum: %d\n",sum);
-    // scheduler();
+    // sti(); 
+     scheduler();
 }
 
 extern void scheduler() {
@@ -114,16 +114,9 @@ extern void scheduler() {
 
     pcb = get_pcb(nextScheduledPID);
 
-    if(pcb == NULL){
-        send_eoi(0);
-        return; 
-    }
-
-
-
   //  if running process is not on visible terminal
     if (terminal_flag != nextScheduled){
-        video_mapping_pt[0].page_table_addr = (VID_ADDR + (nextScheduled + 1) * FOURKB) / ALIGN_BYTES;
+        // video_mapping_pt[0].page_table_addr = (VID_ADDR + (nextScheduled + 1) * FOURKB) / ALIGN_BYTES;
         page_table[VIDEO_PAGE_INDEX].page_table_addr = (VIDEO_PAGE_INDEX + nextScheduled + 1) ;
     }
 
@@ -131,19 +124,16 @@ extern void scheduler() {
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     flush_tlb();
+
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);
     tss.ss0 = KERNEL_DS;
 
-    send_eoi(PIT_IRQ_NUM);
-
-    int32_t ebpSave = pcb->task_ebp; 
-    int32_t espSave = pcb->task_esp;
 
      asm volatile(
-        "movl %%ecx, %%ebp \n "
-        "movl %%edx, %%esp \n "
+        "movl %0, %%ebp \n "
+        "movl %1, %%esp \n "
         :
-        : "c"(ebpSave), "d"(espSave)
+        : "r"(pcb->task_ebp), "r"(pcb->task_esp)
         : "memory"
     );
 }

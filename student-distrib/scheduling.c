@@ -141,8 +141,6 @@ extern void scheduler() {
      asm volatile(
         "movl %0, %%ebp \n "
         "movl %1, %%esp \n "
-        "leave          \n "
-        "ret            \n "
         :
         : "r"(pcb->task_ebp), "r"(pcb->task_esp)
         : "memory"

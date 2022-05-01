@@ -5,8 +5,16 @@ int32_t idt_flag;
 
 
 int32_t parent_id = 0; 
-int32_t curr_id = 0;
+extern int32_t curr_id = 0;
 int terminal_flag ;
+
+int currScheduled; 
+int nextScheduled; 
+int currScheduledPID; 
+int nextScheduledPID; 
+int typingFlag; 
+int sum; 
+
 
 extern void flush_tlb();
 
@@ -23,18 +31,39 @@ int32_t halt(uint8_t status)
     pcb_t * pcb, *parent ;
     uint32_t addr;
     // =============================== Restore parent data   ===============================
-
-    pcb = get_cur_pcb();
+    cli(); 
+    pcb = get_pcb(terminals[terminal_flag].currPID);
 
     //If you are the last PID execute a new shell 
-    if(pcb->process_id == 0){
-        process_array[pcb->process_id] = 0; 
-        execute((const uint8_t * )"shell");
+    // Added -1 check for different shells
+    if(pcb->process_id <= 2 || parent_id == -1){
+        // printf("Can break out of base shell \n"); 
+        asm volatile (
+        "andl $0x00FF, %%edx \n "
+        "movw %%dx,%%ds \n "
+        "pushl %%edx \n"
+        "pushl %%ecx \n" 
+        "pushfl      \n"
+        "popl %%ecx  \n"
+        "orl $0x0200, %%ecx   \n"
+        "pushl %%ecx \n"
+        "pushl %%ebx \n"
+        "pushl %%eax \n"
+        "iret \n"
+        :
+        : "a"(pcb->usr_eip), "b"(USER_CS), "c"(pcb->usr_esp), "d"(USER_DS)
+        : "memory" 
+    );
     }
 
     // New PID is now the parent since you are halting the current process 
     curr_id = pcb->parent_id ; 
     parent = get_pcb(curr_id);
+    
+    terminals[terminal_flag].currPID = curr_id; 
+
+    terminals[terminal_flag].currPCB = parent;
+
     process_array[pcb->process_id] = 0; 
 
 
@@ -65,14 +94,12 @@ int32_t halt(uint8_t status)
     int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
 
-
-
     newStatus = (uint32_t)status; 
     if(idt_flag){
         newStatus = 256; 
         idt_flag = 0; 
     }
-    
+    sti(); 
     //Push paramaters and jump to execute 
      asm volatile(
         "movl %%edx, %%esp \n "
@@ -80,7 +107,7 @@ int32_t halt(uint8_t status)
         "jmp leaveExec \n "
         :
         : "a"(newStatus), "d"(espSave), "c"(ebpSave)
-        : "memory", "ebx"
+        : "memory"
         );
 
     //If code gets here something went horribly wrong 
@@ -98,6 +125,12 @@ RETURN VALUE:  -1 if command cannot be executed
 SIDE EFFECTS: hands processor to new program until it terminates
 */
 int32_t execute (const uint8_t* command){
+// if(sum>4){
+//     typingFlag = 1; 
+// }
+
+    cli(); 
+    // printf(" Curr Shell: %d\n", curr_id); 
     // ===============================    parsing    ===============================
     int command_size = strlen( (const int8_t * ) command);
     int i = 0;
@@ -185,7 +218,8 @@ int32_t execute (const uint8_t* command){
 
     // ===============================     Set up paging     ===============================
 
-    prevPid = curr_id; 
+    prevPid = terminals[terminal_flag].currPID ; 
+    
     while (curr_id < PROCESS_ARRAY_SIZE){
         if (process_array[curr_id] != 1){
         //    pcb_t * curr = get_cur_pcb; 
@@ -219,9 +253,17 @@ int32_t execute (const uint8_t* command){
     }
 
     // ===============================      Create PCB       ===============================
+
     pcb = get_pcb(curr_id);
-    pcb->process_id = curr_id;
+    
     pcb->parent_id = prevPid; 
+    // printf("Curr ID: %d Prev: %d \n",curr_id,prevPid); 
+    terminals[terminal_flag].currPCB = pcb;
+    terminals[terminal_flag].currPID = curr_id;
+    
+    pcb->process_id = curr_id;
+
+   
 
     // Fill all 8 FD's with values
     for (i = 0; i < FD_ARRAY_SIZE; i++)
@@ -259,16 +301,32 @@ int32_t execute (const uint8_t* command){
 
 
     // Save old EBP and ESP
-    register uint32_t saved_ebp asm("ebp");
-    register uint32_t saved_esp asm("esp");
-    pcb->save_ebp = saved_ebp;
-    pcb->save_esp = saved_esp;
+    asm volatile(
+        "movl %%esp, %%edx \n "
+        "movl %%ebp, %%ecx \n "
+        : "=d"(pcb->save_esp), "=c"(pcb->save_ebp)
+        : 
+        : "memory"
+    );
+
     pcb->usr_eip = eip_usr;
     pcb->usr_esp = esp_usr;
+    
+  //  pcb_t * parent = get_pcb(parent_id);
+
 
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values
     // Possible reasons it doesnt work: segment registers need to be set
+    
+
+
+    // if(sum>4){
+    //     typingFlag = 0; 
+
+    // }
+
+
     sti();
 
     // Push an iret stack to switch to our user program in the following order
@@ -299,6 +357,8 @@ int32_t execute (const uint8_t* command){
     : 
     : "memory"
     );
+
+
 
     return returnVal; // value between 0 and 255
 }
@@ -561,6 +621,8 @@ RETURN VALUE: pointer to pcb corresponding to id
 SIDE EFFECTS: 
 */
 pcb_t * get_pcb(int32_t id){
+    if(id <0)
+        return 0; 
 	uint32_t addr = EIGHTMB - EIGHTKB * (id + 1);
 	return (pcb_t * )addr;
 }

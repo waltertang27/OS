@@ -37,7 +37,7 @@
 #define MAX_CMD_LINE_SIZE 32 
 #define BUF_SIZE 4
 #define MAX_ARGUMENT_SIZE 126 
-#define VIDEO_MEMORY 0x8800000
+#define VIDEO_MEMORY 0x8800000 // 132 * 4KB
 
 uint32_t process_array[PROCESS_ARRAY_SIZE];
 
@@ -66,6 +66,8 @@ typedef struct pcb {
     int32_t parent_id;
     int32_t save_ebp;
     int32_t save_esp;
+    int32_t task_ebp; 
+    int32_t task_esp; 
     int32_t usr_eip;
     int32_t usr_esp;
     int32_t active;

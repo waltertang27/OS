@@ -125,3 +125,6 @@ Solution: Add an index flag and separate index counters for each terminal.
 
 Bug: Cat fish does not work. 
 
+Bug: Switching between terminals when fish is running is continuing to run fish on every terminal that is switched to (When put it is turned off)
+
+Bug: When running counter afte switching terminals, counter continues to run on that terminal. 

@@ -62,7 +62,7 @@ void paging_init()
 	for (i = 0; i < TABLE_SIZE; i++)
 	{
 		// video memory page
-		if (i * ALIGN_BYTES == VID_ADDR)
+		if (i >= VIDEO_PAGE_INDEX && i <= VIDEO_PAGE_INDEX + 3)
 		{
 			page_table[i].present = 1;
 		}
@@ -76,7 +76,7 @@ void paging_init()
 		page_table[i].cache_disable = 0;
 		page_table[i].accessed = 0;
 		page_table[i].dirty = 0;
-		page_table[i].attribute = 0; // ???
+		page_table[i].attribute = 0; 
 		page_table[i].global = 0;
 		page_table[i].page_table_addr = i;
 	}
@@ -95,11 +95,6 @@ void paging_init()
 		video_mapping_pt[i].global = 0;
 		video_mapping_pt[i].page_table_addr = i;
 	}
-
-	// Check with Kevin but as of now there is a page for each terminal 
-	video_mapping_pt[2].present = 1; 
-	video_mapping_pt[3].present = 1; 
-	video_mapping_pt[4].present = 1; 
 
 	asm (
 		"movl $page_directory, %%eax ;"

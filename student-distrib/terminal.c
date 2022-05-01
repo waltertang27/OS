@@ -2,6 +2,11 @@
 #include "terminal.h"
 
 int terminal_flag;
+int screen_x;
+int screen_y;
+extern int32_t curr_id ;
+
+
 
     // extern char buffer[BUFFER_SIZE];
     // extern int index;
@@ -61,8 +66,6 @@ int32_t terminal_read(int32_t fd, void *buf, int32_t nbytes) {
             if (nbytes > BUFFER_SIZE){
                 nbytes = BUFFER_SIZE;
             }
-
-            
 
             for (terminal_index = 0; terminal_index < nbytes; terminal_index++) {
 
@@ -142,15 +145,50 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
     return nbytes;
 }
 
+
+/*
+DESCRIPTION: Switched the video memory when a terminal switch happens and updates the screen x and y 
+INPUTS: prevTerminal - The terminal you are switching from The global flag terminal_flag is used to see which terminal we are switching to 
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: The video memory from the previous terminal is saved into its respective page and a new page is loved into video memory 
+*/
 extern void switch_terminals(int32_t prevTerminal)
 {
-    clear(); 
-    printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
+    // Store page is where you are copying video memory too(Save what is in video memory to store page)
+    void * storePage = (void *)(VID_ADDR + ((1+prevTerminal) * FOURKB)); 
+    //Movepage is the videomemory you are moving into video memory 
+    void * movePage = ( (void*)(VID_ADDR + (1+terminal_flag) * FOURKB)) ; 
+    // Move the 4kb Vid memory into a seperate page to preserve it 
+    memcpy(storePage,(void *)VID_ADDR,FOURKB);
 
-    //Save the previous terminal to its video page
+  
+    terminals[prevTerminal].screen_x = screen_x ; 
+    terminals[prevTerminal].screen_y = screen_y ; 
 
-    // Check if its the first time that you are opening the terminal, if so boot shell 
+    // printf(" Switching from Terminal %d to Terminal %d \n", prevTerminal + 1, terminal_flag + 1); 
+    memcpy((void *)VID_ADDR,movePage,FOURKB); 
 
-    // If not get its video page and move it to actual video memory 
+    screen_x = terminals[terminal_flag].screen_x; 
+    screen_y = terminals[terminal_flag].screen_y; 
+    update_cursor(); 
 
 }
+
+
+void init_terminal(){
+    int i; 
+    terminal_flag = 0; 
+    for(i = 0; i<3; i++){
+        terminals[i].shellRunning = 0; 
+        terminals[i].currPCB = (void *)NULL ;
+        terminals[i].screen_x = 0; 
+        terminals[i].screen_y = 0; 
+    }
+    terminals[0].currPID = -1;
+    terminals[1].currPID = -1;
+    terminals[2].currPID = -1;
+}
+
+
+

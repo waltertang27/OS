@@ -14,12 +14,14 @@ extern void flush_tlb();
 int finalFlag; 
 int sum; 
 
+
 extern int32_t curr_id ;
 // Curent terminal that is being executed
 int currScheduled; 
 int nextScheduled; 
 int currScheduledPID; 
 int nextScheduledPID; 
+int typingFlag; 
 
 
 extern void save_reg(void * savePCB){
@@ -41,6 +43,7 @@ extern void pit_init(void) {
     currScheduled = 2; 
     finalFlag = 0; 
     sum = -1; 
+    typingFlag = 0; 
   //  terminals[0].shellRunning = 1; 
     enable_irq(PIT_IRQ_NUM);
 }
@@ -110,8 +113,8 @@ extern void pit_handler(void) {
     default:
         break;
     }
- 
-     scheduler();
+    if(!typingFlag)
+        scheduler();
 }
 
 extern void scheduler() {
@@ -141,7 +144,6 @@ extern void scheduler() {
         : 
         : "memory"
     );
-
 
 
     video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;

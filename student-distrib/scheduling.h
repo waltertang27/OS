@@ -17,8 +17,8 @@ extern int currScheduled;
 extern int nextScheduled; 
 extern int currScheduledPID; 
 extern int nextScheduledPID; 
-
-
+extern int typingFlag; 
+extern int sum; 
 extern void pit_init(void);
 extern void pit_handler(void);
 extern void scheduler();

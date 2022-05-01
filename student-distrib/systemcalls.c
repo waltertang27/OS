@@ -12,6 +12,9 @@ int currScheduled;
 int nextScheduled; 
 int currScheduledPID; 
 int nextScheduledPID; 
+int typingFlag; 
+int sum; 
+
 
 extern void flush_tlb();
 
@@ -122,6 +125,9 @@ RETURN VALUE:  -1 if command cannot be executed
 SIDE EFFECTS: hands processor to new program until it terminates
 */
 int32_t execute (const uint8_t* command){
+if(sum>4){
+    typingFlag = 1; 
+}
     cli(); 
     // printf(" Curr Shell: %d\n", curr_id); 
     // ===============================    parsing    ===============================
@@ -347,6 +353,9 @@ int32_t execute (const uint8_t* command){
     : 
     : "memory"
     );
+    if(sum>4){
+    typingFlag = 0; 
+}
 
     return returnVal; // value between 0 and 255
 }

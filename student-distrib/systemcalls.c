@@ -29,22 +29,38 @@ int32_t halt(uint8_t status)
     uint32_t addr;
     // =============================== Restore parent data   ===============================
 
-    pcb = get_cur_pcb();
+    pcb = get_pcb(terminals[terminal_flag].currPID);
 
     //If you are the last PID execute a new shell 
     // Added -1 check for different shells
-    if(pcb->process_id <= 2){
-        process_array[pcb->process_id] = 0; 
-        execute((const uint8_t * )"shell");
+    if(pcb->process_id <= 2 || parent_id == -1){
+        printf("Can break out of base shell \n"); 
+        asm volatile (
+        "andl $0x00FF, %%edx \n "
+        "movw %%dx,%%ds \n "
+        "pushl %%edx \n"
+        "pushl %%ecx \n" 
+        "pushfl      \n"
+        "popl %%ecx  \n"
+        "orl $0x0200, %%ecx   \n"
+        "pushl %%ecx \n"
+        "pushl %%ebx \n"
+        "pushl %%eax \n"
+        "iret \n"
+        :
+        : "a"(pcb->usr_eip), "b"(USER_CS), "c"(pcb->usr_esp), "d"(USER_DS)
+        : "memory" 
+    );
     }
 
     // New PID is now the parent since you are halting the current process 
     curr_id = pcb->parent_id ; 
-
-
-    terminals[terminal_flag].currPID = curr_id; 
     parent = get_pcb(curr_id);
-    terminals[terminal_flag].currPCB = pcb;
+    
+    terminals[terminal_flag].currPID = curr_id; 
+
+    terminals[terminal_flag].currPCB = parent;
+
     process_array[pcb->process_id] = 0; 
 
 
@@ -74,8 +90,6 @@ int32_t halt(uint8_t status)
     // Call assembly program to jump back to execute for the original PCB
     int32_t ebpSave = pcb->save_ebp; 
     int32_t espSave = pcb->save_esp;
-
-
 
     newStatus = (uint32_t)status; 
     if(idt_flag){

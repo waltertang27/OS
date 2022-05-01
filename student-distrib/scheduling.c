@@ -113,10 +113,10 @@ extern void pit_handler(void) {
     default:
         break;
     }
-    if(!typingFlag){
-        nextScheduled = (currScheduled + 1) % 3; 
-        scheduler(nextScheduled);
-    }
+    // if(!typingFlag){
+    //     nextScheduled = (currScheduled + 1) % 3; 
+    //     scheduler(nextScheduled);
+    // }
 }
 
 extern void scheduler(int next) {

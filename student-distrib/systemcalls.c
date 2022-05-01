@@ -31,7 +31,7 @@ int32_t halt(uint8_t status)
     pcb_t * pcb, *parent ;
     uint32_t addr;
     // =============================== Restore parent data   ===============================
-
+    cli(); 
     pcb = get_pcb(terminals[terminal_flag].currPID);
 
     //If you are the last PID execute a new shell 
@@ -99,7 +99,7 @@ int32_t halt(uint8_t status)
         newStatus = 256; 
         idt_flag = 0; 
     }
-    
+    sti(); 
     //Push paramaters and jump to execute 
      asm volatile(
         "movl %%edx, %%esp \n "

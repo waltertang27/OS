@@ -21,7 +21,7 @@ extern int typingFlag;
 extern int sum; 
 extern void pit_init(void);
 extern void pit_handler(void);
-extern void scheduler();
+extern void scheduler(int nextScheduled);
 extern void cont_switch();
 
 

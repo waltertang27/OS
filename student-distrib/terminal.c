@@ -161,7 +161,8 @@ extern void switch_terminals(int32_t prevTerminal)
     void * movePage = ( (void*)(VID_ADDR + (1+terminal_flag) * FOURKB)) ; 
     // Move the 4kb Vid memory into a seperate page to preserve it 
     memcpy(storePage,(void *)VID_ADDR,FOURKB);
-    
+
+  
     terminals[prevTerminal].screen_x = screen_x ; 
     terminals[prevTerminal].screen_y = screen_y ; 
 

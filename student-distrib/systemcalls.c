@@ -37,7 +37,7 @@ int32_t halt(uint8_t status)
     //If you are the last PID execute a new shell 
     // Added -1 check for different shells
     if(pcb->process_id <= 2 || parent_id == -1){
-        printf("Can break out of base shell \n"); 
+        // printf("Can break out of base shell \n"); 
         asm volatile (
         "andl $0x00FF, %%edx \n "
         "movw %%dx,%%ds \n "
@@ -128,6 +128,7 @@ int32_t execute (const uint8_t* command){
 if(sum>4){
     typingFlag = 1; 
 }
+
     cli(); 
     // printf(" Curr Shell: %d\n", curr_id); 
     // ===============================    parsing    ===============================
@@ -311,18 +312,21 @@ if(sum>4){
     pcb->usr_eip = eip_usr;
     pcb->usr_esp = esp_usr;
     
-  //  if(parent_id != -1){
-    //    pcb_t * parent = get_pcb(parent_id);
-    //    parent->task_ebp = pcb->save_ebp;
-     //   parent->task_esp = pcb->save_esp; 
-    //}
-
   //  pcb_t * parent = get_pcb(parent_id);
 
 
     // =============================== Push IRET context to kernel stack  ===============================
     // Set the registers that we want to pop to the correct values
     // Possible reasons it doesnt work: segment registers need to be set
+    
+
+
+    if(sum>4){
+        typingFlag = 0; 
+
+    }
+    
+
     sti();
 
     // Push an iret stack to switch to our user program in the following order
@@ -353,9 +357,8 @@ if(sum>4){
     : 
     : "memory"
     );
-    if(sum>4){
-    typingFlag = 0; 
-}
+
+
 
     return returnVal; // value between 0 and 255
 }

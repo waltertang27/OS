@@ -113,23 +113,23 @@ extern void pit_handler(void) {
     default:
         break;
     }
-    if(!typingFlag)
-        scheduler();
+    if(!typingFlag){
+        nextScheduled = (currScheduled + 1) % 3; 
+        scheduler(nextScheduled);
+    }
 }
 
-extern void scheduler() {
+extern void scheduler(int next) {
     int32_t addr;
-
-    nextScheduled = (currScheduled + 1) % 3; 
     currScheduledPID = terminals[currScheduled].currPID ;
-    nextScheduledPID = terminals[nextScheduled].currPID ;  
+    nextScheduledPID = terminals[next].currPID ;  
     //Uncomment line to see if paging is working right 
     
     // printf("Running %d switching %d\n",currScheduledPID,nextScheduledPID); 
 
     if(currScheduledPID == -1 && nextScheduledPID == -1){
         send_eoi(0);
-        currScheduled = nextScheduled; 
+        currScheduled = next; 
         return; 
     }
         
@@ -146,10 +146,10 @@ extern void scheduler() {
     );
 
 
-    video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
-    page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX; 
+   // video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
 
-    currScheduled = nextScheduled; 
+
+    currScheduled = next; 
 
     pcb = get_pcb(nextScheduledPID);
 
@@ -158,9 +158,12 @@ extern void scheduler() {
     }
 
   //  if running process is not on visible terminal
-    if (terminal_flag != nextScheduled){
+    if (terminal_flag != next){
         // video_mapping_pt[0].page_table_addr = (VID_ADDR + (nextScheduled + 1) * FOURKB) / ALIGN_BYTES;
-        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VIDEO_PAGE_INDEX + nextScheduled + 1) ;
+        page_table[VIDEO_PAGE_INDEX].page_table_addr = (VIDEO_PAGE_INDEX + next + 1) ;
+    }
+    else{
+        page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX; 
     }
 
     addr = EIGHTMB + ((nextScheduledPID)*PAGE_SIZE);

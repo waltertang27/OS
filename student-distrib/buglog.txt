@@ -124,14 +124,15 @@ Solution: Add an index flag and separate index counters for each terminal.
 
 3.5
 
-Bug: Cat fish does not work.
-Where: terminal.c
-
 Bug: Switching between terminals when fish is running is continuing to run fish on every terminal that is switched to (When put it is turned off)
 Where: scheduling.c
+Why: Vidmap is not being scheduled properly
+Fix: Not yet 
 
-Bug: When running counter afte switching terminals, counter continues to run on that terminal.
+Bug: When running counter afte switching terminals, counter continues to run on that terminal
 Where: scheduling.c
+Issue: The current process is still being mapped to 0x0B800 when it should be sending to its respective branch when we switch 
+Fix: Not fixed 
 
 Bug: After implementing scheduling with PIT, we cannot type on the terminal
 Where: scheduling.c

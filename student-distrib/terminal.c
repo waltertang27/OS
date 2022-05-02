@@ -1,4 +1,3 @@
-
 #include "terminal.h"
 
 int terminal_flag;
@@ -135,8 +134,16 @@ int32_t terminal_write(int32_t fd, const void *buf, int32_t nbytes) {
         // putc(byte); 
 
         // dpn't print NULL
-        if (byte != '\0'){
-            putc(byte); // print
+        if (byte >= 32 && byte <= 126) {
+            if(byte != '\0') {
+                putc(byte);
+            }
+        }
+        else if(byte == '\n') {
+            putc(byte);
+        }
+        else {
+            putc(' ');
         }
     }
     

@@ -143,3 +143,8 @@ Bug: After implementing scheduling with PIT, terminal cannot run more than one p
 Where: scheduling.c
 Issue: The asm is still not saving the correct values for esp and ebp.
 Solution: We have not found a solution
+
+Bug: Multiple terminals would not save the keyboard input properly.
+Where: keyboard.c 
+Issue: the keyboard and terminal buffers were getting overwritten.
+Solution: We created separate buffers for each terminal so that it wouldn't get overwritten everytime we switched terminals.

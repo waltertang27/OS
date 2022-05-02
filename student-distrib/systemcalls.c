@@ -5,7 +5,7 @@ int32_t idt_flag;
 
 
 int32_t parent_id = 0; 
-extern int32_t curr_id = 0;
+int32_t curr_id = 0;
 int terminal_flag ;
 
 int currScheduled; 

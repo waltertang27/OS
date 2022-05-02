@@ -15,7 +15,6 @@ int finalFlag;
 int sum; 
 
 
-extern int32_t curr_id ;
 // Curent terminal that is being executed
 int currScheduled; 
 int nextScheduled; 
@@ -51,7 +50,7 @@ extern void pit_init(void) {
 extern void pit_handler(void) { 
     send_eoi(0);
 
-    int i; 
+   // int i; 
     sum++; 
 
     if(sum > 100)
@@ -64,7 +63,7 @@ extern void pit_handler(void) {
         finalFlag = 0; 
         terminal_flag = 0;
         terminals[0].shellRunning = 1; 
-        execute("shell"); 
+        execute((const uint8_t * )"shell"); 
         return;  
         break;
     case 1: 
@@ -80,7 +79,7 @@ extern void pit_handler(void) {
         : "memory"
     );
 
-        execute("shell"); //get_pcb(1)
+        execute((const uint8_t * )"shell"); //get_pcb(1)
         return; 
         break; 
     case 2: 
@@ -96,7 +95,7 @@ extern void pit_handler(void) {
         : "memory"
         );
 
-        execute("shell"); 
+        execute((const uint8_t * )"shell"); 
         return; 
         break;
     case 3: 

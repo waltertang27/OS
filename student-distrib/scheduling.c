@@ -23,11 +23,11 @@ int nextScheduledPID;
 int typingFlag;
 
 /*
-DESCRIPTION: 
-INPUTS: 
-OUTPUTS: 
-RETURN VALUE: 
-SIDE EFFECTS: 
+DESCRIPTION: Initiailzes PIT to access interrupts
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: Enables interrupts requests to the PIT IRQ port
 */
 
 extern void pit_init(void) {
@@ -41,6 +41,14 @@ extern void pit_init(void) {
   //  terminals[0].shellRunning = 1; 
     enable_irq(PIT_IRQ_NUM);
 }
+
+/*
+DESCRIPTION: It is called when receiving PIT interrupts and calls scheduler to do scheduling
+INPUTS: none
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: Saves values in ebp and esp when switching terminals
+*/
 
 extern void pit_handler(void) { 
     send_eoi(0);

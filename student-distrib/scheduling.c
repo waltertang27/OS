@@ -20,20 +20,15 @@ int currScheduled;
 int nextScheduled; 
 int currScheduledPID; 
 int nextScheduledPID; 
-int typingFlag; 
+int typingFlag;
 
-
-extern void save_reg(void * savePCB){
-
-        asm volatile(
-        "movl %%ebp, %0 \n "
-        "movl %%esp, %1 \n "
-        : "=r"(((pcb_t *)savePCB)->task_ebp), "=r"(((pcb_t *)savePCB)->task_esp)
-        : 
-        : "memory"
-    );
-}
-
+/*
+DESCRIPTION: 
+INPUTS: 
+OUTPUTS: 
+RETURN VALUE: 
+SIDE EFFECTS: 
+*/
 
 extern void pit_init(void) {
     outb(FREQ_SET, MC_REG);
@@ -118,13 +113,17 @@ extern void pit_handler(void) {
     // }
 }
 
+/*
+DESCRIPTION: Constantly switches between the 3 terminals and remaps physical memory 
+INPUTS: next - The next scheduled process 
+OUTPUTS: none
+RETURN VALUE: none
+SIDE EFFECTS: - Executing will switch between programs every time the pit handler is called
+*/
 extern void scheduler(int next) {
     int32_t addr;
     currScheduledPID = terminals[currScheduled].currPID ;
     nextScheduledPID = terminals[next].currPID ;  
-    //Uncomment line to see if paging is working right 
-    
-    // printf("Running %d switching %d\n",currScheduledPID,nextScheduledPID); 
 
     if(currScheduledPID == -1 && nextScheduledPID == -1){
         send_eoi(0);
@@ -132,10 +131,10 @@ extern void scheduler(int next) {
         return; 
     }
         
-    // get current process; terminal_flag tells us the current terminal
+    // get current process that we are switching from 
     pcb_t *pcb = get_pcb(currScheduledPID);
 
-
+    //Save its EBP value
    asm volatile(
         "movl %%ebp, %0 \n "
         "movl %%esp, %1 \n "
@@ -144,10 +143,7 @@ extern void scheduler(int next) {
         : "memory"
     );
 
-
-   // video_mapping_pt[0].page_table_addr = VID_ADDR / ALIGN_BYTES;
-
-
+    //Get the next scheduled process's pcb
     currScheduled = next; 
 
     pcb = get_pcb(nextScheduledPID);
@@ -156,7 +152,7 @@ extern void scheduler(int next) {
        return; 
     }
 
-  //  if running process is not on visible terminal
+    // if running process is not on visible terminal
     if (terminal_flag != next){
         // video_mapping_pt[0].page_table_addr = (VID_ADDR + (nextScheduled + 1) * FOURKB) / ALIGN_BYTES;
         page_table[VIDEO_PAGE_INDEX].page_table_addr = (VIDEO_PAGE_INDEX + next + 1) ;
@@ -165,15 +161,17 @@ extern void scheduler(int next) {
         page_table[VIDEO_PAGE_INDEX].page_table_addr = VIDEO_PAGE_INDEX; 
     }
 
+    //Chnage program image 
     addr = EIGHTMB + ((nextScheduledPID)*PAGE_SIZE);
     page_directory[USER_INDEX].page_table_addr = addr / ALIGN_BYTES;
 
     flush_tlb();
 
+    //Swap TSS
     tss.esp0 = EIGHTMB - SIZE_OF_INT32 - (EIGHTKB * pcb->process_id);
     tss.ss0 = KERNEL_DS;
 
-
+    //Restore ebp and esp values 
      asm volatile(
         "movl %0, %%ebp \n "
         "movl %1, %%esp \n "

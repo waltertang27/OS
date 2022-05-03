@@ -32,7 +32,7 @@ static inline void assertion_failure()
  */
 int idt_test()
 {
-    
+    return 1;
 }
 
 // add more tests here
